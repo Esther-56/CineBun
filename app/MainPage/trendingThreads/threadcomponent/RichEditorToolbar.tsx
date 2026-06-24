@@ -135,50 +135,57 @@ export function RichEditorToolbar({
 
   const closeAll = () => { setShowEmoji(false); setShowLink(false); setShowEmbed(false); };
 
-  const handleInsertLink = () => {
-    if (!linkUrl.trim()) return;
-    onInsertLink(linkUrl, linkText);
-    setShowLink(false);
-    setLinkUrl("");
-    setLinkText("");
-  };
+const handleInsertLink = () => {
+  if (!linkUrl.trim()) return;
+  const safeUrl = `/leaving?site=${encodeURIComponent(linkUrl)}`;
+  onInsertLink(safeUrl, linkText || linkUrl);
+  setShowLink(false);
+  setLinkUrl("");
+  setLinkText("");
+};
 
-  const handleInsertEmbed = async () => {
-    const url = embedUrl.trim();
-    if (!url) return;
+const handleInsertEmbed = async () => {
+  const url = embedUrl.trim();
+  if (!url) return;
 
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
-    } catch {
-      setEmbedError("Enter a valid http(s) URL.");
-      return;
-    }
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
+  } catch {
+    setEmbedError("Enter a valid http(s) URL.");
+    return;
+  }
 
-    const videoSrc = getVideoEmbedSrc(url);
-    if (videoSrc) {
-      onInsertVideoEmbed(videoSrc);
-      setShowEmbed(false);
-      setEmbedUrl("");
-      setEmbedError("");
-      return;
-    }
-
-    setEmbedLoading(true);
+  const videoSrc = getVideoEmbedSrc(url);
+  if (videoSrc) {
+    // Videos go direct — no leaving page for embeds
+    onInsertVideoEmbed(videoSrc);
+    setShowEmbed(false);
+    setEmbedUrl("");
     setEmbedError("");
-    try {
-      const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-      const json = await res.json();
-      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
-      onInsertLinkCard(json.data);
-      setShowEmbed(false);
-      setEmbedUrl("");
-    } catch (e: any) {
-      setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
-    } finally {
-      setEmbedLoading(false);
-    }
-  };
+    return;
+  }
+
+  setEmbedLoading(true);
+  setEmbedError("");
+  try {
+    const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+    const json = await res.json();
+    if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
+
+    onInsertLinkCard({
+      ...json.data,
+      url: `/leaving?site=${encodeURIComponent(url)}`,
+    });
+
+    setShowEmbed(false);
+    setEmbedUrl("");
+  } catch (e: any) {
+    setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
+  } finally {
+    setEmbedLoading(false);
+  }
+};
 
   return (
     <>

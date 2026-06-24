@@ -283,6 +283,17 @@ export default function PostCard({
     }
   }
 
+  function sanitizePostLinks(html: string): string {
+  return html.replace(
+    /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
+    (match, before, href, after) => {
+      if (href.startsWith("/leaving")) return match;
+      const safe = `/leaving?site=${encodeURIComponent(href)}`;
+      return `<a ${before}href="${safe}"${after}>`;
+    }
+  );
+}
+
   async function handleCopyLink() {
     const url = `${window.location.origin}${window.location.pathname}?post=${post._id}`;
     try {
@@ -434,10 +445,10 @@ export default function PostCard({
                   </div>
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
-                    <div
-                      className={`prose-dark ${isReply?'text-[13px]':'text-[15px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-1' : 'mb-8'}`}
-                      dangerouslySetInnerHTML={{ __html: content }}
-                    />
+                                  <div
+                  className={`prose-dark ${isReply ? 'text-[13px]' : 'text-[15px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-1' : 'mb-8'}`}
+                  dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
+                />
 
                     {id&&<div>
                       {/* Reaction bubbles */}
