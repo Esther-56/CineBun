@@ -12,15 +12,15 @@ export default function ThreadViewHeader({ thread }: ThreadViewHeaderProps) {
   return (
     <div className="mb-1">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 font-semibold text-sm text-[#b3b7be] mb-2 flex-wrap">
-        <Link href="/" className="hover:text-[#e4e6eb] transition-colors">Home</Link>
-        <ChevronRight size={14} className="text-[#4a4b50]" />
-        <Link href={`/f/${thread.subforum?._id}`} className="hover:text-[#e4e6eb] transition-colors">{thread.subforum?.name}</Link>
-        <ChevronRight size={14} className="text-[#4a4b50]" />
-        <span className="text-[#9a9da3] truncate max-w-xs">{thread?.title}</span>
+      <div className="flex items-center gap-1.5 font-semibold text-sm text-(--text-secondary) mb-2 flex-wrap">
+        <Link href="/" className="hover:text-(--text-primary) transition-colors">Home</Link>
+        <ChevronRight size={14} className="text-(--text-muted)" />
+        <Link href={`/f/${thread.subforum?._id}`} className="hover:text-(--text-primary) transition-colors">{thread.subforum?.name}</Link>
+        <ChevronRight size={14} className="text-(--text-muted)" />
+        <span className="text-(--text-muted) truncate max-w-xs">{thread?.title}</span>
       </div>
 
-      <div className="border-b border-[rgba(255,255,255,0.07)] pb-5">
+      <div className="border-b border-(--border-soft) pb-5">
         {/* Badge row — prefix + status */}
         {(prefix || thread?.isPinned || thread?.isLocked) && (
           <div className="flex items-center gap-2 mb-2 flex-wrap">
@@ -38,7 +38,7 @@ export default function ThreadViewHeader({ thread }: ThreadViewHeaderProps) {
               </span>
             )}
             {thread?.isLocked && (
-              <span className="flex items-center gap-1 text-[13px] font-medium px-2 py-1 rounded-md bg-[rgba(255,255,255,0.06)] text-[#9a9da3]">
+              <span className="flex items-center gap-1 text-[13px] font-medium px-2 py-1 rounded-md bg-(--border-soft) text-(--text-muted)">
                 <Lock size={13} /> Locked
               </span>
             )}
@@ -46,27 +46,27 @@ export default function ThreadViewHeader({ thread }: ThreadViewHeaderProps) {
         )}
 
         {/* Title */}
-        <h1 className="text-xl font-semibold text-[#e4e6eb] leading-snug mb-2">
+        <h1 className="text-xl font-semibold text-(--text-primary) leading-snug mb-2">
           {thread?.title}
         </h1>
 
         {/* Meta row */}
         <div className="flex items-center gap-3.5 flex-wrap">
-          <span className="flex items-center gap-1.5 text-sm text-[#c1c3c6]">
+          <span className="flex items-center gap-1.5 text-sm text-(--text-secondary)">
             <MessageSquare size={14} /> {formatNumber(thread?.replyCount)} replies
           </span>
-          <span className="flex items-center gap-1.5 text-sm text-[#b9bcc0]">
+          <span className="flex items-center gap-1.5 text-sm text-(--text-secondary)">
             <Eye size={14} /> {formatNumber(thread?.views)} views
           </span>
 
           {thread?.tags?.length > 0 && (
             <>
-              <div className="w-px h-3 bg-[rgba(255,255,255,0.1)]" />
+              <div className="w-px h-3 bg-(--border-soft)" />
               <div className="flex items-center gap-1.5 flex-wrap">
                 {thread.tags.map(tag => (
                   <span
                     key={tag}
-                    className="text-[12px] px-2 py-0.5 rounded-full bg-[rgba(255,255,255,0.05)] text-[#e6e7e7]"
+                    className="text-[12px] px-2 py-0.5 rounded-full bg-(--border-soft) text-(--text-primary)"
                   >
                     #{tag}
                   </span>

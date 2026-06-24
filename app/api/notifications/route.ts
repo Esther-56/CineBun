@@ -3,7 +3,7 @@
 import mongoosedb from "@/app/lib/db/db";
 import Notification from "@/app/lib/models/Notification";
 import { withAuth } from "../../lib/middleware/auth";
-import { ok, fail, serverError, getPagination } from "../../lib/response";
+import { ok, serverError } from "../../lib/response";
 
 
 
@@ -23,7 +23,7 @@ export async function GET(req: Request) {
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .populate("actor", "username avatar")
+          .populate("actor", "username avatar avatarEffect usernameEffect")
           .populate("thread", "title subforum")
           .populate("post", "content")
           .lean(),

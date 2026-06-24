@@ -1,14 +1,14 @@
-export function formatDate(iso: string): string {
+export function formatDate(iso: Date): string {
   return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-export function formatDateTime(iso: string): string {
+export function formatDateTime(iso: Date): string {
   return new Date(iso).toLocaleString('en-US', {
     year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
   });
 }
 
-export function timeAgo(iso: string): string {
+export function timeAgo(iso: Date): string {
   const diffMs = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diffMs / 60000);
   if (mins < 1) return 'just now';

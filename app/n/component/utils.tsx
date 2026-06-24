@@ -50,7 +50,7 @@ export function notifSummary(n: Notification): string {
 // ── Notification link ─────────────────────────────────────────────────────────
 export function notifHref(n: Notification): string {
   if (n.type === 'dm')      return `/messages/${n.actor._id}`;
-  if (n.type === 'warning') return `/account/warnings`;
+  if (n.type === 'warning') return `/n`;
   if (n.thread && n.post)   return `/f/${n.thread.subforum}/${n.thread._id}?post=${n.post._id}`;
   if (n.thread)             return `/f/${n.thread.subforum}//${n.thread._id}`;
   return '/n';

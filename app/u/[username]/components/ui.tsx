@@ -17,7 +17,7 @@ export function Avatar({ letter, size = 80, className = '' }: AvatarProps) {
   const bg = AVATAR_COLORS[letter] ?? '#4b8ef1';
   return (
     <div
-      className={`rounded-full flex items-center justify-center font-bold text-white flex-shrink-0 border-4 border-[#1b1c1f] shadow-xl ${className}`}
+      className={`rounded-full flex items-center justify-center font-bold text-white shrink-0 border-4 border-[#1b1c1f] shadow-xl ${className}`}
       style={{ width: size, height: size, backgroundColor: bg, fontSize: size * 0.38 }}
     >
       {letter}
@@ -43,7 +43,7 @@ export function Toggle({ defaultChecked = false, onChange }: ToggleProps) {
       onClick={handleClick}
       aria-checked={on}
       role="switch"
-      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${on ? 'bg-[#4b8ef1]' : 'bg-[#2d2e32]'}`}
+      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${on ? 'bg-(--accent)' : 'bg-(--bg-elevated)'}`}
     >
       <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`} />
     </button>
@@ -74,10 +74,10 @@ export function Field({
 
   return (
     <div>
-      <label className="block text-xs font-semibold text-[#a8b3cf] mb-1.5">{label}</label>
+      <label className="block text-xs font-semibold text-(--text-secondary) mb-1.5">{label}</label>
       <div className="relative">
         {icon && (
-          <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#4a4b50]">{icon}</div>
+          <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-(--text-muted)">{icon}</div>
         )}
         {multiline ? (
           <textarea
@@ -87,7 +87,7 @@ export function Field({
             placeholder={placeholder}
             rows={rows}
             disabled={disabled}
-            className="w-full bg-[#1b1c1f] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#e4e6eb] placeholder:text-[#4a4b50] outline-none focus:border-[#4b8ef1] transition-colors resize-none disabled:opacity-50"
+            className="w-full bg-(--bg-page) border border-(--border-medium) rounded-md px-3 py-2 text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none focus:border-(--accent) transition-colors resize-none disabled:opacity-50"
           />
         ) : (
           <input
@@ -97,11 +97,11 @@ export function Field({
             onChange={(e) => onChange?.(e.target.value)}
             placeholder={placeholder}
             disabled={disabled}
-            className={`w-full bg-[#1b1c1f] border border-[rgba(255,255,255,0.08)] rounded-md py-2 text-sm text-[#e4e6eb] placeholder:text-[#4a4b50] outline-none focus:border-[#4b8ef1] transition-colors ${icon ? 'pl-8 pr-3' : 'px-3'} disabled:opacity-50`}
+            className={`w-full bg-(--bg-page) border border-(--border-medium) rounded-md py-2 text-sm text-(--text-primary) placeholder:text-(--text-muted) outline-none focus:border-(--accent) transition-colors ${icon ? 'pl-8 pr-3' : 'px-3'} disabled:opacity-50`}
           />
         )}
       </div>
-      {hint && <p className="text-[11px] text-[#4a4b50] mt-1">{hint}</p>}
+      {hint && <p className="text-[11px] text-(--text-muted) mt-1">{hint}</p>}
     </div>
   );
 }
@@ -115,10 +115,10 @@ interface StatPillProps {
 
 export function StatPill({ icon, label, value }: StatPillProps) {
   return (
-    <div className="flex flex-col items-center gap-0.5 px-4 py-2.5 bg-[#1b1c1f] rounded-lg border border-[rgba(255,255,255,0.05)]">
-      <div className="text-[#4b8ef1] mb-1">{icon}</div>
-      <div className="text-[#e4e6eb] font-bold text-base leading-none mb-1">{value}</div>
-      <div className="text-[#c7c8cc] text-[12px] uppercase tracking-wide">{label}</div>
+    <div className="flex flex-col items-center gap-0.5 px-4 py-2.5 bg-(--bg-surface) rounded-lg border border-(--border-soft)">
+      <div className="text-(--accent) mb-1">{icon}</div>
+      <div className="text-(--text-primary) font-bold text-base leading-none mb-1">{value}</div>
+      <div className="text-(--text-secondary) text-[12px] uppercase tracking-wide">{label}</div>
     </div>
   );
 }
@@ -133,9 +133,9 @@ interface SectionCardProps {
 
 export function SectionCard({ title, children, danger = false, headerExtra }: SectionCardProps) {
   return (
-    <div className={`bg-[#242528] rounded-lg border ${danger ? 'border-[#ef444430]' : 'border-[rgba(255,255,255,0.06)]'}`}>
-      <div className={`flex items-center gap-2 px-4 py-3 border-b ${danger ? 'border-[#ef444430]' : 'border-[rgba(255,255,255,0.05)]'}`}>
-        <h2 className={`text-xs font-bold uppercase tracking-widest ${danger ? 'text-[#ef4444]' : 'text-[#e4e6eb]'}`}>
+    <div className={`bg-(--bg-surface) rounded-lg border ${danger ? 'border-(--danger)/20' : 'border-(--border-soft)'}`}>
+      <div className={`flex items-center gap-2 px-4 py-3 border-b ${danger ? 'border-(--danger)/20' : 'border-(--border-soft)'}`}>
+        <h2 className={`text-xs font-bold uppercase tracking-widest ${danger ? 'text-(--danger)' : 'text-(--text-primary)'}`}>
           {title}
         </h2>
         {headerExtra && <div className="ml-auto">{headerExtra}</div>}
@@ -173,18 +173,18 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-2.5 py-1.5 text-xs text-[#8a8d91] hover:text-[#e4e6eb] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#2d2e32] rounded transition-colors"
+        className="px-2.5 py-1.5 text-xs text-(--text-muted) hover:text-(--text-primary) disabled:opacity-30 disabled:cursor-not-allowed hover:bg-(--bg-elevated) rounded transition-colors"
       >
         ← Prev
       </button>
       {pages.map((p, i) =>
         p === '...' ? (
-          <span key={`dot-${i}`} className="px-2 text-[#4a4b50] text-xs">…</span>
+          <span key={`dot-${i}`} className="px-2 text-(--text-muted) text-xs">…</span>
         ) : (
           <button
             key={p}
             onClick={() => onPageChange(p as number)}
-            className={`w-7 h-7 text-xs rounded transition-colors ${currentPage === p ? 'bg-[#4b8ef1] text-white font-semibold' : 'text-[#8a8d91] hover:text-[#e4e6eb] hover:bg-[#2d2e32]'}`}
+            className={`w-7 h-7 text-xs rounded transition-colors ${currentPage === p ? 'bg-(--accent) text-white font-semibold' : 'text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-elevated)'}`}
           >
             {p}
           </button>
@@ -193,7 +193,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-2.5 py-1.5 text-xs text-[#8a8d91] hover:text-[#e4e6eb] disabled:opacity-30 disabled:cursor-not-allowed hover:bg-[#2d2e32] rounded transition-colors"
+        className="px-2.5 py-1.5 text-xs text-(--text-muted) hover:text-(--text-primary) disabled:opacity-30 disabled:cursor-not-allowed hover:bg-(--bg-elevated) rounded transition-colors"
       >
         Next →
       </button>

@@ -25,7 +25,7 @@ export default function LogoutButton({ mobile = false }: LogoutButtonProps) {
       store.hydrated = true;
       router.push("/");
     } catch (err) {
-      console.error("Logout failed", err);
+      console.log("Logout failed", err);
     } finally {
       setLoading(false);
       setOpen(false);
@@ -37,7 +37,7 @@ export default function LogoutButton({ mobile = false }: LogoutButtonProps) {
       {mobile ? (
         <button
           onClick={() => setOpen(true)}
-          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium text-[#ff6b6b] hover:bg-[#2d2e32] rounded-lg transition-colors"
+          className="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm font-medium text-[#ff6b6b] hover:bg-(--bg-elevated) rounded-lg transition-colors"
         >
           <Power size={16} />
           Sign out
@@ -45,7 +45,7 @@ export default function LogoutButton({ mobile = false }: LogoutButtonProps) {
       ) : (
         <button
           onClick={() => setOpen(true)}
-          className="w-10 h-10 flex items-center justify-center rounded hover:bg-[#2d2e32] text-[#eceef2] cursor-pointer hover:text-[#ff6b6b] transition-colors shrink-0"
+          className="w-10 h-10 flex items-center justify-center rounded hover:bg-(--bg-elevated) text-(--text-primary) cursor-pointer hover:text-[#ff6b6b] transition-colors shrink-0"
           title="Sign out"
         >
           <Power size={18} />
@@ -58,22 +58,22 @@ export default function LogoutButton({ mobile = false }: LogoutButtonProps) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-[#242528] border border-[rgba(255,255,255,0.08)] rounded-xl p-6 w-80 shadow-2xl"
+            className="bg-(--bg-surface) border border-(--border-medium) rounded-xl p-6 w-80 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#ff6b6b]/10 mx-auto mb-4">
               <Power size={22} className="text-[#ff6b6b]" />
             </div>
-            <h2 className="text-[#e4e6eb] text-base font-semibold text-center mb-1">
+            <h2 className="text-(--text-primary) text-base font-semibold text-center mb-1">
               Sign out?
             </h2>
-            <p className="text-[#8a8d91] text-sm text-center mb-6">
+            <p className="text-(--text-secondary) text-sm text-center mb-6">
               {"You'll need to log back in to access your account."}
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-[#8a8d91] bg-[#2d2e32] hover:bg-[#35363a] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-(--text-secondary) bg-(--bg-elevated) hover:bg-(--bg-elevated) transition-colors"
               >
                 Cancel
               </button>

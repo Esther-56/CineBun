@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
       const conversations = await DM.find({ participants: user._id })
         .sort({ lastMessageAt: -1 })
-        .populate("participants", "username avatar")
+        .populate("participants", "username avatar avatarEffect usernameEffect")
         .lean();
 
       const inbox = conversations.map((c: any) => {

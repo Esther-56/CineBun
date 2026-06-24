@@ -11,7 +11,7 @@ export const fail = (message: string, status = 400) =>
   NextResponse.json({ success: false, message }, { status });
 
 export const serverError = (err: unknown, context = "") => {
-  console.error(`[${context}]`, err);
+  console.log(`[${context}]`, err);
   return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
 };
 

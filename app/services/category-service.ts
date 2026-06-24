@@ -1,5 +1,7 @@
 // app/services/category-service.ts
 import ForumApi from '../ApiCore';
+import { AvatarEffectKey } from '../MainPage/trendingThreads/components/Avatar';
+import { UsernameEffectKey } from '../u/[username]/components/ui/UsernameEffect';
 const api = new ForumApi();
 
 // Matches the backend's ok()/created()/fail() envelope — every response is wrapped like this.
@@ -14,6 +16,8 @@ export interface LastPost {
   avatar: string;
   timeAgo: string;
   threadTitle: string;
+  usernameEffect:UsernameEffectKey;
+  avatarEffect:AvatarEffectKey;
 }
 
 export interface ApiSubforum {

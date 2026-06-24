@@ -22,7 +22,7 @@ export async function GET(
       const { page, limit } = pagination;
 
       const thread = await Thread.findById(id)
-        .populate("author", "username avatar role customTitle postCount joinedAt signature")
+        .populate("author", "username avatar avatarEffect usernameEffet role customTitle postCount joinedAt signature")
         .populate("subforum", "name category")
         .lean();
 
@@ -38,7 +38,7 @@ export async function GET(
         .sort({ createdAt: 1 })
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate("author", "username avatar role customTitle postCount joinedAt signature")
+        .populate("author", "username avatar avatarEffect usernameEffet role customTitle postCount joinedAt signature")
         .populate("quotedPost", "content author")
         .lean();
 

@@ -56,11 +56,11 @@ export default function LoginPage() {
       title="Welcome back"
       subtitle="Log in to your Bunny Forum account to continue."
       footer={
-        <p className="text-sm text-[#8a8d91]">
+        <p className="text-sm text-(--text-secondary)">
           New here?{' '}
           <button
             onClick={() => router.replace("/auth/register")}
-            className="text-[#4b8ef1] hover:underline font-semibold"
+            className="text-(--accent) hover:underline font-semibold"
           >
             Create an account
           </button>
@@ -71,73 +71,73 @@ export default function LoginPage() {
 
         {/* Server error */}
         {serverError && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-lg">
-            <AlertCircle size={16} className="text-[#ef4444] shrink-0" />
-            <p className="text-sm font-medium text-[#ef4444]">{serverError}</p>
+          <div className="flex items-center gap-3 px-4 py-3 bg-(--bg-page) border border-(--danger) rounded-lg">
+            <AlertCircle size={16} className="text-(--danger) shrink-0" />
+            <p className="text-sm font-medium text-(--danger)">{serverError}</p>
           </div>
         )}
 
         {/* Email */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="login-id" className="text-sm font-semibold text-[#a8b3cf]">
+          <label htmlFor="login-id" className="text-sm font-semibold text-(--text-secondary)">
             Username or email
           </label>
           <div className="relative">
-            <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-(--text-muted)" />
             <input
               id="login-id"
               type="text"
               autoComplete="username"
               placeholder="jonah_dev"
               {...formik.getFieldProps('email')}
-              className={`w-full bg-[#1b1c1f] border rounded-lg pl-10 pr-4 py-3 text-sm font-medium text-[#e4e6eb] placeholder:text-[#4a4b50] outline-none transition-colors
-                ${fieldError('email') ? 'border-[#ef4444]' : 'border-[rgba(255,255,255,0.08)] focus:border-[#4b8ef1]'}`}
+              className={`w-full bg-(--bg-input) border rounded-lg pl-10 pr-4 py-3 text-sm font-medium text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors
+                ${fieldError('email') ? 'border-(--danger)' : 'border-(--border-soft) focus:border-(--accent)'}`}
             />
           </div>
           {fieldError('email') && (
-            <p className="text-xs font-medium text-[#ef4444]">{fieldError('email')}</p>
+            <p className="text-xs font-medium text-(--danger)">{fieldError('email')}</p>
           )}
         </div>
 
         {/* Password */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label htmlFor="login-password" className="text-sm font-semibold text-[#a8b3cf]">
+            <label htmlFor="login-password" className="text-sm font-semibold text-(--text-secondary)">
               Password
             </label>
-            <a href="#" className="text-xs font-semibold text-[#4b8ef1] hover:underline">
+            <a href="#" className="text-xs font-semibold text-(--accent) hover:underline">
               Forgot password?
             </a>
           </div>
           <div className="relative">
-            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-(--text-muted)" />
             <input
               id="login-password"
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="••••••••"
               {...formik.getFieldProps('password')}
-              className={`w-full bg-[#1b1c1f] border rounded-lg pl-10 pr-10 py-3 text-sm font-medium text-[#e4e6eb] placeholder:text-[#4a4b50] outline-none transition-colors
-                ${fieldError('password') ? 'border-[#ef4444]' : 'border-[rgba(255,255,255,0.08)] focus:border-[#4b8ef1]'}`}
+              className={`w-full bg-(--bg-input) border rounded-lg pl-10 pr-10 py-3 text-sm font-medium text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors
+                ${fieldError('password') ? 'border-(--danger)' : 'border-(--border-soft) focus:border-(--accent)'}`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(s => !s)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50] hover:text-[#8a8d91] transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-(--text-muted) hover:text-(--text-secondary) transition-colors"
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
           {fieldError('password') && (
-            <p className="text-xs font-medium text-[#ef4444]">{fieldError('password')}</p>
+            <p className="text-xs font-medium text-(--danger)">{fieldError('password')}</p>
           )}
         </div>
 
         {/* Remember me */}
-        <label className="flex items-center gap-2.5 text-sm font-medium text-[#8a8d91] cursor-pointer select-none">
+        <label className="flex items-center gap-2.5 text-sm font-medium text-(--text-secondary) cursor-pointer select-none">
           <input
             type="checkbox"
-            className="w-4 h-4 rounded border-[rgba(255,255,255,0.15)] bg-[#1b1c1f] accent-[#4b8ef1]"
+            className="w-4 h-4 rounded border-(--border-medium) bg-(--bg-input) accent-(--accent)"
           />
           Stay logged in
         </label>
@@ -145,7 +145,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={formik.isSubmitting}
-          className="w-full flex items-center justify-center gap-2 bg-[#4b8ef1] hover:bg-[#3a7de0] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg py-3 transition-colors mt-1"
+          className="w-full flex items-center justify-center gap-2 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg py-3 transition-colors mt-1"
         >
           <Power size={16} />
           {formik.isSubmitting ? 'Logging in...' : 'Log in'}

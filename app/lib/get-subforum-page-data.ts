@@ -27,6 +27,8 @@ function shapeLastPost(lastPost: any) {
     username: lastPost.user?.username ?? 'Unknown',
     threadTitle: lastPost.thread?.title ?? '',
     timeAgo: timeAgo(lastPost.createdAt),
+    usernameEffect: lastPost.user?.usernameEffect ?? null,
+    avatarEffect : lastPost.user?.avatarEffect ?? null
   };
 } // the helper from earlier — see note below
 
@@ -37,7 +39,7 @@ export async function getSubforumPageData(id: string, page: number, limit = 25) 
     .populate('category', 'name accentColor')
     .populate('parent', 'name')
     .populate('allowedRoles', 'name color')
-    .populate('lastPost.user', 'username avatar')
+    .populate('lastPost.user', 'username avatar usernameEffect avatarEffect')
     .populate('lastPost.thread', 'title')
     .lean();
 
@@ -60,7 +62,7 @@ export async function getSubforumPageData(id: string, page: number, limit = 25) 
       .sort({ order: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate('lastPost.user', 'username avatar')
+      .populate('lastPost.user', 'username avatar usernameEffect avatarEffect')
       .populate('lastPost.thread', 'title')
       .lean();
 
@@ -68,7 +70,7 @@ export async function getSubforumPageData(id: string, page: number, limit = 25) 
     const grandchildren = childIds.length
       ? await Subforum.find({ parent: { $in: childIds } })
           .sort({ order: 1 })
-          .populate('lastPost.user', 'username avatar')
+          .populate('lastPost.user', 'username avatar usernameEffect avatarEffect')
           .populate('lastPost.thread', 'title')
           .lean()
       : [];
@@ -92,8 +94,8 @@ export async function getSubforumPageData(id: string, page: number, limit = 25) 
     .sort({ isPinned: -1, 'lastPost.createdAt': -1 })
     .skip((page - 1) * limit)
     .limit(limit)
-    .populate('author', 'username avatar role')
-    .populate('lastPost.user', 'username avatar')
+    .populate('author', 'username avatar role avatarEffect usernameEffect avatarEffect')
+    .populate('lastPost.user', 'username avatar avatarEffect usernameEffect avatarEffect')
     .lean();
 
   return { subforum, type: 'threads' as const, items, total, page, pages: Math.max(1, Math.ceil(total / limit)) };

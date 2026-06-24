@@ -1,3 +1,6 @@
+import { UsernameEffectKey } from "@/app/u/[username]/components/ui/UsernameEffect";
+import { AvatarEffectKey } from "../trendingThreads/components/Avatar";
+
 export interface LastPost {
   username: string;
   avatar: string;
@@ -34,9 +37,11 @@ export interface ForumStats {
 // ── Thread-related types (mirrors models/Thread.ts) ────────────────────────
 export interface ThreadUser {
   _id?: string;
-  username?: string;
+  username: string;
   avatar?: string; // single letter used by <Avatar />
   role?: 'admin' | 'moderator' | 'member';
+  avatarEffect:AvatarEffectKey
+  usernameEffect:UsernameEffectKey
 }
 
 export type ThreadPrefix = 'GUIDE' | 'WIP' | 'DISCUSSION' | 'QUESTION' | 'NEWS' | null;
@@ -114,6 +119,8 @@ export interface ForumUser {
   isVerified: boolean;
   isOnline?: boolean;
   socials?: UserSocials;
+  usernameEffect:UsernameEffectKey;
+  avatarEffect:AvatarEffectKey
 }
 
 // ── Reactions (mirrors Post.reactionCount) ─────────────────────────────────

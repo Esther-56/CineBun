@@ -1,6 +1,6 @@
 import mongoosedb from "@/app/lib/db/db";
 import User from "@/app/lib/models/User";
-import { withOptionalAuth } from "@/app/lib/middleware/auth";
+import { withAuth } from "@/app/lib/middleware/auth";
 import { ok, fail, serverError } from "@/app/lib/response";
 
 // GET /api/users/[username] — public profile
@@ -8,7 +8,7 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ username: string }> }
 ) {
-  return withOptionalAuth(req, async (viewer) => {
+  return withAuth(req, async (viewer) => {
     try {
       await mongoosedb();
       const { username } = await params;

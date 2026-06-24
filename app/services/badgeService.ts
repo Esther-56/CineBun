@@ -26,7 +26,6 @@ type UserBadgeDocument = {
 // services/badgeService.ts — add this
 export async function assignDefaultBadge(userId: string) {
   const defaultBadge = await BadgeModel.findOne({ isDefault: true });
-  console.log(defaultBadge)
   if (!defaultBadge) return; // no default configured, skip silently
 
   await User.updateOne(

@@ -19,7 +19,7 @@ export async function GET(
 
     return NextResponse.json({ role }, { status: 200 });
   } catch (err) {
-    console.error("GET /api/admin/roles/:id failed:", err);
+    console.log("GET /api/admin/roles/:id failed:", err);
     return NextResponse.json({ error: "Failed to fetch role" }, { status: 500 });
   }})
 }
@@ -81,7 +81,7 @@ export async function PATCH(
 
     return NextResponse.json({ role: existing }, { status: 200 });
   } catch (err) {
-    console.error("PATCH /api/admin/roles/:id failed:", err);
+    console.log("PATCH /api/admin/roles/:id failed:", err);
     return NextResponse.json({ error: "Failed to update role" }, { status: 500 });
   }})
 }
@@ -111,7 +111,7 @@ export async function DELETE(
     await Role.findByIdAndDelete(id);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (err) {
-    console.error("DELETE /api/admin/roles/:id failed:", err);
+    console.log("DELETE /api/admin/roles/:id failed:", err);
     return NextResponse.json({ error: "Failed to delete role" }, { status: 500 });
   }})
 }

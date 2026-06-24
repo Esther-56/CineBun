@@ -1,10 +1,10 @@
 'use client';
 import { Ban, AlertTriangle } from 'lucide-react';
 import RoleIcon from './RoleIcon';
-import type { ForumUser, Role } from '../lib/types';
+import type {  Role } from '../lib/types';
 import Avatar from '@/app/MainPage/trendingThreads/components/Avatar';
-
-const STATUS_STYLES: Record<ForumUser['status'], string> = {
+import { UserProfile } from '@/app/u/[username]/types';
+const STATUS_STYLES: Record<UserProfile['customTitle'], string> = {
   active:    'bg-[#10b981]/15 text-[#10b981]',
   warned:    'bg-[#f59e0b]/15 text-[#f59e0b]',
   suspended: 'bg-[#f59e0b]/15 text-[#f59e0b]',
@@ -14,8 +14,10 @@ const STATUS_STYLES: Record<ForumUser['status'], string> = {
 export default function UserListItem({
   user, role, isSelected, onSelect,
 }: {
-  user: ForumUser; role: Role | undefined; isSelected: boolean; onSelect: () => void;
+  user: UserProfile; role: Role | undefined; isSelected: boolean; onSelect: () => void;
 }) {
+
+  console.log(user)
   return (
     <div
       onClick={onSelect}
@@ -26,13 +28,12 @@ export default function UserListItem({
         }`}
     >
       {/* Avatar */}
-      <Avatar name={user.username}/>
+      <Avatar name={user.username} src={user.avatar}/>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs font-semibold text-[#e4e6eb] truncate">{user.displayName}</span>
-          {user.status === 'banned' && <Ban size={10} className="text-[#ef4444] shrink-0" />}
-          {user.status === 'warned' && <AlertTriangle size={10} className="text-[#f59e0b] shrink-0" />}
+          <span className="text-xs font-semibold text-[#e4e6eb] truncate">{user.username}</span>
+          {user.isBanned  && <Ban size={10} className="text-[#ef4444] shrink-0" />}
         </div>
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-[10px] text-[#4a4b50] truncate">@{user.username}</span>
@@ -44,8 +45,8 @@ export default function UserListItem({
         </div>
       </div>
 
-      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 capitalize ${STATUS_STYLES[user.status]}`}>
-        {user.status}
+      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 capitalize ${STATUS_STYLES[user.customTitle]}`}>
+        {user.customTitle}
       </span>
     </div>
   );

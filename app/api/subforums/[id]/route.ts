@@ -6,7 +6,7 @@ import Subforum from "@/app/lib/models/SubforumSchema";
 import Thread from "@/app/lib/models/ThreadSchema";
 import Post from "@/app/lib/models/Post";
 import User from "@/app/lib/models/User";
-import { withAuth, withPermission } from "@/app/lib/middleware/auth";
+import { withAuth, withPermission, withOptionalAuth } from "@/app/lib/middleware/auth";
 import { ok,  fail, serverError, getPagination } from "@/app/lib/response";
 import "@/app/lib/models/CategorySchema"
 
@@ -16,6 +16,7 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  return withOptionalAuth(req, async (user) => {
   try {
     const { id } = await params;
     const { searchParams } = new URL(req.url);
@@ -27,7 +28,7 @@ export async function GET(
     return ok(data);
   } catch (err) {
     return serverError(err, "GET /api/subforums/[id]");
-  }
+  }})
 }
 
 export async function DELETE(

@@ -5,6 +5,7 @@ import OnlineUsers from './OnlineUsers';
 import TrendingPanel from './TrendingPanel';
 import { ForumService } from '@/app/services/forum';
 import { ForumStats } from '../../types/forum';
+import { UsernameEffectKey } from '@/app/u/[username]/components/ui/UsernameEffect';
 
 interface TrendingThread {
   _id: string;
@@ -14,14 +15,17 @@ interface TrendingThread {
 
 export default function ForumSidebar() {
   const [stats, setStats] = useState<ForumStats | null>(null);
-  const [onlineUsers, setOnlineUsers] = useState<{ users: string[]; total: number }>({ users: [], total: 0 });
+  const [onlineUsers, setOnlineUsers] = useState<{ users: { username: string; usernameEffect: UsernameEffectKey }[]; total: number }>({
+    users: [],
+    total: 0,
+  });
   const [trendingThreads, setTrendingThreads] = useState<TrendingThread[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     ForumService.getStats()
       .then(res => {
-        const data = res?.data; // adjust to `res` if your ApiCore doesn't wrap in `.data`
+        const data = res?.data;
         setStats(data.stats);
         setOnlineUsers(data.onlineUsers);
         setTrendingThreads(data.trendingThreads);
@@ -36,7 +40,7 @@ export default function ForumSidebar() {
         <SidebarSkeleton />
       ) : (
         <>
-         <OnlineUsers users={onlineUsers?.users} total={onlineUsers?.total} />
+          <OnlineUsers users={onlineUsers?.users} total={onlineUsers?.total} />
           <StatsBar stats={stats} />
           <TrendingPanel threads={trendingThreads} />
         </>
@@ -49,7 +53,7 @@ function SidebarSkeleton() {
   return (
     <>
       {[0, 1, 2].map(i => (
-        <div key={i} className="rounded-lg border border-[rgba(255,255,255,0.06)] bg-[#242528] p-4 h-28 animate-pulse" />
+        <div key={i} className="rounded-lg border border-(--border-soft) bg-(--bg-surface) p-4 h-28 animate-pulse" />
       ))}
     </>
   );

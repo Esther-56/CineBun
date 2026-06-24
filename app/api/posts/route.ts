@@ -82,8 +82,6 @@ export async function POST(req: Request) {
       }
 
       // ── Notifications ──────────────────────────────────────────────────
-      console.log(user?._id)
-      console.log(parentPost)
       if (parentPost) {
         // Nested reply — notify the post being replied to, not the thread author
         if (parentPost.author.toString() !== user._id.toString()) {
@@ -138,7 +136,7 @@ export async function POST(req: Request) {
 
           const populated = await post.populate({
           path: "author",
-          select: "username avatar role customTitle postCount",
+          select: "username avatar role customTitle postCount avatarEffect usernameEffect",
           populate: { path: "role", select: "name" },
         });
 

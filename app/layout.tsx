@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Body from './MainPage/Body'
+import ThemeInit from '@/app/components/ThemeInit';
+
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://bunnyforum.com"), // 🔁 Replace with your actual domain
@@ -86,6 +88,7 @@ export default function RootLayout({
     >
       <head>
         <meta name="monetag" content="f812d08ef1bb5d01aaa6bdb313c1d2e4" />
+         <ThemeInit /> 
       </head>
       <Body>{children}</Body>
     </html>

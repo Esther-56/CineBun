@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import {  useSearchParams } from "next/navigation";
 import { X, Image as ImageIcon, AlertCircle, ChevronDown } from "lucide-react";
 import { ThreadService } from "@/app/services/threads";
 import { RichEditor } from "@/app/MainPage/trendingThreads/threadcomponent/RichEditor";
-
+import { useRouter } from "nextjs-toploader/app";
 const MAX_TAGS = 5;
 
 const PREFIXES = [
@@ -96,21 +96,21 @@ export default function NewThreadPage() {
   const selectedPrefix = PREFIXES.find((p) => p.value === prefix);
 
   return (
-    <div className="min-h-screen bg-[#18191a] text-[#e4e6eb]">
+    <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
       <div className="max-w-4xl mx-auto px-4 py-6">
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-[#8a8d91] mb-5">
-          <button onClick={() => router.back()} className="hover:text-[#e4e6eb] transition-colors">
+        <div className="flex font-medium  items-center gap-2 text-sm text-(--text-muted) mb-5">
+          <button onClick={() => router.back()} className="hover:text-(--text-primary) transition-colors">
             Forums
           </button>
           <span>/</span>
-          <span className="text-[#e4e6eb]">{subforumName}</span>
+          <span className="text-(--text-primary)">{subforumName}</span>
           <span>/</span>
-          <span className="text-[#1877f2]">New Thread</span>
+          <span className="text-(--accent)">New Thread</span>
         </div>
 
-        <h1 className="text-xl font-bold text-[#e4e6eb] mb-5">Post New Thread</h1>
+        <h1 className="text-xl font-bold text-(--text-primary) mb-5">Post New Thread</h1>
 
         {/* Page-level error */}
         {error && (
@@ -129,18 +129,18 @@ export default function NewThreadPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={200}
-            className="w-full h-10 px-3 bg-[#242526] border border-[rgba(255,255,255,0.08)] rounded-lg text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none focus:border-[#1877f2] transition-colors"
+            className="w-full font-medium  h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) transition-colors"
           />
 
           {/* Prefix dropdown */}
-          <div className="relative" ref={prefixRef}>
+          <div className="relative font-medium " ref={prefixRef}>
             <button
               type="button"
               onClick={() => setPrefixOpen((o) => !o)}
-              className={`flex items-center gap-2 w-full h-10 px-3 bg-[#242526] border rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-2 w-full h-10 px-3 bg-(--bg-surface) border rounded-lg text-sm transition-colors ${
                 prefixOpen
-                  ? "border-[#1877f2]"
-                  : "border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.18)]"
+                  ? "border-(--accent)"
+                  : "border-(--border-soft) hover:border-(--border-medium)"
               }`}
               aria-haspopup="listbox"
               aria-expanded={prefixOpen}
@@ -152,7 +152,7 @@ export default function NewThreadPage() {
                 />
               )}
 
-              <span className={`flex-1 text-left ${!prefix ? "text-[#8a8d91]" : "text-[#e4e6eb]"}`}>
+              <span className={`flex-1 text-left ${!prefix ? "text-(--text-muted)" : "text-(--text-primary)"}`}>
                 {prefix || "Select a prefix… (optional)"}
               </span>
 
@@ -164,7 +164,7 @@ export default function NewThreadPage() {
                     e.stopPropagation();
                     setPrefix("");
                   }}
-                  className="flex items-center justify-center w-4 h-4 rounded hover:bg-white/10 text-[#8a8d91] hover:text-[#e4e6eb] transition-colors"
+                  className="flex items-center font-medium  justify-center w-4 h-4 rounded hover:bg-white/10 text-(--text-muted) hover:text-(--text-primary) transition-colors"
                 >
                   <X size={10} />
                 </span>
@@ -172,17 +172,17 @@ export default function NewThreadPage() {
 
               <ChevronDown
                 size={14}
-                className={`text-[#8a8d91] transition-transform duration-150 ${prefixOpen ? "rotate-180" : ""}`}
+                className={`text-(--text-muted) transition-transform duration-150 ${prefixOpen ? "rotate-180" : ""}`}
                 aria-hidden="true"
               />
             </button>
 
             {prefixOpen && (
               <div
-                className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-[#2d2e2f] border border-[rgba(255,255,255,0.12)] rounded-lg overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+                className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-(--bg-elevated) border border-(--border-medium) rounded-lg overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
                 role="listbox"
               >
-                <div className="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wider text-[#8a8d91] font-medium">
+                <div className="px-3 pt-2  pb-1 text-[11px] uppercase tracking-wider text-(--text-muted) font-medium">
                   Thread prefix
                 </div>
 
@@ -194,8 +194,8 @@ export default function NewThreadPage() {
                   onClick={() => { setPrefix(""); setPrefixOpen(false); }}
                   className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm transition-colors ${
                     prefix === ""
-                      ? "bg-[#1877f2]/10 text-[#1877f2]"
-                      : "text-[#8a8d91] hover:bg-white/5"
+                      ? "bg-(--accent-subtle) text-(--accent)"
+                      : "text-(--text-muted) hover:bg-white/5"
                   }`}
                 >
                   No prefix
@@ -208,10 +208,10 @@ export default function NewThreadPage() {
                     role="option"
                     aria-selected={prefix === p.value}
                     onClick={() => { setPrefix(p.value); setPrefixOpen(false); }}
-                    className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-sm transition-colors ${
+                    className={`flex items-center gap-2.5 font-medium  w-full px-3 py-2.5 text-sm transition-colors ${
                       prefix === p.value
-                        ? "bg-[#1877f2]/10 text-[#1877f2]"
-                        : "text-[#e4e6eb] hover:bg-white/5"
+                        ? "bg-(--accent-subtle) text-(--accent)"
+                        : "text-(--text-primary) hover:bg-white/5"
                     }`}
                   >
                     <span
@@ -219,7 +219,7 @@ export default function NewThreadPage() {
                       style={{ background: p.color }}
                     />
                     <span className="flex-1 text-left">{p.value}</span>
-                    <span className="text-xs text-[#8a8d91]">{p.desc}</span>
+                    <span className="text-xs text-(--text-muted)">{p.desc}</span>
                   </button>
                 ))}
               </div>
@@ -228,17 +228,17 @@ export default function NewThreadPage() {
 
           {/* Tags */}
           <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap items-center gap-1.5 min-h-10 px-3 py-1.5 bg-[#242526] border border-[rgba(255,255,255,0.08)] rounded-lg focus-within:border-[#1877f2] transition-colors">
+            <div className="flex flex-wrap font-medium  items-center gap-1.5 min-h-10 px-3 py-1.5 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  className="flex items-center gap-1 bg-[#1877f2]/15 text-[#1877f2] text-xs font-medium pl-2 pr-1 py-1 rounded-md"
+                  className="flex items-center gap-1 bg-(--accent-subtle) text-(--accent) text-xs font-medium pl-2 pr-1 py-1 rounded-md"
                 >
                   {tag}
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="hover:bg-[#1877f2]/20 rounded p-0.5 transition-colors"
+                    className="hover:bg-(--accent-subtle) rounded p-0.5 transition-colors"
                   >
                     <X size={10} />
                   </button>
@@ -252,18 +252,18 @@ export default function NewThreadPage() {
                 onBlur={() => addTag(tagInput)}
                 placeholder={tags.length ? "" : "Add tags… (press Enter)"}
                 disabled={tags.length >= MAX_TAGS}
-                className="flex-1 min-w-[100px] bg-transparent text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none disabled:cursor-not-allowed"
+                className="flex-1 min-w-25 font-medium  bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none disabled:cursor-not-allowed"
               />
             </div>
-            <span className="text-[11px] text-[#4a4b50]">
+            <span className="text-[11px] text-(--text-muted)">
               {tags.length}/{MAX_TAGS} tags · press Enter or comma to add
             </span>
           </div>
 
           {/* Image link — compulsory */}
-          <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2 h-10 px-3 bg-[#242526] border border-[rgba(255,255,255,0.08)] rounded-lg focus-within:border-[#1877f2] transition-colors">
-              <ImageIcon size={14} className="text-[#8a8d91] shrink-0" />
+          <div className="flex font-medium  flex-col gap-1">
+            <div className="flex items-center gap-2 h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
+              <ImageIcon size={14} className="text-(--text-muted) shrink-0" />
               <input
                 type="url"
                 placeholder="Image link…"
@@ -272,9 +272,9 @@ export default function NewThreadPage() {
                   setImage(e.target.value);
                   if (imageError) setImageError("");
                 }}
-                className="flex-1 bg-transparent text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none"
+                className="flex-1 bg-transparent font-medium  text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none"
               />
-              <span className="text-[10px] uppercase tracking-wide text-[#1877f2] font-semibold shrink-0">
+              <span className="text-[10px] uppercase tracking-wide text-(--accent) font-semibold shrink-0">
                 Required
               </span>
             </div>
@@ -285,7 +285,7 @@ export default function NewThreadPage() {
               </span>
             )}
             {image && !imageError && (
-              <div className="rounded-lg overflow-hidden border border-[rgba(255,255,255,0.08)] max-h-40">
+              <div className="rounded-lg overflow-hidden border border-(--border-soft) max-h-40">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={image}

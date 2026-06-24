@@ -9,6 +9,8 @@ const User = new Schema({
   banner:       { type: String, default: null },            // profile banner url
   signature:    { type: String, default: '' },              // shown below posts
   bio:          { type: String, default: '' },
+  usernameEffect: { type: String, default: null }, 
+  avatarEffect:   { type: String, default: null }, 
   role: {
   type: mongoose.Schema.Types.ObjectId,
   ref: "Role",

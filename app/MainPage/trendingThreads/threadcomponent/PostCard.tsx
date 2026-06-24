@@ -13,6 +13,7 @@ import UserBadges from './UserBadge';
 import { formatTimeAgo } from '@/app/n/component/utils';
 import { store } from '@/app/store';
 import { useSnapshot } from 'valtio';
+import UsernameEffect from '@/app/u/[username]/components/ui/UsernameEffect';
 
 export interface PostNode extends Post {
   children: PostNode[];
@@ -70,14 +71,14 @@ function getRoleBadgeStyle(role?: string): { bg: string; text: string } {
 function PostNumberBadge({ n }: { n?: number }) {
   if (!n) return null;
   return (
-    <span className="text-[12px] font-mono text-[#b8b9c0] select-none">#{n}</span>
+    <span className="text-[12px] font-mono text-(--text-secondary) select-none">#{n}</span>
   );
 }
 
 function flashHighlight(el: HTMLElement) {
-  el.classList.add('ring-2', 'ring-[#4b8ef1]', 'ring-offset-2', 'ring-offset-[#18191a]');
+  el.classList.add('ring-2', 'ring-(--accent)', 'ring-offset-2', 'ring-offset-(--bg-page)');
   window.setTimeout(() => {
-    el.classList.remove('ring-2', 'ring-[#4b8ef1]', 'ring-offset-2', 'ring-offset-[#18191a]');
+    el.classList.remove('ring-2', 'ring-(--accent)', 'ring-offset-2', 'ring-offset-(--bg-page)');
   }, 1400);
 }
 
@@ -100,14 +101,14 @@ function DeleteModal({
 }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="bg-[#242526] border border-[rgba(255,255,255,0.1)] rounded-xl w-full max-w-sm mx-4 p-5 shadow-2xl">
+      <div className="bg-(--bg-surface) border border-(--border-medium) rounded-xl w-full max-w-sm mx-4 p-5 shadow-2xl">
         <div className="flex items-start gap-3 mb-4">
-          <div className="mt-0.5 flex items-center justify-center w-8 h-8 rounded-full bg-[#3a1a1a] shrink-0">
-            <AlertTriangle size={15} className="text-[#ff6b6b]" />
+          <div className="mt-0.5 flex items-center justify-center w-8 h-8 rounded-full bg-(--danger-subtle) shrink-0">
+            <AlertTriangle size={15} className="text-(--danger)" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#e4e6eb] mb-1">Delete this post?</p>
-            <p className="text-xs text-[#8a8d91] leading-relaxed">
+            <p className="text-sm font-semibold text-(--text-primary) mb-1">Delete this post?</p>
+            <p className="text-xs text-(--text-muted) leading-relaxed">
               {"This action can't be undone. The post will be permanently removed."}
             </p>
           </div>
@@ -116,14 +117,14 @@ function DeleteModal({
           <button
             onClick={onCancel}
             disabled={loading}
-            className="h-8 px-3.5 rounded-lg text-xs text-[#a3a5ab] bg-[#1e1f20] border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.18)] transition-colors disabled:opacity-50"
+            className="h-8 px-3.5 rounded-lg text-xs text-(--text-secondary) bg-(--bg-input) border border-(--border-soft) hover:border-(--border-medium) transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="h-8 px-3.5 rounded-lg text-xs font-semibold text-white bg-[#c43f3f] hover:bg-[#d94f4f] transition-colors disabled:opacity-60 flex items-center gap-1.5"
+            className="h-8 px-3.5 rounded-lg text-xs font-semibold text-white bg-(--danger) hover:bg-[#d94f4f] transition-colors disabled:opacity-60 flex items-center gap-1.5"
           >
             {loading ? (
               <>
@@ -172,6 +173,7 @@ export default function PostCard({
   const [visibleReplies, setVisibleReplies]   = useState(INITIAL_VISIBLE_REPLIES);
   const [copied, setCopied]                   = useState(false);
   const snap = useSnapshot(store)
+  const id = snap._id
   const emojiRef = useRef<HTMLDivElement>(null);
 
   // Close emoji picker on outside click
@@ -313,11 +315,11 @@ export default function PostCard({
     return (
       <div
         style={{ marginLeft: indent }}
-        className={`${isReply ? "border-l-2 border-[rgba(255,255,255,0.06)] pl-3" : ""}`}
+        className={`${isReply ? "border-l-2 border-(--border-soft) pl-3" : ""}`}
       >
-        <div className="bg-[#1e1f20] border border-[rgba(255,255,255,0.06)] rounded-lg px-4 py-3 flex items-center gap-2">
-          <Trash2 size={12} className="text-[#4a4b50]" />
-          <span className="text-xs text-[#4a4b50] italic">This post has been deleted.</span>
+        <div className="bg-(--bg-input) border border-(--border-soft) rounded-lg px-4 py-3 flex items-center gap-2">
+          <Trash2 size={12} className="text-(--text-muted)" />
+          <span className="text-xs text-(--text-muted) italic">This post has been deleted.</span>
         </div>
       </div>
     );
@@ -336,19 +338,19 @@ export default function PostCard({
       <div
         id={`post-${post._id}`}
         style={{ marginLeft: indent }}
-        className={`${isReply ? "border-l-2 border-[rgba(255,255,255,0.06)] pl-3" : ""} rounded-lg transition-shadow duration-300`}
+        className={`${isReply ? "border-l-2 border-(--border-soft) pl-3" : ""} rounded-lg transition-shadow duration-300`}
       >
-        <div className="bg-[#242526] border border-[rgba(255,255,255,0.07)] rounded-lg overflow-hidden">
+        <div className="bg-(--bg-surface) border border-(--border-soft) rounded-lg overflow-hidden">
 
           {/* ── Sidebar + Body ──────────────────────────────────── */}
           <div className="flex">
 
             {/* Left sidebar (top-level posts only, sm+) */}
             {!isReply && (
-              <div className="hidden sm:flex flex-col items-center gap-1.5 px-3 py-3 bg-[#1e1f20] border-r border-[rgba(255,255,255,0.06)] min-w-32 max-w-32">
-                <Avatar name={post.author.username} src={post.author.avatar} size="lg" />
-                <span className="text-[13px] font-semibold text-[#e4e6eb] text-center leading-tight break-all">
-                  {post?.author?.username}
+              <div className="hidden sm:flex flex-col items-center gap-1.5 px-3 py-3 bg-(--bg-input) border-r border-(--border-soft) min-w-32 max-w-32">
+                <Avatar name={post.author.username} effect={post.author.avatarEffect} src={post.author.avatar} size="lg" />
+                <span>
+                  <UsernameEffect name={post.author.username} effect={post.author.usernameEffect} className='text-[13px] font-semibold text-center leading-tight break-all'/>
                 </span>
                 <span
                   className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded"
@@ -357,7 +359,7 @@ export default function PostCard({
                   {roleName}
                 </span>
                 {customTitle && (
-                  <span className="text-[11px] text-[#d1d5db] italic text-center leading-tight">
+                  <span className="text-[11px] text-(--text-primary) italic text-center leading-tight">
                     {customTitle}
                   </span>
                 )}
@@ -372,7 +374,7 @@ export default function PostCard({
               {showJumpPill && (
                 <button
                   onClick={() => scrollToPost(post.replyingToId!)}
-                  className="flex items-center gap-1 my-1 text-[12px] text-[#6a8fc2] hover:text-[#4b8ef1] mb-1.5 transition-colors"
+                  className="flex items-center gap-1 my-1 text-[12px] text-[#6a8fc2] hover:text-(--accent) mb-1.5 transition-colors"
                 >
                   <CornerUpLeft size={10} />
                   replying to <span className="font-semibold">{post.replyingToName ?? 'comment'}</span>
@@ -382,17 +384,17 @@ export default function PostCard({
               {/* Header row */}
               <div className="flex items-center gap-2 mb-2">
                 <div className={`${isReply ? 'flex' : 'sm:hidden flex'} items-center gap-1.5`}>
-                  <Avatar name={post.author.username} src={post.author.avatar} size="md" />
-                  <span className="text-xs font-semibold text-[#e4e6eb]">{post.author?.username}</span>
-                  {isReply && <span className="text-xs text-[#6a8fc2]">commented</span>}
+                  <Avatar name={post.author.username} effect={post.author.avatarEffect} src={post.author.avatar} size="md" />
+                  <UsernameEffect name={post.author.username} effect={post.author.usernameEffect} className='text-xs font-semibold'/>
+                  {isReply && <span className="text-xs text-(--accent)">commented</span>}
                 </div>
 
-                <span className="text-[11px] font-semibold text-[#c6c8d4]">
+                <span className="text-[11px] font-semibold text-(--text-secondary)">
                   {`${formatTimeAgo(post.createdAt)}`}
                 </span>
 
                 {editedAt && (
-                  <span className="flex items-center gap-1 text-[12px] text-[#d4d5db]">
+                  <span className="flex items-center gap-1 text-[12px] text-(--text-primary)">
                     <Pencil size={10} /> edited
                   </span>
                 )}
@@ -401,7 +403,7 @@ export default function PostCard({
                   {children.length > 0 && (
                     <button
                       onClick={() => setCollapsed((v) => !v)}
-                      className="text-[#aeafb4] hover:text-[#8a8d91] transition-colors"
+                      className="text-(--text-secondary) hover:text-(--text-muted) transition-colors"
                       aria-label={collapsed ? 'Expand thread' : 'Collapse thread'}
                     >
                       {collapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
@@ -420,7 +422,7 @@ export default function PostCard({
                       value={editReason}
                       onChange={(e) => setEditReason(e.target.value)}
                       placeholder="Reason for edit (optional)"
-                      className="w-full mb-2 bg-[#1e1f20] border border-[rgba(255,255,255,0.08)] rounded-lg px-3 py-2 text-xs text-[#e4e6eb] placeholder:text-[#4a4b50] focus:outline-none focus:border-[#1877f2]"
+                      className="w-full mb-2 bg-(--bg-input) border border-(--border-soft) rounded-lg px-3 py-2 text-xs text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent)"
                     />
                     <RichEditor
                       initialContent={content}
@@ -433,11 +435,11 @@ export default function PostCard({
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
                     <div
-                      className={`prose-dark ${isReply?'text-[13px]':'text-[15px]'}  text-[#e4e6eb] leading-relaxed ${isReply ? 'mb-1' : 'mb-8'}`}
+                      className={`prose-dark ${isReply?'text-[13px]':'text-[15px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-1' : 'mb-8'}`}
                       dangerouslySetInnerHTML={{ __html: content }}
                     />
 
-                    <div>
+                    {id&&<div>
                       {/* Reaction bubbles */}
                       {Object.keys(reactions).length > 0 && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
@@ -447,8 +449,8 @@ export default function PostCard({
                               onClick={() => handleReact(r.type)}
                               className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] border transition-colors ${
                                 myReaction === r.type
-                                  ? 'bg-[#1a2a3a] border-[#4b8ef1] text-[#4b8ef1]'
-                                  : 'bg-[#1e1f20] border-[rgba(255,255,255,0.07)] text-[#8a8d91] hover:border-[rgba(255,255,255,0.15)]'
+                                  ? 'bg-[#1a2a3a] border-(--accent) text-(--accent)'
+                                  : 'bg-(--bg-input) border-(--border-soft) text-(--text-muted) hover:border-(--border-medium)'
                               }`}
                             >
                               <span>{r.emoji}</span>
@@ -459,12 +461,12 @@ export default function PostCard({
                       )}
 
                       {/* Action bar */}
-                      <div className={`flex items-center gap-3 ${isReply ? "pt-1 mt-0" : "mt-2.5 pt-2"} border-t border-[rgba(255,255,255,0.05)]`}>
+                      <div className={`flex items-center gap-3 ${isReply ? "pt-1 mt-0" : "mt-2.5 pt-2"} border-t border-(--border-soft)`}>
 
                         {!isLocked && (
                           <button
                             onClick={() => setReplying((v) => !v)}
-                            className="flex items-center cursor-pointer gap-1 text-[13px] text-[#a3a5ab] hover:text-[#4b8ef1] transition-colors"
+                            className="flex items-center cursor-pointer gap-1  font-medium text-[13px] text-(--text-secondary) hover:text-(--accent) transition-colors"
                           >
                             <MessageSquare size={12} />
                             Reply
@@ -475,19 +477,19 @@ export default function PostCard({
                         <div className="relative" ref={emojiRef}>
                           <button
                             onClick={() => setShowEmojiPicker((v) => !v)}
-                            className="flex items-center cursor-pointer gap-1 text-[13px] text-[#9fa2a5] hover:text-[#4b8ef1] transition-colors"
+                            className="flex items-center cursor-pointer font-medium  gap-1 text-[13px] text-(--text-secondary) hover:text-(--accent) transition-colors"
                           >
                             <SmilePlus size={12} />
                             React
                           </button>
                           {showEmojiPicker && (
-                            <div className="absolute bottom-full left-0 mb-1 flex gap-1 bg-[#1e1f20] border border-[rgba(255,255,255,0.1)] rounded-lg px-2 py-1.5 shadow-xl z-10">
+                            <div className="absolute bottom-full left-0 mb-1 flex gap-1 bg-(--bg-input) border border-(--border-medium) rounded-lg px-2 py-1.5 shadow-xl z-10">
                               {REACTIONS.map((r) => (
                                 <button
                                   key={r.type}
                                   onClick={() => handleReact(r.type)}
                                   title={r.label}
-                                  className={`text-base hover:scale-125 transition-transform ${myReaction === r.type ? 'scale-125' : ''}`}
+                                  className={`text-base hover:scale-125 font-medium  transition-transform ${myReaction === r.type ? 'scale-125' : ''}`}
                                 >
                                   {r.emoji}
                                 </button>
@@ -500,7 +502,7 @@ export default function PostCard({
                         {canEdit && (
                           <button
                             onClick={() => { setEditing(true); setReplying(false); }}
-                            className="flex items-center gap-1 text-[13px] text-[#9fa2a5] hover:text-[#4b8ef1] transition-colors"
+                            className="flex items-center gap-1 font-medium  text-[13px] text-(--text-muted) hover:text-(--accent) transition-colors"
                           >
                             <Pencil size={12} />
                             Edit
@@ -511,7 +513,7 @@ export default function PostCard({
                         {canDelete && (
                           <button
                             onClick={() => setShowDeleteModal(true)}
-                            className="flex items-center gap-1 text-[13px] text-[#9fa2a5] hover:text-[#ff6b6b] transition-colors"
+                            className="flex items-center gap-1 text-[13px] text-(--text-muted) hover:text-(--danger) transition-colors"
                           >
                             <Trash2 size={12} />
                             Delete
@@ -520,7 +522,7 @@ export default function PostCard({
 
                         {/* Delete error (inline fallback) */}
                         {deleteError && (
-                          <span className="flex items-center gap-1 text-[11px] text-[#ff6b6b]">
+                          <span className="flex items-center gap-1 text-[11px] text-(--danger)">
                             <X size={10} />
                             {deleteError}
                           </span>
@@ -530,7 +532,7 @@ export default function PostCard({
                         <button
                           onClick={handleCopyLink}
                           title="Copy link to this post"
-                          className="flex items-center cursor-pointer gap-1 text-[12px] text-[#b3b7bb] hover:text-[#4b8ef1] transition-colors ml-auto"
+                          className="flex items-center cursor-pointer gap-1 text-[12px] text-(--text-secondary) hover:text-(--accent) transition-colors ml-auto"
                         >
                           {copied ? <Check size={12} /> : <LinkIcon size={12} />}
                         </button>
@@ -547,7 +549,7 @@ export default function PostCard({
                           />
                         </div>
                       )}
-                    </div>
+                    </div>}
                   </div>
                 )
               )}
@@ -578,7 +580,7 @@ export default function PostCard({
             {hiddenCount > 0 && (
               <button
                 onClick={() => setVisibleReplies((v) => v + REPLIES_PER_REVEAL)}
-                className="self-start ml-4 text-[11px] text-[#4b8ef1] hover:text-[#6aa3f5] transition-colors flex items-center gap-1"
+                className="self-start ml-4 text-[11px] text-(--accent) hover:text-(--accent-hover) transition-colors flex items-center gap-1"
               >
                 <ChevronDown size={12} />
                 Show more ({hiddenCount} {hiddenCount === 1 ? 'reply' : 'replies'} hidden)
@@ -588,7 +590,7 @@ export default function PostCard({
             {hiddenCount <= 0 && visibleReplies > INITIAL_VISIBLE_REPLIES && (
               <button
                 onClick={() => setVisibleReplies(INITIAL_VISIBLE_REPLIES)}
-                className="self-start ml-4 text-[11px] text-[#8a8d91] hover:text-[#e4e6eb] transition-colors flex items-center gap-1"
+                className="self-start ml-4 text-[11px] text-(--text-muted) hover:text-(--text-primary) transition-colors flex items-center gap-1"
               >
                 <ChevronRight size={12} />
                 Hide replies

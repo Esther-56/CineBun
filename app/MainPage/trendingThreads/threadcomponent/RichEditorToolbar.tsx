@@ -63,8 +63,8 @@ function ToolbarButton({ icon, label, onClick, active, disabled }: ToolbarButton
       className={`
         w-7 h-7 flex items-center justify-center rounded text-xs transition-all duration-100
         ${active
-          ? "bg-[#1877f2] text-white"
-          : "text-[#9fa3aa] hover:text-[#e4e6eb] hover:bg-[#3a3b3c]"}
+          ? "bg-(--accent) text-white"
+          : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-elevated)"}
         ${disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
       `}
     >
@@ -74,13 +74,13 @@ function ToolbarButton({ icon, label, onClick, active, disabled }: ToolbarButton
 }
 
 function ToolbarDivider() {
-  return <div className="w-px h-5 bg-[rgba(255,255,255,0.08)] mx-0.5 shrink-0" />;
+  return <div className="w-px h-5 bg-(--border-soft) mx-0.5 shrink-0" />;
 }
 
 // ─── Popover shell ────────────────────────────────────────────────────────────
 function Popover({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute top-8 left-0 z-50 bg-[#2d2e30] border border-[rgba(255,255,255,0.1)] rounded-lg p-3 shadow-xl">
+    <div className="absolute top-8 left-0 z-50 bg-(--bg-elevated) border border-(--border-medium) rounded-lg p-3 shadow-xl">
       {children}
     </div>
   );
@@ -182,7 +182,7 @@ export function RichEditorToolbar({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 border-b border-[rgba(255,255,255,0.06)] bg-[#1e1f20]">
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-2 border-b border-(--border-soft) bg-(--bg-input)">
 
         {/* Headings */}
         <ToolbarButton icon={<Heading1 size={13} />} label="Heading 2" active={formatState.heading === "h2"} onClick={() => onInsertHeading("h2")} />
@@ -225,24 +225,24 @@ export function RichEditorToolbar({
           />
           {showLink && (
             <Popover>
-              <p className="text-[10px] text-[#8a8d91] uppercase tracking-wide mb-2">Insert Link</p>
+              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Insert Link</p>
               <input
                 autoFocus
                 placeholder="URL"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
-                className=" mb-2 px-2 py-1.5 bg-[#18191a] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none focus:border-[#1877f2] lg:w-64 w-full"
+                className="mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-64 w-full"
               />
               <input
                 placeholder="Display text (optional)"
                 value={linkText}
                 onChange={(e) => setLinkText(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleInsertLink()}
-                className="w-full mb-2 px-2 py-1.5 bg-[#18191a] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none focus:border-[#1877f2]"
+                className="w-full mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent)"
               />
               <div className="flex gap-2">
-                <button onClick={handleInsertLink} className="flex-1 py-1.5 bg-[#1877f2] hover:bg-[#166fe5] text-white text-xs rounded transition-colors">Insert</button>
-                <button onClick={() => setShowLink(false)} className="px-3 py-1.5 bg-[#3a3b3c] hover:bg-[#4a4b4c] text-[#e4e6eb] text-xs rounded transition-colors">Cancel</button>
+                <button onClick={handleInsertLink} className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) text-white text-xs rounded transition-colors">Insert</button>
+                <button onClick={() => setShowLink(false)} className="px-3 py-1.5 bg-(--bg-elevated) hover:bg-(--border-soft) text-(--text-primary) text-xs rounded transition-colors">Cancel</button>
               </div>
             </Popover>
           )}
@@ -258,32 +258,32 @@ export function RichEditorToolbar({
           />
           {showEmbed && (
             <Popover>
-              <p className="text-[10px] text-[#8a8d91] uppercase tracking-wide mb-2">Embed video or link</p>
+              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Embed video or link</p>
               <input
                 autoFocus
                 placeholder="Paste a YouTube, Vimeo, or any URL"
                 value={embedUrl}
                 onChange={(e) => { setEmbedUrl(e.target.value); setEmbedError(""); }}
                 onKeyDown={(e) => e.key === "Enter" && handleInsertEmbed()}
-                className=" mb-2 px-2 py-1.5 bg-[#18191a] border border-[rgba(255,255,255,0.08)] rounded text-sm text-[#e4e6eb] placeholder:text-[#8a8d91] focus:outline-none focus:border-[#1877f2] lg:w-64 w-full"
+                className="mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-64 w-full"
               />
-              {embedError && <p className="text-[11px] text-[#ff6b6b] mb-2">{embedError}</p>}
+              {embedError && <p className="text-[11px] text-(--danger) mb-2">{embedError}</p>}
               <div className="flex gap-2">
                 <button
                   onClick={handleInsertEmbed}
                   disabled={embedLoading || !embedUrl.trim()}
-                  className="flex-1 py-1.5 bg-[#1877f2] hover:bg-[#166fe5] disabled:opacity-40 text-white text-xs rounded transition-colors"
+                  className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-40 text-white text-xs rounded transition-colors"
                 >
                   {embedLoading ? "Loading…" : "Insert"}
                 </button>
                 <button
                   onClick={() => { setShowEmbed(false); setEmbedError(""); }}
-                  className="px-3 py-1.5 bg-[#3a3b3c] hover:bg-[#4a4b4c] text-[#e4e6eb] text-xs rounded transition-colors"
+                  className="px-3 py-1.5 bg-(--bg-elevated) hover:bg-(--border-soft) text-(--text-primary) text-xs rounded transition-colors"
                 >
                   Cancel
                 </button>
               </div>
-              <p className="text-[10px] text-[#4a4b50] mt-2">YouTube &amp; Vimeo embed as video. Other links show as a preview card.</p>
+              <p className="text-[10px] text-(--text-muted) mt-2">YouTube &amp; Vimeo embed as video. Other links show as a preview card.</p>
             </Popover>
           )}
         </div>
@@ -304,7 +304,7 @@ export function RichEditorToolbar({
                     key={e}
                     type="button"
                     onClick={() => { onInsertEmoji(e); setShowEmoji(false); }}
-                    className="w-7 h-7 flex items-center justify-center text-base hover:bg-[#3a3b3c] rounded transition-colors"
+                    className="w-7 h-7 flex items-center justify-center text-base hover:bg-(--bg-elevated) rounded transition-colors"
                   >
                     {e}
                   </button>

@@ -36,6 +36,9 @@ type LastPost = {
   user?: {
     username?: string | null;
     avatar?: string | null;
+    avatarEffect?:string | null;
+    usernameEffect?:string | null;
+
   };
   thread?: {
     title?: string | null;
@@ -51,13 +54,15 @@ function shapeLastPost(lastPost: LastPost) {
     username: lastPost.user?.username ?? 'Unknown',
     threadTitle: lastPost.thread?.title ?? '',
     timeAgo: timeAgo(lastPost.createdAt),
+    avatarEffect: lastPost.user?.avatarEffect ?? null,
+    usernameEffect: lastPost.user?.usernameEffect ?? null 
   };
 }
 
 function buildSubforumTree<T extends SubforumTreeItem>(subforums: T[], parentId: string | null = null): SubforumTree<T>[] {
   return subforums
     .filter((s) => {
-      const p = s.parent ? s.parent.toString() : null;
+      const p = s.parent ? s.parent.toString() : null; 
       return p === parentId;
     })
     .map((s) => ({
@@ -76,7 +81,7 @@ export async function GET() {
       Category.find().sort({ order: 1 }).lean(),
       Subforum.find()
         .sort({ order: 1 })
-        .populate("lastPost.user",   "avatar username ")
+        .populate("lastPost.user",   "avatar username usernameEffect avatarEffect")
         .populate("lastPost.thread", "title")
         .populate("allowedRoles",    "name color")
         .lean(),

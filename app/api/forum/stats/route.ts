@@ -34,14 +34,14 @@ export async function GET() {
       User.find({ lastSeenAt: { $gte: onlineSince } })
         .populate({
           path: "role",
-          select: "name",
+          select: "name usernameEffect",
           match: {
             name: { $in: ["Admin", "Mod"] },
           },
         })
         .sort({ lastSeenAt: -1 })
         .limit(ONLINE_PREVIEW_LIMIT)
-        .select("username role")
+        .select("username role usernameEffect")
         .lean(),
       User.countDocuments({ lastSeenAt: { $gte: onlineSince } }),
       Post.aggregate([
@@ -76,7 +76,10 @@ export async function GET() {
       .filter(Boolean);
   const onlineUsers = onlinePreview
   .filter(user => user.role)
-  .map(user => user.username);
+  .map(user => ({
+    username: user.username,
+    usernameEffect: user?.usernameEffect ?? null,
+  }));
 
     return ok({
       stats: {

@@ -21,7 +21,6 @@ export async function PATCH(req: Request) {
       if (!dbUser) return fail("User not found.", 404);
         
       const match = await bcrypt.compare(body.currentPassword, dbUser.password);
-        console.log(match)
       if (!match) return fail("Current password is incorrect.");
 
       const hashed = await bcrypt.hash(body.newPassword, 12);

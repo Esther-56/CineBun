@@ -58,11 +58,11 @@ body {
 
 .prose-dark li {
   margin: 0.25rem 0;
-  color: inherit; /* or your dark-mode text color, e.g. #e5e7eb */
+  color: inherit;
 }
 
 .prose-dark li::marker {
-  color: #9ca3af; /* muted marker color, optional */
+  color: #9ca3af;
 }
 
 /* nested lists */
@@ -79,7 +79,7 @@ body {
   text-decoration-color: rgba(75, 142, 241, 0.4);
   text-underline-offset: 2px;
   transition: color 0.15s ease;
-   cursor: pointer;
+  cursor: pointer;
 }
 
 .prose-dark a:hover {
@@ -89,5 +89,431 @@ body {
 
 .prose-dark a:visited {
   color: #8a7bc7;
+}
+
+/* ────────────────────────────────────────────────
+   THEME TOKENS
+   ──────────────────────────────────────────────── */
+
+/* ── Default (dark) ── */
+:root {
+  --bg-page:        #1b1c1f;
+  --bg-surface:     #242528;
+  --bg-elevated:    #2a2b2f;
+  --bg-input:       #1b1c1f;
+
+  --border-soft:    rgba(255,255,255,0.06);
+  --border-medium:  rgba(255,255,255,0.10);
+  --border-strong:  rgba(255,255,255,0.18);
+
+  --text-primary:   #e4e6eb;
+  --text-secondary: #e0e0e0;
+  --text-muted:     #999a9c;
+
+  --accent:         #4b8ef1;
+  --accent-hover:   #3a7de0;
+  --accent-subtle:  rgba(75,142,241,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+
+  --online:         #10b981;
+}
+
+/* ── Midnight Blue ── */
+.theme-midnight {
+  --bg-page:        #0d1117;
+  --bg-surface:     #161b22;
+  --bg-elevated:    #1c2128;
+  --bg-input:       #0d1117;
+
+  --border-soft:    rgba(255,255,255,0.08);
+  --border-medium:  rgba(255,255,255,0.12);
+  --border-strong:  rgba(255,255,255,0.20);
+
+  --text-primary:   #f2f6fa;
+  --text-secondary: #ced1d4;
+  --text-muted:     #cdcdce;
+
+  --accent:         #58a6ff;
+  --accent-hover:   #4493f8;
+  --accent-subtle:  rgba(88,166,255,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #10b981;
+}
+
+/* ── Charcoal ── */
+.theme-charcoal {
+  --bg-page:        #111111;
+  --bg-surface:     #1a1a1a;
+  --bg-elevated:    #222222;
+  --bg-input:       #111111;
+
+  --border-soft:    rgba(255,255,255,0.05);
+  --border-medium:  rgba(255,255,255,0.09);
+  --border-strong:  rgba(255,255,255,0.15);
+
+  --text-primary:   #f5f3f3;
+  --text-secondary: #dfdada;
+  --text-muted:     #cfcbcb;
+
+  --accent:         #ff6b35;
+  --accent-hover:   #e55a25;
+  --accent-subtle:  rgba(255,107,53,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #10b981;
+}
+
+/* ── Forest ── */
+.theme-forest {
+  --bg-page:        #0f1a14;
+  --bg-surface:     #162210;
+  --bg-elevated:    #1d2e18;
+  --bg-input:       #0f1a14;
+
+  --border-soft:    rgba(255,255,255,0.06);
+  --border-medium:  rgba(255,255,255,0.10);
+  --border-strong:  rgba(255,255,255,0.16);
+
+  --text-primary:   #f4f7f1;
+  --text-secondary: #cacfc6;
+  --text-muted:     #d2d3d1;
+
+  --accent:         #4caf50;
+  --accent-hover:   #388e3c;
+  --accent-subtle:  rgba(76,175,80,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #10b981;
+}
+
+/* ── Amoled ── */
+.theme-amoled {
+  --bg-page:        #000000;
+  --bg-surface:     #0a0a0a;
+  --bg-elevated:    #111111;
+  --bg-input:       #000000;
+
+  --border-soft:    rgba(255,255,255,0.04);
+  --border-medium:  rgba(255,255,255,0.08);
+  --border-strong:  rgba(255,255,255,0.14);
+
+  --text-primary:   #ffffff;
+  --text-secondary: #cfcdcd;
+  --text-muted:     #b4b3b3;
+
+  --accent:         #bb86fc;
+  --accent-hover:   #a370e8;
+  --accent-subtle:  rgba(187,134,252,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #10b981;
+}
+
+/* ── Obsidian ──
+   Deep black-purple with a cold violet glow.
+   Feels like a terminal from the future. */
+.theme-obsidian {
+  --bg-page:        #0e0c14;
+  --bg-surface:     #16131f;
+  --bg-elevated:    #1e1a2b;
+  --bg-input:       #0e0c14;
+
+  --border-soft:    rgba(160,140,255,0.07);
+  --border-medium:  rgba(160,140,255,0.13);
+  --border-strong:  rgba(160,140,255,0.22);
+
+  --text-primary:   #e2deff;
+  --text-secondary: #bebdc9;
+  --text-muted:     #cbcbd3;
+
+  --accent:         #a78bfa;
+  --accent-hover:   #8b6ef5;
+  --accent-subtle:  rgba(167,139,250,0.10);
+
+  --danger:         #f87171;
+  --danger-subtle:  rgba(248,113,113,0.08);
+  --online:         #34d399;
+}
+
+/* ── Blood Moon ──
+   Crimson-tinted dark. Brooding and intense. */
+.theme-blood-moon {
+  --bg-page:        #120a0a;
+  --bg-surface:     #1c1010;
+  --bg-elevated:    #251515;
+  --bg-input:       #120a0a;
+
+  --border-soft:    rgba(255,80,80,0.07);
+  --border-medium:  rgba(255,80,80,0.12);
+  --border-strong:  rgba(255,80,80,0.20);
+
+  --text-primary:   #f5dada;
+  --text-secondary: #cebbbb;
+  --text-muted:     #c0b2b2;
+
+  --accent:         #e05252;
+  --accent-hover:   #c83c3c;
+  --accent-subtle:  rgba(224,82,82,0.10);
+
+  --danger:         #ff6b6b;
+  --danger-subtle:  rgba(255,107,107,0.08);
+  --online:         #4ade80;
+}
+
+/* ── Deep Sea ──
+   Dark teal abyss. Calm, cold, mysterious. */
+.theme-deep-sea {
+  --bg-page:        #080f12;
+  --bg-surface:     #0d1a20;
+  --bg-elevated:    #12232b;
+  --bg-input:       #080f12;
+
+  --border-soft:    rgba(0,200,200,0.07);
+  --border-medium:  rgba(0,200,200,0.12);
+  --border-strong:  rgba(0,200,200,0.20);
+
+  --text-primary:   #e5f7f8;
+  --text-secondary: #ceeff3;
+  --text-muted:     #c6e9f0;
+
+  --accent:         #22d3ee;
+  --accent-hover:   #06b6d4;
+  --accent-subtle:  rgba(34,211,238,0.10);
+
+  --danger:         #f87171;
+  --danger-subtle:  rgba(248,113,113,0.08);
+  --online:         #2dd4bf;
+}
+
+/* ── Noir ──
+   Cool gray monochrome. Like old film negatives. */
+.theme-noir {
+  --bg-page:        #0c0c0d;
+  --bg-surface:     #141416;
+  --bg-elevated:    #1c1c1f;
+  --bg-input:       #0c0c0d;
+
+  --border-soft:    rgba(255,255,255,0.05);
+  --border-medium:  rgba(255,255,255,0.09);
+  --border-strong:  rgba(255,255,255,0.15);
+
+  --text-primary:   #ececee;
+  --text-secondary: #cdcdcf;
+  --text-muted:     #c2bfbf;
+
+  --accent:         #c0c0c8;
+  --accent-hover:   #a0a0aa;
+  --accent-subtle:  rgba(192,192,200,0.08);
+
+  --danger:         #e05050;
+  --danger-subtle:  rgba(224,80,80,0.08);
+  --online:         #6ee7b7;
+}
+
+/* ── Toxic ──
+   Black base with acid-green. Hacker aesthetic. */
+.theme-toxic {
+  --bg-page:        #080c08;
+  --bg-surface:     #0e130e;
+  --bg-elevated:    #141c14;
+  --bg-input:       #080c08;
+
+  --border-soft:    rgba(80,255,80,0.07);
+  --border-medium:  rgba(80,255,80,0.12);
+  --border-strong:  rgba(80,255,80,0.20);
+
+  --text-primary:   #c8f5c8;
+  --text-secondary: #b1c5b1;
+  --text-muted:     #a5b6a5;
+
+  --accent:         #39ff14;
+  --accent-hover:   #2de010;
+  --accent-subtle:  rgba(57,255,20,0.08);
+
+  --danger:         #ff4444;
+  --danger-subtle:  rgba(255,68,68,0.08);
+  --online:         #39ff14;
+}
+
+/* ── Rust ──
+   Burnt sienna on near-black. Industrial and weathered. */
+.theme-rust {
+  --bg-page:        #100c08;
+  --bg-surface:     #1a1410;
+  --bg-elevated:    #221b16;
+  --bg-input:       #100c08;
+
+  --border-soft:    rgba(200,120,60,0.08);
+  --border-medium:  rgba(200,120,60,0.14);
+  --border-strong:  rgba(200,120,60,0.22);
+
+  --text-primary:   #f8ede4;
+  --text-secondary: #f3e1d3;
+  --text-muted:     #f5e0d0;
+
+  --accent:         #d4622a;
+  --accent-hover:   #b8501e;
+  --accent-subtle:  rgba(212,98,42,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #86efac;
+}
+
+/* ── Dusk ──
+   Dusty rose-purple twilight. Melancholy and soft. */
+.theme-dusk {
+  --bg-page:        #110d14;
+  --bg-surface:     #1a1420;
+  --bg-elevated:    #221b2c;
+  --bg-input:       #110d14;
+
+  --border-soft:    rgba(200,150,220,0.07);
+  --border-medium:  rgba(200,150,220,0.12);
+  --border-strong:  rgba(200,150,220,0.20);
+
+  --text-primary:   #f7effc;
+  --text-secondary: #e2d2ec;
+  --text-muted:     #e9d2f8;
+
+  --accent:         #d879f0;
+  --accent-hover:   #c060d8;
+  --accent-subtle:  rgba(216,121,240,0.10);
+
+  --danger:         #f87171;
+  --danger-subtle:  rgba(248,113,113,0.08);
+  --online:         #a3e635;
+}
+
+/* ── Ember ──
+   Smoldering amber on dark brown. Warm, dimly lit. */
+.theme-ember {
+  --bg-page:        #100e08;
+  --bg-surface:     #1a180e;
+  --bg-elevated:    #232014;
+  --bg-input:       #100e08;
+
+  --border-soft:    rgba(240,180,60,0.07);
+  --border-medium:  rgba(240,180,60,0.12);
+  --border-strong:  rgba(240,180,60,0.20);
+
+  --text-primary:   #f5e8c0;
+  --text-secondary: #f5e9c5;
+  --text-muted:     #f1e6c1;
+
+  --accent:         #f59e0b;
+  --accent-hover:   #d97706;
+  --accent-subtle:  rgba(245,158,11,0.10);
+
+  --danger:         #ef4444;
+  --danger-subtle:  rgba(239,68,68,0.08);
+  --online:         #4ade80;
+}
+
+/* ── Void ──
+   True void black with electric cyan pop. */
+.theme-void {
+  --bg-page:        #030305;
+  --bg-surface:     #08080d;
+  --bg-elevated:    #0e0e16;
+  --bg-input:       #030305;
+
+  --border-soft:    rgba(0,240,255,0.06);
+  --border-medium:  rgba(0,240,255,0.11);
+  --border-strong:  rgba(0,240,255,0.18);
+
+  --text-primary:   #e0f8ff;
+  --text-secondary: #c9f3fc;
+  --text-muted:     #c8f8f8;
+
+  --accent:         #00f0ff;
+  --accent-hover:   #00d4e0;
+  --accent-subtle:  rgba(0,240,255,0.08);
+
+  --danger:         #ff4466;
+  --danger-subtle:  rgba(255,68,102,0.08);
+  --online:         #00f0ff;
+}
+
+/* ── Sepia Noir ──
+   Warm dark sepia. Like reading by candlelight. */
+.theme-sepia-noir {
+  --bg-page:        #0e0b07;
+  --bg-surface:     #181410;
+  --bg-elevated:    #211c16;
+  --bg-input:       #0e0b07;
+
+  --border-soft:    rgba(200,170,120,0.07);
+  --border-medium:  rgba(200,170,120,0.12);
+  --border-strong:  rgba(200,170,120,0.20);
+
+  --text-primary:   #fcf4e7;
+  --text-secondary: #f5ead9;
+  --text-muted:     #f0e1c5;
+
+  --accent:         #c9a85c;
+  --accent-hover:   #b08e3e;
+  --accent-subtle:  rgba(201,168,92,0.10);
+
+  --danger:         #e05050;
+  --danger-subtle:  rgba(224,80,80,0.08);
+  --online:         #86efac;
+}
+
+/* ── Phantom ──
+   Cool slate-blue dark. Clean and ghostly. */
+.theme-phantom {
+  --bg-page:        #0a0c10;
+  --bg-surface:     #121520;
+  --bg-elevated:    #1a1e2e;
+  --bg-input:       #0a0c10;
+
+  --border-soft:    rgba(100,130,220,0.08);
+  --border-medium:  rgba(100,130,220,0.14);
+  --border-strong:  rgba(100,130,220,0.22);
+
+  --text-primary:   #d0d8f0;
+  --text-secondary: #dbe3fd;
+  --text-muted:     #d9e1fc;
+
+  --accent:         #6c8ef5;
+  --accent-hover:   #5070e0;
+  --accent-subtle:  rgba(108,142,245,0.10);
+
+  --danger:         #f87171;
+  --danger-subtle:  rgba(248,113,113,0.08);
+  --online:         #34d399;
+}
+
+/* ── Infrared ──
+   Hot magenta-pink on near-black. Electric and aggressive. */
+.theme-infrared {
+  --bg-page:        #0d080f;
+  --bg-surface:     #160d18;
+  --bg-elevated:    #1e1222;
+  --bg-input:       #0d080f;
+
+  --border-soft:    rgba(255,60,180,0.07);
+  --border-medium:  rgba(255,60,180,0.12);
+  --border-strong:  rgba(255,60,180,0.20);
+
+  --text-primary:   #f1ecf1;
+  --text-secondary: #f5e6fa;
+  --text-muted:     #f6dcff;
+
+  --accent:         #f040c0;
+  --accent-hover:   #d828a8;
+  --accent-subtle:  rgba(240,64,192,0.10);
+
+  --danger:         #ff5555;
+  --danger-subtle:  rgba(255,85,85,0.08);
+  --online:         #a3e635;
 }
 

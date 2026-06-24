@@ -12,6 +12,7 @@ import { Thread } from '@/app/MainPage/types/forum';
 import { ApiSubforumFull } from '@/app/services/subforum-service';
 import { SubforumService } from '@/app/services/subforum-service';
 import AnnouncementBoard from '@/app/MainPage/trendingThreads/components/AnnouncementBoard';
+import Footer from '@/app/Footer';
 
 interface SubforumPageProps {
   params_cc: { subforumId: string };
@@ -20,28 +21,28 @@ interface SubforumPageProps {
 function SubforumHeaderSkeleton() {
   return (
     <div className="mb-5">
-      <div className="h-5 w-48 rounded bg-[#2d2e32] animate-pulse mb-2" />
-      <div className="h-3 w-72 rounded bg-[#2d2e32] animate-pulse" />
+      <div className="h-5 w-48 rounded bg-(--bg-elevated) animate-pulse mb-2" />
+      <div className="h-3 w-72 rounded bg-(--bg-elevated) animate-pulse" />
     </div>
   );
 }
 
 function RowSkeleton() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-b border-[rgba(255,255,255,0.06)] last:border-b-0">
-      <div className="w-9 h-9 rounded-full bg-[#2d2e32] animate-pulse shrink-0" />
+    <div className="flex items-center gap-3 px-4 py-3 border-b border-(--border-soft) last:border-b-0">
+      <div className="w-9 h-9 rounded-full bg-(--bg-elevated) animate-pulse shrink-0" />
       <div className="flex-1 min-w-0 flex flex-col gap-2">
-        <div className="h-3 w-1/2 rounded bg-[#2d2e32] animate-pulse" />
-        <div className="h-2.5 w-1/3 rounded bg-[#2d2e32] animate-pulse" />
+        <div className="h-3 w-1/2 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-2.5 w-1/3 rounded bg-(--bg-elevated) animate-pulse" />
       </div>
-      <div className="hidden sm:block w-14 h-2.5 rounded bg-[#2d2e32] animate-pulse shrink-0" />
+      <div className="hidden sm:block w-14 h-2.5 rounded bg-(--bg-elevated) animate-pulse shrink-0" />
     </div>
   );
 }
 
 function SubforumBodySkeleton() {
   return (
-    <div className="rounded-lg border border-[rgba(255,255,255,0.06)] bg-[#242528] overflow-hidden">
+    <div className="rounded-lg border border-(--border-soft) bg-(--bg-surface) overflow-hidden">
       {[0, 1, 2, 3, 4].map(i => (
         <RowSkeleton key={i} />
       ))}
@@ -59,51 +60,30 @@ export default function Body({ params_cc }: SubforumPageProps) {
   const [notFoundFlag, setNotFoundFlag] = useState(false);
 
   useEffect(() => {
-    if (!subforumId) {
-      setNotFoundFlag(true);
-      return;
-    }
-
+    if (!subforumId) { setNotFoundFlag(true); return; }
     let cancelled = false;
-
     async function fetchData() {
       setLoading(true);
       const data = await SubforumService.get(subforumId, Number(page));
-
       if (cancelled) return;
-
-      if (!data?.data) {
-        setNotFoundFlag(true);
-        setLoading(false);
-        return;
-      }
-
+      if (!data?.data) { setNotFoundFlag(true); setLoading(false); return; }
       setResult(data.data);
       setLoading(false);
     }
-
     fetchData();
-
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [subforumId, page]);
 
-  if (notFoundFlag) {
-    notFound();
-    return null;
-  }
+  if (notFoundFlag) { notFound(); return null; }
 
   if (loading || !result) {
     return (
-      <div className="min-h-screen bg-[#1b1c1f] text-[#e4e6eb]">
+      <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
         <Navbar />
         <main className="max-w-8xl mx-auto px-4 py-6">
           <SubforumHeaderSkeleton />
           <div className="flex gap-5">
-            <div className="flex-1 min-w-0">
-              <SubforumBodySkeleton />
-            </div>
+            <div className="flex-1 min-w-0"><SubforumBodySkeleton /></div>
             <ForumSidebar />
           </div>
         </main>
@@ -119,15 +99,13 @@ export default function Body({ params_cc }: SubforumPageProps) {
   const subforumItems = type === 'threads' ? [] : (items as ApiSubforumFull[]);
 
   return (
-    <div className="min-h-screen bg-[#1b1c1f] text-[#e4e6eb]">
+    <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
       <Navbar />
-
       <main className="max-w-8xl mx-auto px-4 py-6">
         <SubforumHeader subforum={subforum} type={type} length={length} />
-
         <div className="flex gap-5">
           <div className="flex-1 min-w-0">
-            <AnnouncementBoard/>
+            <AnnouncementBoard />
             {(pages ?? 0) > 1 && (
               <Pagination currentPage={Number(page) ?? 1} totalPages={pages!} basePath={`/f/${subforumId}`} />
             )}
@@ -136,14 +114,14 @@ export default function Body({ params_cc }: SubforumPageProps) {
             ) : (
               <SubforumGrid subforums={subforumItems} accentColor={subforum.accentColor} />
             )}
-
             {(pages ?? 0) > 1 && (
               <Pagination currentPage={Number(page) ?? 1} totalPages={pages!} basePath={`/f/${subforumId}`} />
             )}
           </div>
-          <ForumSidebar  />
+          <ForumSidebar />
         </div>
       </main>
+      <Footer/>
     </div>
   );
 }

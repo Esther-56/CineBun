@@ -1,4 +1,4 @@
-import { proxy } from "valtio";
+import { proxy, subscribe  } from "valtio";
 
 interface t {
   canEditAnyPost:boolean;
@@ -30,7 +30,8 @@ export const store = proxy({
   bio: "",
   signature: "",
   customTitle: "",
-
+  avatarEffect:null,
+  usernameEffect:null,
   // role & permissions (populate role on the server, send just what the UI needs)
   role: null as RoleInfo | null,
 
@@ -61,3 +62,67 @@ export const store = proxy({
   // UI-only state (not from the server)
   bellopen: false,
 });
+
+export type ThemeId =
+  | 'default'
+  | 'midnight'
+  | 'charcoal'
+  | 'forest'
+  | 'amoled'
+  | 'obsidian'
+  | 'blood-moon'
+  | 'deep-sea'
+  | 'noir'
+  | 'toxic'
+  | 'rust'
+  | 'dusk'
+  | 'ember'
+  | 'void'
+  | 'sepia-noir'
+  | 'phantom'
+  | 'infrared';
+
+
+  const themeClasses = [
+  'theme-midnight',
+  'theme-charcoal',
+  'theme-forest',
+  'theme-amoled',
+  'theme-obsidian',
+  'theme-blood-moon',
+  'theme-deep-sea',
+  'theme-noir',
+  'theme-toxic',
+  'theme-rust',
+  'theme-dusk',
+  'theme-ember',
+  'theme-void',
+  'theme-sepia-noir',
+  'theme-phantom',
+  'theme-infrared',
+];
+
+
+
+const saved = typeof window !== 'undefined'
+  ? (localStorage.getItem('theme') as ThemeId) ?? 'default'
+  : 'default';
+
+export const storeTheme = proxy({
+  // ...your existing fields
+  theme: saved as ThemeId,
+});
+
+// Apply theme class to <html> and persist
+if (typeof window !== 'undefined') {
+  const applyTheme = (theme: ThemeId) => {
+    const el = document.documentElement;
+    el.classList.remove(...themeClasses);;
+    if (theme !== 'default') el.classList.add(`theme-${theme}`);
+    localStorage.setItem('theme', theme);
+  };
+
+  applyTheme(storeTheme.theme);
+
+  subscribe(storeTheme, () => applyTheme(storeTheme.theme));
+}

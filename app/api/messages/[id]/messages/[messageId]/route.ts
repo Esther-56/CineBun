@@ -14,8 +14,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       const { id } = await params;
 
       const conversation = await DM.findOne({ _id: id, participants: user._id })
-        .populate("participants", "username avatar")
-        .populate("messages.sender", "username avatar");
+        .populate("participants", "username avatar avatarEffect usernameEffect")
+        .populate("messages.sender", "username avatar avatarEffect usernameEffect");
 
       if (!conversation) return fail("Conversation not found.", 404);
 

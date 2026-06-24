@@ -88,7 +88,7 @@ export async function withAuth(
 
     return handler(user as AuthUser);
   } catch (err) {
-    console.error("[withAuth]", err);
+    console.log("[withAuth]", err);
     return NextResponse.json({ success: false, message: "Server error" }, { status: 500 });
   }
 }

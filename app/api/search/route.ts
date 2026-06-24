@@ -6,7 +6,7 @@ import Thread from "@/app/lib/models/ThreadSchema";
 import Post from "@/app/lib/models/Post";
 import User from "@/app/lib/models/User";
 import { ok, fail, serverError } from "../../lib/response";
-
+import { withAuth } from "@/app/lib/middleware/auth";
 const PAGE_SIZE = 20;
 
 function escapeRegex(s: string) {
@@ -14,6 +14,7 @@ function escapeRegex(s: string) {
 }
 
 export async function GET(req: Request) {
+  return withAuth(req, async (user) => {
   try {
     await mongoosedb();
     await mongoosedb();
@@ -165,5 +166,5 @@ export async function GET(req: Request) {
     });
   } catch (err) {
     return serverError(err, "GET /api/search");
-  }
+  }})
 }

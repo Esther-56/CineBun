@@ -1,6 +1,6 @@
 'use client';
 import { Edit3, MessageSquare } from 'lucide-react';
-import {  StatPill } from '../ui';
+import { StatPill } from '../ui';
 import { UserProfile } from '../../types';
 import { FileText, ThumbsUp, Calendar } from 'lucide-react';
 import Avatar from '@/app/MainPage/trendingThreads/components/Avatar';
@@ -8,22 +8,24 @@ import { formatTimeAgo } from '@/app/n/component/utils';
 import { useRouter } from 'nextjs-toploader/app';
 import { MessageService } from '@/app/services/messages';
 import { useState } from 'react';
+import UsernameEffect from '../ui/UsernameEffect';
 
 interface ProfileHeaderProps {
   profile: UserProfile;
   onEdit: () => void;
-  total:number
+  total: number;
 }
 
 export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
-  const router = useRouter()
+  const router = useRouter();
   const [messaging, setMessaging] = useState(false);
+
   return (
     <>
       {/* Banner */}
-      <div className="h-48 bg-linear-to-br from-[#1a2236] via-[#1b2640] to-[#1b1c1f] relative">
+      <div className="h-28 sm:h-48 bg-linear-to-br from-[#1a2236] via-[#1b2640] to-(--bg-page) relative">
         <div
-          className="absolute inset-0 opacity-100 bg-cover  bg-center"
+          className="absolute inset-0 opacity-100 bg-cover bg-center"
           style={{
             backgroundImage: profile?.banner
               ? `url(${profile.banner})`
@@ -32,23 +34,34 @@ export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4">
         {/* Avatar row */}
-        <div className="flex items-end justify-between -mt-10 mb-5 relative z-10">
-          <div className="flex items-end gap-4">
-            <div className=' border-2 border-black rounded-full'>
-            <Avatar name={profile.username} src={profile.avatar} size={"xxl"} />
+        <div className="flex items-end justify-between -mt-8 sm:-mt-10 mb-3 sm:mb-5 relative z-10">
+          <div className="flex items-end gap-2 sm:gap-4">
+            <div className="border-2 border-black rounded-full">
+              <Avatar
+                name={profile.username}
+                src={profile.avatar}
+                effect={profile.avatarEffect}
+                size="xxl"
+              />
             </div>
-            <div className="mb-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-[#e4e6eb] leading-none">{profile.username}</h1>
+
+            {/* Identity — hidden on mobile, shown sm+ inline */}
+            <div className="mb-1 hidden sm:block">
+              <div className="flex items-center gap-2 ">
+                <h1 className="text-xl font-bold text-(--text-primary) leading-none">
+                  <UsernameEffect name={profile.username} effect={profile.usernameEffect} />
+                </h1>
                 {profile.isOnline ? (
-                  <span className="flex items-center gap-1 bg-[#242528] rounded-lg border  border-[rgba(255,255,255,0.06)] px-4 py-1  text-[12px] text-[#10b981] ">
-                    <div className="w-1.5 h-1.5  rounded-full bg-[#10b981] animate-pulse" />
+                  <span className="flex items-center gap-1 bg-(--bg-surface) rounded-lg border border-(--border-soft) px-4 py-1 text-[12px] text-(--online)">
+                    <div className="w-1.5 h-1.5 rounded-full bg-(--online) animate-pulse" />
                     Online
                   </span>
                 ) : (
-                  <span className="text-[12px] bg-[#242528] rounded-lg border  border-[rgba(255,255,255,0.06)] px-4 py-1  text-[#e6e6eb]">{`Last seen - ${formatTimeAgo(profile.lastSeenAt)}`}</span>
+                  <span className="text-[12px] bg-(--bg-surface) rounded-lg border border-(--border-soft) px-4 py-1 text-(--text-primary)">
+                    {`Last seen - ${formatTimeAgo(profile.lastSeenAt)}`}
+                  </span>
                 )}
               </div>
               <div className="flex items-center gap-2 mt-1">
@@ -58,7 +71,7 @@ export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
                 >
                   {profile.role.name}
                 </span>
-                <span className="text-base text-[#d7d8df]">{profile.customTitle}</span>
+                <span className="text-base text-(--text-secondary)">{profile.customTitle}</span>
               </div>
             </div>
           </div>
@@ -68,38 +81,74 @@ export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
             {profile.isOwnProfile ? (
               <button
                 onClick={onEdit}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#242528] border border-[rgba(255,255,255,0.08)] hover:border-[#4b8ef1] text-[#e4e6eb] text-sm font-medium rounded-md transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-(--bg-surface) border border-(--border-soft) hover:border-(--accent) text-(--text-primary) text-sm font-medium rounded-md transition-colors"
               >
-                <Edit3 size={12} /> Edit profile
+                <Edit3 size={12} />
+                <span className="hidden xs:inline">Edit profile</span>
+                <span className="xs:hidden">Edit</span>
               </button>
             ) : (
-              <>
-                <button  
-                  disabled={messaging}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-[#4b8ef1] hover:bg-[#3a7de0] cursor-pointer text-white text-base font-semibold rounded-md transition-colors disabled:opacity-50" 
-                  onClick={async () => {
-                    setMessaging(true);
-                    try {
-                      const res = await MessageService.send({ recipientId: profile._id, content: '👋' });
-                      router.push(`/messages/${res.data.conversationId}`);
-                    } catch (err) {
-                      console.error('Failed to start conversation', err);
-                    } finally {
-                      setMessaging(false);
-                    }
-                  }}>
-                    {messaging 
-                    ? <><span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />Starting…</>
-                    : <><MessageSquare size={13} />Message</>
+              <button
+                disabled={messaging}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-(--accent) hover:bg-(--accent-hover) cursor-pointer text-white text-sm sm:text-base font-semibold rounded-md transition-colors disabled:opacity-50"
+                onClick={async () => {
+                  setMessaging(true);
+                  try {
+                    const res = await MessageService.send({ recipientId: profile._id, content: '👋' });
+                    router.push(`/messages/${res.data.conversationId}`);
+                  } catch (err) {
+                    console.log('Failed to start conversation', err);
+                  } finally {
+                    setMessaging(false);
                   }
-                </button>
-              </>
+                }}
+              >
+                {messaging ? (
+                  <>
+                    <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span className="hidden xs:inline">Starting…</span>
+                  </>
+                ) : (
+                  <>
+                    <MessageSquare size={13} />
+                    Message
+                  </>
+                )}
+              </button>
             )}
           </div>
         </div>
 
-        {/* Stats row */}
-        <div className="flex gap-3 mb-5 overflow-x-auto pb-1">
+        {/* Identity — mobile only (below avatar row) */}
+        <div className="sm:hidden mb-3 px-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-base font-bold text-(--text-primary) leading-none">
+              <UsernameEffect name={profile.username} effect={profile.usernameEffect} />
+            </h1>
+            {profile.isOnline ? (
+              <span className="flex items-center gap-1 bg-(--bg-surface) rounded-lg border border-(--border-soft) px-3 py-0.5 text-[11px] text-(--online)">
+                <div className="w-1.5 h-1.5 rounded-full bg-(--online) animate-pulse" />
+                Online
+              </span>
+            ) : (
+              <span className="text-[11px] bg-(--bg-surface) rounded-lg border border-(--border-soft) px-3 py-0.5 text-(--text-primary)">
+                {`Last seen - ${formatTimeAgo(profile.lastSeenAt)}`}
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-1">
+            <span
+              className="text-xs font-semibold px-1.5 py-0.5 rounded"
+              style={{ color: profile.role.color, backgroundColor: profile.role.color + '18' }}
+            >
+              {profile.role.name}
+            </span>
+            <span className="text-sm text-(--text-secondary)">{profile.customTitle}</span>
+          </div>
+        </div>
+
+        {/* Stats row — grid on mobile, flex on sm+ */}
+        <div className="grid grid-cols-2 gap-2 mb-4 sm:flex sm:gap-3 sm:mb-5 sm:overflow-x-auto sm:pb-1">
           <StatPill icon={<FileText size={13} />} label="Posts" value={profile.postCount.toLocaleString()} />
           <StatPill icon={<MessageSquare size={13} />} label="Threads" value={total} />
           <StatPill icon={<ThumbsUp size={13} />} label="Reputation" value={profile.reputation} />

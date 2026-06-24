@@ -34,7 +34,7 @@ export function ProfileView({
 }: ProfileViewProps) {
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   return (
-    <div className="min-h-screen bg-[#1b1c1f]">
+    <div className="min-h-screen bg-(--bg-page)">
       <ProfileHeader profile={profile} onEdit={onEdit} total={total} />
 
       <div className="max-w-6xl mx-auto px-4">
@@ -42,15 +42,15 @@ export function ProfileView({
           {/* Main */}
           <div className="flex-1 min-w-0">
             {/* Tab bar */}
-            <div className="flex gap-0.5 border-b border-[rgba(255,255,255,0.06)] mb-4">
+            <div className="flex gap-0.5 border-b border-(--border-soft) mb-4">
               {TABS.map(t => (
                 <button
                   key={t.id}
                   onClick={() => setActiveTab(t.id)}
                   className={`px-4 py-2.5 text-base font-semibold border-b-2 transition-colors -mb-px ${
                     activeTab === t.id
-                      ? 'border-[#4b8ef1] text-[#4b8ef1]'
-                      : 'border-transparent text-[#8a8d91] hover:text-[#e4e6eb]'
+                      ? 'border-(--accent) text-(--accent)'
+                      : 'border-transparent text-(--text-muted) hover:text-(--text-primary)'
                   }`}
                 >
                   {t.label}

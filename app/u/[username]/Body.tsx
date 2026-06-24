@@ -29,11 +29,10 @@ const loadProfile = useCallback(async () => {
   try {
     const res = await UserService.getProfile(username);
     setProfile(res?.data?.profile);
+    setLoading(false);
   } catch {
     setError('Could not load this profile.');
-  } finally {
-    setLoading(false);
-  }
+  } 
 }, [username]);
 
 const loadThreads = useCallback(async (page: number) => {
@@ -44,8 +43,9 @@ const loadThreads = useCallback(async (page: number) => {
     setThreadsTotalPages(res.data.pages);
     setThreadsPage(page);
     setTotalCount(res.data.total)
-  } finally {
     setThreadsLoading(false);
+  } catch(err) {
+    console.log(err)
   }
 }, [username]);
 
@@ -54,13 +54,13 @@ const loadThreads = useCallback(async (page: number) => {
     loadThreads(1);
   }, [loadProfile, loadThreads]);
 
-  if (loading) {
+if (loading) {
     return (
-      <div className="min-h-screen bg-[#1b1c1f] flex items-center justify-center">
+      <div className="min-h-screen bg-(--bg-page) flex items-center justify-center">
   <div className="flex flex-col items-center gap-3">
     <div className="relative w-10 h-10">
-      <div className="absolute inset-0 rounded-full border-2 border-[#2d2e32]" />
-      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-[#4b8ef1] animate-spin" />
+      <div className="absolute inset-0 rounded-full border-2 border-(--border-soft)" />
+      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-(--accent) animate-spin" />
     </div>
   </div>
 </div>
@@ -69,8 +69,8 @@ const loadThreads = useCallback(async (page: number) => {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-[#1b1c1f] flex items-center justify-center">
-        <span className="text-sm text-[#8a8d91]">{error ?? 'Profile not found.'}</span>
+      <div className="min-h-screen bg-(--bg-page) flex items-center justify-center">
+        <span className="text-sm text-(--text-muted)">{error ?? 'Profile not found.'}</span>
       </div>
     );
   }

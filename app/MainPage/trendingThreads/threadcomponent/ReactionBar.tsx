@@ -26,7 +26,7 @@ export default function ReactionBar({ reactions }: ReactionBarProps) {
     return (
       <button
         onClick={toggleLike}
-        className="text-[11px] text-[#8a8d91] hover:text-[#4b8ef1] transition-colors font-medium"
+        className="text-[11px] text-(--text-muted) hover:text-(--accent) transition-colors font-medium"
       >
         👍 Like
       </button>
@@ -37,7 +37,7 @@ export default function ReactionBar({ reactions }: ReactionBarProps) {
     <button
       onClick={toggleLike}
       className={`flex items-center gap-1.5 text-[11px] font-medium px-2 py-1 rounded-full transition-colors ${
-        liked ? 'bg-[#4b8ef1]/15 text-[#4b8ef1]' : 'bg-[#1b1c1f] text-[#8a8d91] hover:text-[#e4e6eb]'
+        liked ? 'bg-(--accent-subtle) text-(--accent)' : 'bg-(--bg-page) text-(--text-muted) hover:text-(--text-primary)'
       }`}
     >
       <span className="flex -space-x-1">

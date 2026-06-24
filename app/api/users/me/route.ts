@@ -32,7 +32,7 @@ export async function PATCH(req: Request) {
     try {
       await mongoosedb();
       const body = await req.json();
-      const allowed = ["bio", "location", "signature", "customTitle", "socials", "timezone", "avatar", "banner"];
+      const allowed = ["bio", "location", "signature", "customTitle", "socials", "timezone", "avatar", "banner", "avatarEffect", "usernameEffect", "theme"];
       const updates: Record<string, unknown> = {};
 
       for (const key of allowed) {

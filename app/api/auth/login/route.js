@@ -37,6 +37,30 @@ export const POST = async (req) => {
       return NextResponse.json({ success: false, message: "Password wrong" });
     }
 
+    // Auto-lift expired suspension
+    if (info.isBanned && info.banExpiresAt && info.banExpiresAt <= new Date()) {
+      await User.findByIdAndUpdate(info._id, {
+        isBanned: false,
+        banReason: null,
+        banExpiresAt: null,
+      });
+      info.isBanned = false;
+      info.banReason = null;
+      info.banExpiresAt = null;
+    }
+
+    if (info.isBanned) {
+      const isPermanent = !info.banExpiresAt;
+      return NextResponse.json({
+        success: false,
+        message: isPermanent
+          ? `Your account has been permanently banned. Reason: ${info.banReason ?? 'No reason provided.'}`
+          : `Your account is suspended until ${info.banExpiresAt.toUTCString()}. Reason: ${info.banReason ?? 'No reason provided.'}`,
+        banned: true,
+        banExpiresAt: info.banExpiresAt ?? null,
+      });
+    }
+
     const token = await new SignJWT({ id: String(info._id) })
       .setProtectedHeader({ alg: "HS256" })
       .setExpirationTime("30d")

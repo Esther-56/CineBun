@@ -14,7 +14,7 @@ interface RecentThreadsProps {
 export function RecentThreads({ threads, page, totalPages, loading, onPageChange }: RecentThreadsProps) {
   if (!loading && threads.length === 0) {
     return (
-      <div className="text-center py-10 text-lg text-[#bfc1cc]">
+      <div className="text-center py-10 text-lg text-(--text-secondary)">
         No threads started yet.
       </div>
     );
@@ -40,28 +40,28 @@ export function RecentThreads({ threads, page, totalPages, loading, onPageChange
 
 function ThreadCard({ thread }: { thread: RecentThread }) {
   return (
-    <div className="bg-[#242528] rounded-lg border border-[rgba(255,255,255,0.06)] p-4 hover:border-[rgba(255,255,255,0.1)] transition-colors group cursor-pointer">
+    <div className="bg-(--bg-surface) rounded-lg border border-(--border-soft) p-4 hover:border-(--border-medium) transition-colors group cursor-pointer">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="text-[12px] font-semibold text-[#aeafb4] bg-[#1b1c1f] px-1.5 py-0.5 rounded">
+            <span className="text-[12px] font-semibold text-(--text-secondary) bg-(--bg-page) px-1.5 py-0.5 rounded">
               {thread.subforum}
             </span>
             <span className='text-base'>{thread.threadTitle}</span>
           
           </div>
-          <p className="text-sm text-[#d0d3d8] leading-relaxed line-clamp-2">{thread.excerpt}</p>
+          <p className="text-sm text-(--text-secondary) leading-relaxed line-clamp-2">{thread.excerpt}</p>
         </div>
         <ChevronRight
           size={14}
-          className="text-[#e5e6ec] group-hover:text-[#8a8d91] shrink-0 mt-1 transition-colors"
+          className="text-(--text-primary) group-hover:text-(--text-muted) shrink-0 mt-1 transition-colors"
         />
       </div>
-      <div className="flex items-center font-medium gap-4 mt-3 pt-3 border-t border-[rgba(255,255,255,0.04)]">
-        <span className="flex items-center gap-1 text-[13px] text-[#d4d5da]">
+      <div className="flex items-center font-medium gap-4 mt-3 pt-3 border-t border-(--border-soft)">
+        <span className="flex items-center gap-1 text-[13px] text-(--text-secondary)">
           <MessageSquare size={10} /> {thread.replyCount} replies
         </span>
-        <span className="flex items-center gap-1 text-[13px] text-[#d4d5da]">
+        <span className="flex items-center gap-1 text-[13px] text-(--text-secondary)">
           <Eye size={10} /> {thread.views} views
         </span>
       </div>

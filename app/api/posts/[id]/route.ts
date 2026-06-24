@@ -3,7 +3,7 @@
 import mongoosedb from "@/app/lib/db/db";
 import Post from "@/app/lib/models/Post";
 import User from "@/app/lib/models/User";
-import { withAuth } from "../../../lib/middleware/auth";
+import { withAuth, withPermission } from "../../../lib/middleware/auth";
 import { ok, fail, serverError } from "../../../lib/response";
 import Thread from "@/app/lib/models/ThreadSchema";
 import Subforum from "@/app/lib/models/SubforumSchema";
@@ -19,7 +19,8 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  return withAuth(req, async (user) => {
+    return withPermission(req, "canAccessAdmin", async (user) => {
+  
     try {
       await mongoosedb();
       const {id} = await params
@@ -91,7 +92,7 @@ export async function PATCH(
           editReason: body.editReason ?? null,
         },
         { new: true }
-      ).populate("author", "username avatar role customTitle postCount");
+      ).populate("author", "username avatar role customTitle postCount avatarEffect usernameEffect");
 
       return ok(updated);
     } catch (err) {

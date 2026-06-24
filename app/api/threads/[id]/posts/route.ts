@@ -6,7 +6,7 @@ import Thread from "@/app/lib/models/ThreadSchema";
 import { ok, fail, serverError } from "@/app/lib/response";
 import Reaction from "@/app/lib/models/Reaction";
 const PAGE_SIZE = 3;
-import { withAuth  } from "@/app/lib/middleware/auth";
+import { withOptionalAuth  } from "@/app/lib/middleware/auth";
 import User from "@/app/lib/models/User";
 import '@/app/lib/models/Badge'
 
@@ -15,7 +15,7 @@ import '@/app/lib/models/Badge'
 // wherever AUTHOR_POPULATE is defined — likely services/postService.ts or a shared constants file
 const AUTHOR_POPULATE = {
   path: 'author',
-  select: 'username avatar customTitle role badges postCount ', // add `badges` to select
+  select: 'username avatar customTitle role badges postCount avatarEffect usernameEffect ', // add `badges` to select
   populate: [
     { path: 'role', select: 'name color permissions' },
     { path: 'badges.badge', select: 'key label icon color tier' }, // nested populate for the badge ref inside the array
@@ -29,10 +29,14 @@ export async function GET(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  return withAuth(req, async (user) => {
+  return withOptionalAuth(req, async (user) => {
     try {
       await mongoosedb();
-      const full = await User.findById(user._id);
+      let full;
+      if (user)
+      {
+      full = await User.findById(user._id);
+      }
 
       const { id } = await params;
       if (!id) {
@@ -74,13 +78,16 @@ export async function GET(
       let reactionsByPost: Record<string, string> = {};
       if (allPosts.length) {
         const postIds = allPosts.map((p) => p._id);
-        const myReactions = await Reaction.find({
+        let myReactions: { post: any; type: string }[] = [];
+        if(full)
+        {
+         myReactions = await Reaction.find({
           post: { $in: postIds },
           user: full._id,
         })
           .select("post type")
           .lean();
-
+       }
         reactionsByPost = Object.fromEntries(
           myReactions.map((r) => [r.post.toString(), r.type])
         );

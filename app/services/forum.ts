@@ -1,6 +1,7 @@
 // app/services/forum.ts
 import ForumApi from '../ApiCore';
 import { ForumStats } from '../MainPage/types/forum';
+import { UsernameEffectKey } from '../u/[username]/components/ui/UsernameEffect';
 const api = new ForumApi();
 
 
@@ -13,7 +14,7 @@ interface TrendingThread {
 
 
 interface OnlineUsersProps {
-  users: string[];
+  users:  {username:string, usernameEffect:UsernameEffectKey}[];
   total: number;
 }
 

@@ -61,17 +61,17 @@ export default function RegisterPage() {
     formik.touched[key] && formik.errors[key] ? formik.errors[key] : null;
 
   const inputClass = (key: keyof typeof formik.errors) =>
-    `w-full bg-[#1b1c1f] border rounded-lg py-3 text-sm font-medium text-[#e4e6eb] placeholder:text-[#4a4b50] outline-none transition-colors
-    ${fieldError(key) ? 'border-[#ef4444]' : 'border-[rgba(255,255,255,0.08)] focus:border-[#4b8ef1]'}`;
+    `w-full bg-[var(--bg-input)] border rounded-lg py-3 text-sm font-medium text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-colors
+    ${fieldError(key) ? 'border-[var(--danger)]' : 'border-[var(--border-soft)] focus:border-[var(--accent)]'}`;
 
   if (success) {
     return (
       <AuthLayout title="You're in!" subtitle="Account created successfully." footer={<p></p>}>
         <div className="flex flex-col items-center gap-4 py-8">
-          <div className="w-16 h-16 rounded-full bg-[#10b981]/10 flex items-center justify-center">
-            <CheckCircle2 size={36} className="text-[#10b981]" />
+          <div className="w-16 h-16 rounded-full bg-[var(--online)]/10 flex items-center justify-center">
+            <CheckCircle2 size={36} className="text-[var(--online)]" />
           </div>
-          <p className="text-sm font-medium text-[#8a8d91]">Redirecting you now...</p>
+          <p className="text-sm font-medium text-[var(--text-secondary)]">Redirecting you now...</p>
         </div>
       </AuthLayout>
     );
@@ -82,11 +82,11 @@ export default function RegisterPage() {
       title="Create an account"
       subtitle="Join the Bunny Forum community — it only takes a minute."
       footer={
-        <p className="text-sm text-[#8a8d91]">
+        <p className="text-sm text-[var(--text-secondary)]">
           Already a member?{' '}
           <button
             onClick={() => router.replace("/auth/login")}
-            className="text-[#4b8ef1] hover:underline font-semibold"
+            className="text-[var(--accent)] hover:underline font-semibold"
           >
             Log in
           </button>
@@ -97,17 +97,19 @@ export default function RegisterPage() {
 
         {/* Server error */}
         {serverError && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#ef4444]/10 border border-[#ef4444]/30 rounded-lg">
-            <AlertCircle size={16} className="text-[#ef4444] shrink-0" />
-            <p className="text-sm font-medium text-[#ef4444]">{serverError}</p>
+          <div className="flex items-center gap-3 px-4 py-3 bg-[var(--danger-subtle)] border border-[var(--danger)] rounded-lg">
+            <AlertCircle size={16} className="text-[var(--danger)] shrink-0" />
+            <p className="text-sm font-medium text-[var(--danger)]">{serverError}</p>
           </div>
         )}
 
         {/* Username */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="reg-username" className="text-sm font-semibold text-[#a8b3cf]">Username</label>
+          <label htmlFor="reg-username" className="text-sm font-semibold text-[var(--text-secondary)]">
+            Username
+          </label>
           <div className="relative">
-            <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="reg-username"
               type="text"
@@ -117,14 +119,16 @@ export default function RegisterPage() {
               className={`${inputClass('username')} pl-10 pr-4`}
             />
           </div>
-          {fieldError('username') && <p className="text-xs font-medium text-[#ef4444]">{fieldError('username')}</p>}
+          {fieldError('username') && <p className="text-xs font-medium text-[var(--danger)]">{fieldError('username')}</p>}
         </div>
 
         {/* Email */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="reg-email" className="text-sm font-semibold text-[#a8b3cf]">Email address</label>
+          <label htmlFor="reg-email" className="text-sm font-semibold text-[var(--text-secondary)]">
+            Email address
+          </label>
           <div className="relative">
-            <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="reg-email"
               type="email"
@@ -134,14 +138,16 @@ export default function RegisterPage() {
               className={`${inputClass('email')} pl-10 pr-4`}
             />
           </div>
-          {fieldError('email') && <p className="text-xs font-medium text-[#ef4444]">{fieldError('email')}</p>}
+          {fieldError('email') && <p className="text-xs font-medium text-[var(--danger)]">{fieldError('email')}</p>}
         </div>
 
         {/* Password */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="reg-password" className="text-sm font-semibold text-[#a8b3cf]">Password</label>
+          <label htmlFor="reg-password" className="text-sm font-semibold text-[var(--text-secondary)]">
+            Password
+          </label>
           <div className="relative">
-            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="reg-password"
               type={showPassword ? 'text' : 'password'}
@@ -150,19 +156,24 @@ export default function RegisterPage() {
               {...formik.getFieldProps('password')}
               className={`${inputClass('password')} pl-10 pr-10`}
             />
-            <button type="button" onClick={() => setShowPassword(s => !s)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50] hover:text-[#8a8d91] transition-colors">
+            <button
+              type="button"
+              onClick={() => setShowPassword(s => !s)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+            >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          {fieldError('password') && <p className="text-xs font-medium text-[#ef4444]">{fieldError('password')}</p>}
+          {fieldError('password') && <p className="text-xs font-medium text-[var(--danger)]">{fieldError('password')}</p>}
         </div>
 
         {/* Confirm */}
         <div className="flex flex-col gap-2">
-          <label htmlFor="reg-confirm" className="text-sm font-semibold text-[#a8b3cf]">Confirm password</label>
+          <label htmlFor="reg-confirm" className="text-sm font-semibold text-[var(--text-secondary)]">
+            Confirm password
+          </label>
           <div className="relative">
-            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50]" />
+            <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="reg-confirm"
               type={showConfirm ? 'text' : 'password'}
@@ -171,37 +182,40 @@ export default function RegisterPage() {
               {...formik.getFieldProps('confirm')}
               className={`${inputClass('confirm')} pl-10 pr-10`}
             />
-            <button type="button" onClick={() => setShowConfirm(s => !s)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4a4b50] hover:text-[#8a8d91] transition-colors">
+            <button
+              type="button"
+              onClick={() => setShowConfirm(s => !s)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)] transition-colors"
+            >
               {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
           </div>
-          {fieldError('confirm') && <p className="text-xs font-medium text-[#ef4444]">{fieldError('confirm')}</p>}
+          {fieldError('confirm') && <p className="text-xs font-medium text-[var(--danger)]">{fieldError('confirm')}</p>}
         </div>
 
         {/* Terms */}
         <div className="flex flex-col gap-1.5">
-          <label className="flex items-start gap-3 text-sm font-medium text-[#8a8d91] cursor-pointer select-none">
+          <label className="flex items-start gap-3 text-sm font-medium text-[var(--text-secondary)] cursor-pointer select-none">
             <input
               type="checkbox"
               {...formik.getFieldProps('terms')}
               checked={formik.values.terms}
-              className="w-4 h-4 mt-0.5 rounded border-[rgba(255,255,255,0.15)] bg-[#1b1c1f] accent-[#4b8ef1] shrink-0"
+              className="w-4 h-4 mt-0.5 rounded border-[var(--border-medium)] bg-[var(--bg-input)] accent-[var(--accent)] shrink-0"
             />
             <span>
               I agree to the{' '}
-              <a href="#" className="text-[#4b8ef1] hover:underline font-semibold">Terms of Service</a>
+              <a href="#" className="text-[var(--accent)] hover:underline font-semibold">Terms of Service</a>
               {' '}and{' '}
-              <a href="#" className="text-[#4b8ef1] hover:underline font-semibold">Privacy Policy</a>
+              <a href="#" className="text-[var(--accent)] hover:underline font-semibold">Privacy Policy</a>
             </span>
           </label>
-          {fieldError('terms') && <p className="text-xs font-medium text-[#ef4444]">{fieldError('terms')}</p>}
+          {fieldError('terms') && <p className="text-xs font-medium text-[var(--danger)]">{fieldError('terms')}</p>}
         </div>
 
         <button
           type="submit"
           disabled={formik.isSubmitting}
-          className="w-full flex items-center justify-center gap-2 bg-[#4b8ef1] hover:bg-[#3a7de0] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg py-3 transition-colors mt-1"
+          className="w-full flex items-center justify-center gap-2 bg-[var(--accent)] hover:bg-[var(--accent-hover)] disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg py-3 transition-colors mt-1"
         >
           <UserPlus size={16} />
           {formik.isSubmitting ? 'Creating account...' : 'Create account'}

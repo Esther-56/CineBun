@@ -10,6 +10,7 @@ import { PostService } from "@/app/services/posts";
 import { Thread, Post } from '../../../MainPage/types/forum';
 import Pagination from '@/app/MainPage/trendingThreads/components/Pagination';
 import AnnouncementBoard from '@/app/MainPage/trendingThreads/components/AnnouncementBoard';
+import Footer from '@/app/Footer';
 
 interface ThreadPageProps {
   params_cc: { subforumId: string; threadId: string };
@@ -18,27 +19,27 @@ interface ThreadPageProps {
 function ThreadHeaderSkeleton() {
   return (
     <div className="mb-5">
-      <div className="h-5 w-2/3 rounded bg-[#2d2e32] animate-pulse mb-2" />
-      <div className="h-3 w-40 rounded bg-[#2d2e32] animate-pulse" />
+      <div className="h-5 w-2/3 rounded bg-(--bg-elevated) animate-pulse mb-2" />
+      <div className="h-3 w-40 rounded bg-(--bg-elevated) animate-pulse" />
     </div>
   );
 }
 
 function PostSkeleton() {
   return (
-    <div className="flex gap-3 px-4 py-4 border-b border-[rgba(255,255,255,0.06)] last:border-b-0">
+    <div className="flex gap-3 px-4 py-4 border-b border-(--border-soft) last:border-b-0">
       {/* author column */}
       <div className="w-20 shrink-0 flex flex-col items-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-[#2d2e32] animate-pulse" />
-        <div className="h-2.5 w-14 rounded bg-[#2d2e32] animate-pulse" />
+        <div className="w-12 h-12 rounded-full bg-(--bg-elevated) animate-pulse" />
+        <div className="h-2.5 w-14 rounded bg-(--bg-elevated) animate-pulse" />
       </div>
 
       {/* content column */}
       <div className="flex-1 min-w-0 flex flex-col gap-2.5">
-        <div className="h-2.5 w-24 rounded bg-[#2d2e32] animate-pulse" />
-        <div className="h-3 w-full rounded bg-[#2d2e32] animate-pulse" />
-        <div className="h-3 w-11/12 rounded bg-[#2d2e32] animate-pulse" />
-        <div className="h-3 w-3/5 rounded bg-[#2d2e32] animate-pulse" />
+        <div className="h-2.5 w-24 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3 w-full rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3 w-11/12 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3 w-3/5 rounded bg-(--bg-elevated) animate-pulse" />
       </div>
     </div>
   );
@@ -46,7 +47,7 @@ function PostSkeleton() {
 
 function ThreadViewSkeleton() {
   return (
-    <div className="rounded-lg border border-[rgba(255,255,255,0.06)] bg-[#242528] overflow-hidden">
+    <div className="rounded-lg border border-(--border-soft) bg-(--bg-surface) overflow-hidden">
       {[0, 1, 2, 3].map(i => (
         <PostSkeleton key={i} />
       ))}
@@ -137,7 +138,7 @@ export function Body({ params_cc }: ThreadPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#1b1c1f] text-[#e4e6eb]">
+      <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
         <Navbar />
         <main className="max-w-8xl mx-auto px-4 py-6">
           <ThreadHeaderSkeleton />
@@ -154,7 +155,7 @@ export function Body({ params_cc }: ThreadPageProps) {
 
   if (error || !thread) {
     return (
-      <div className="min-h-screen bg-[#1b1c1f] flex items-center justify-center text-[#ff6b6b] text-sm">
+      <div className="min-h-screen bg-(--bg-page) flex items-center justify-center text-[#ff6b6b] text-sm">
         {error || "Thread not found."}
       </div>
     );
@@ -163,14 +164,14 @@ export function Body({ params_cc }: ThreadPageProps) {
   const totalPages = pageSize > 0 ? Math.ceil(totalPosts / pageSize) : 1;
 
   return (
-    <div className="min-h-screen bg-[#1b1c1f] text-[#e4e6eb]">
+    <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
       <Navbar />
 
       <main className="max-w-8xl mx-auto px-4 py-6">
         <ThreadViewHeader thread={thread} />
 
         {highlightMissing && (
-          <div className="mb-4 px-4 py-3 bg-[#1a2a3a] border border-[#4b8ef1]/20 rounded-lg text-base text-[#c4c5c7]">
+          <div className="mb-4 px-4 py-3 bg-[#1a2a3a] border border-(--accent-subtle) rounded-lg text-base text-(--text-secondary)">
             The linked post isn&apos;t on this page — it may be further back in the thread.
           </div>
         )}
@@ -199,6 +200,7 @@ export function Body({ params_cc }: ThreadPageProps) {
           <ForumSidebar  />
         </div>
       </main>
+      <Footer/>
     </div>
   );
 }

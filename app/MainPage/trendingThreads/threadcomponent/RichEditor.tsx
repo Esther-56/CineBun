@@ -97,7 +97,7 @@ export function RichEditor({
       )}
 
       {/* Editor card */}
-      <div className="bg-[#242526] border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden">
+      <div className="bg-(--bg-surface) border border-(--border-soft) rounded-lg overflow-hidden">
 
         {/* Toolbar */}
         <RichEditorToolbar
@@ -119,11 +119,11 @@ export function RichEditor({
 
         {/* Preview pane */}
         <div
-          className={`${preview ? "block" : "hidden"} ${height} px-4 py-3 text-[#e4e6eb] leading-relaxed overflow-auto prose-dark`}
+          className={`${preview ? "block" : "hidden"} ${height} px-4 py-3 text-(--text-primary) leading-relaxed overflow-auto prose-dark`}
           dangerouslySetInnerHTML={{
             __html:
               editor.editorRef.current?.innerHTML ||
-              "<em class='text-[#8a8d91]'>Nothing to preview yet.</em>",
+              "<em class='text-(--text-muted)'>Nothing to preview yet.</em>",
           }}
         />
 
@@ -142,15 +142,15 @@ export function RichEditor({
             if (e.key === "Escape") { /* toolbar handles its own state */ }
           }}
           data-placeholder={placeholder}
-          className={`${height} ${preview ? "hidden" : "block"} px-4 py-3 text-[#e4e6eb] leading-relaxed focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-[#4a4b50] empty:before:pointer-events-none prose-dark`}
+          className={`${height} ${preview ? "hidden" : "block"} px-4 py-3 text-(--text-primary) leading-relaxed focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-(--text-muted) empty:before:pointer-events-none prose-dark`}
           style={{ fontFamily: "inherit", lineHeight: "1.7" }}
         />
 
         {/* Status bar */}
-        <div className="flex items-center justify-between px-3 py-2 border-t border-[rgba(255,255,255,0.06)] bg-[#1e1f20]">
-          <span className="text-[11px] text-[#4a4b50]">{editor.getCharCount()} characters</span>
+        <div className="flex items-center justify-between px-3 py-2 border-t border-(--border-soft) bg-(--bg-input)">
+          <span className="text-[11px] text-(--text-muted)">{editor.getCharCount()} characters</span>
           {footerNote && (
-            <span className="text-[11px] text-[#4a4b50]">{footerNote}</span>
+            <span className="text-[11px] text-(--text-muted)">{footerNote}</span>
           )}
         </div>
       </div>
@@ -161,7 +161,7 @@ export function RichEditor({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-[#8a8d91] hover:text-[#e4e6eb] transition-colors"
+            className="px-4 py-2 text-sm text-(--text-muted) hover:text-(--text-primary) transition-colors"
           >
             Cancel
           </button>
@@ -173,7 +173,7 @@ export function RichEditor({
           type="button"
           onClick={handleSubmit}
           disabled={submitting}
-          className={`flex items-center gap-2 ${comment ? "px-2" : "px-5"} py-2 bg-[#1877f2] hover:bg-[#166fe5] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors`}
+          className={`flex items-center gap-2 ${comment ? "px-2" : "px-5"} py-2 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-lg transition-colors`}
         >
           <Send size={14} />
           {submitting ? "Submitting…" : submitLabel}

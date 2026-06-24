@@ -11,26 +11,28 @@ export async function GET(req: Request) {
     try {
       await mongoosedb();
       const { searchParams } = new URL(req.url);
-      const search = searchParams.get("search") ?? "";
-      const page   = parseInt(searchParams.get("page") ?? "1");
-      const limit  = 30;
+  const query  = searchParams.get('query')?.trim();
+  const status = searchParams.get('status');
 
-      const filter = search
-        ? { username: { $regex: search, $options: "i" } }
-        : {};
+  const filter: Record<string, unknown> = {};
 
-      const [users, total] = await Promise.all([
-        User.find(filter)
-          .populate("role", "name color")
-          .select("-password")
-          .sort({ createdAt: -1 })
-          .skip((page - 1) * limit)
-          .limit(limit)
-          .lean(),
-        User.countDocuments(filter),
-      ]);
+  if (query) {
+    filter.$or = [
+      { username:    { $regex: query, $options: 'i' } },
+    ];
+  }
 
-      return ok({ users, total, page, pages: Math.ceil(total / limit) });
+  if (status === 'banned')    { filter.isBanned = true;  filter.banExpiresAt = null; }
+  if (status === 'suspended') { filter.isBanned = true;  filter.banExpiresAt = { $ne: null }; }
+  if (status === 'active')    { filter.isBanned = false; }
+  // 'warned' — add when you have a warnings count field, e.g. filter.warningCount = { $gt: 0 }
+
+  const users = await User.find(filter)
+    .populate('role')
+    .sort({ createdAt: -1 })
+    .lean();
+
+  return ok({ users });
     } catch (err) {
       return serverError(err, "GET /api/admin/users");
     }

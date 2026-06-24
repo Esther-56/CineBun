@@ -28,6 +28,7 @@ export default async function mongoosedb(): Promise<typeof mongoose> {
 
   if (!cached.promise) {
     cached.promise = mongoose.connect(MONGODB_URI as string, {
+      dbName: "bunnyforum",
       bufferCommands: false,
     });
   }

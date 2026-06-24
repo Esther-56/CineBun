@@ -17,7 +17,6 @@ interface ProfileSidebarProps {
 }
 
 export function ProfileSidebar({ username, isOwnProfile }: ProfileSidebarProps) {
-  
   const [badges, setBadges] = useState<Badge[]>([]);
   const [activity, setActivity] = useState<ActivityStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,12 +58,12 @@ export function ProfileSidebar({ username, isOwnProfile }: ProfileSidebarProps) 
 
 function BadgesCard({ badges, loading }: { badges: Badge[]; loading: boolean }) {
   return (
-    <div className="bg-[#242528] rounded-lg border  border-[rgba(255,255,255,0.06)] p-4">
-      <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#c3c4ca] mb-3">Badges</h3>
+    <div className="bg-(--bg-surface) rounded-lg border border-(--border-soft) p-4">
+      <h3 className="text-[13px] uppercase tracking-widest font-bold text-(--text-secondary) mb-3">Badges</h3>
       <div className="flex flex-wrap gap-2">
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="w-8 h-8 rounded-full bg-[rgba(255,255,255,0.04)] animate-pulse" />
+              <div key={i} className="w-8 h-8 rounded-full bg-(--border-soft) animate-pulse" />
             ))
           : badges?.map((badge) => {
               const Icon = (Icons as any)[badge?.icon] as Icons.LucideIcon | undefined;
@@ -72,7 +71,7 @@ function BadgesCard({ badges, loading }: { badges: Badge[]; loading: boolean }) 
                 <div
                   key={badge?.id}
                   title={badge?.label}
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-[rgba(255,255,255,0.08)]"
+                  className="w-8 h-8 rounded-full flex items-center justify-center border border-(--border-soft)"
                   style={{ backgroundColor: badge?.color + '18', color: badge?.color }}
                 >
                   {Icon && <Icon size={12} />}
@@ -86,17 +85,17 @@ function BadgesCard({ badges, loading }: { badges: Badge[]; loading: boolean }) 
 
 function ActivityCard({ stats, loading }: { stats: ActivityStat[]; loading: boolean }) {
   return (
-    <div className="bg-[#242528] rounded-lg border border-[rgba(255,255,255,0.06)] p-4">
-      <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#c3c4ca] mb-3">Activity</h3>
+    <div className="bg-(--bg-surface) rounded-lg border border-(--border-soft) p-4">
+      <h3 className="text-[13px] uppercase tracking-widest font-bold text-(--text-secondary) mb-3">Activity</h3>
       <div className="space-y-2.5">
         {loading
           ? Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-3 bg-[rgba(255,255,255,0.04)] rounded animate-pulse" />
+              <div key={i} className="h-3 bg-(--border-soft) rounded animate-pulse" />
             ))
           : stats?.map((stat, i) => (
               <div key={i} className="flex items-center justify-between">
-                <span className="text-[13px] text-[#c3c4ca]">{stat?.label}</span>
-                <span className="text-[13px] font-semibold text-[#a8b3cf]">{stat?.value}</span>
+                <span className="text-[13px] text-(--text-secondary)">{stat?.label}</span>
+                <span className="text-[13px] font-semibold text-(--text-secondary)">{stat?.value}</span>
               </div>
             ))}
       </div>
@@ -107,13 +106,13 @@ function ActivityCard({ stats, loading }: { stats: ActivityStat[]; loading: bool
 function ModActionsCard() {
   const actions = ['Warn user', 'Ban user', 'View IP log'];
   return (
-    <div className="bg-[#242528] rounded-lg border border-[rgba(255,255,255,0.06)] p-4">
-      <h3 className="text-[13px] uppercase tracking-widest font-bold text-[#c3c4ca] mb-3">Mod Actions</h3>
+    <div className="bg-(--bg-surface) rounded-lg border border-(--border-soft) p-4">
+      <h3 className="text-[13px] uppercase tracking-widest font-bold text-(--text-secondary) mb-3">Mod Actions</h3>
       <div className="flex flex-col gap-1.5">
         {actions.map((action, i) => (
           <button
             key={i}
-            className="text-left text-base text-[#c3c4ca] hover:text-[#ef4444] px-2 py-1.5 rounded hover:bg-[#ef44440a] transition-colors"
+            className="text-left text-base text-(--text-secondary) hover:text-(--danger) px-2 py-1.5 rounded hover:bg-(--danger-subtle) transition-colors"
           >
             {action}
           </button>

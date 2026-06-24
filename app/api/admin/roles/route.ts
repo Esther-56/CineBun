@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     const roles = await Role.find().sort({ priority: -1 });
     return NextResponse.json({ roles }, { status: 200 });
   } catch (err) {
-    console.error("GET /api/admin/roles failed:", err);
+    console.log("GET /api/admin/roles failed:", err);
     return NextResponse.json({ error: "Failed to fetch roles" }, { status: 500 });
   }})
 }
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ role }, { status: 201 });
   } catch (err) {
-    console.error("POST /api/admin/roles failed:", err);
+    console.log("POST /api/admin/roles failed:", err);
     return NextResponse.json({ error: "Failed to create role" }, { status: 500 });
   }})
 }
