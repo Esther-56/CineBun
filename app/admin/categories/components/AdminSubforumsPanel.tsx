@@ -8,6 +8,16 @@ import {
   Megaphone, HelpCircle, Star, Flag, BookOpen, Wrench,
   Gamepad2, Music, Image as ImageIcon, Globe, Hash,
   HelpCircle as UnknownIconFallback,
+  Users, UserCheck, UserPlus, Shield, ShieldCheck, Crown,
+  Gavel, ScrollText, Bell, BellRing, Pin, Bookmark,
+  ThumbsUp, ThumbsDown, Heart, Flame, Zap, Trophy,
+  Video, Camera, Tv, Film, Clapperboard, Mic,
+  Image, FileImage, GalleryHorizontal, PlayCircle,
+  Link, Globe2, Share2, ExternalLink, AtSign, Tag,
+  ShoppingBag, Banknote, ArrowLeftRight, Package, Store,
+  Lightbulb, LifeBuoy, GraduationCap, Newspaper, Search,
+  Settings, Layout, FolderOpen, Eye, Unlock,
+  Rocket, Sparkles, Rainbow, Moon, Sun, Box, PenLine
 } from 'lucide-react';
 import { SubforumService, type ApiSubforumFull, type SubforumInput } from '@/app/services/subforum-service';
 import { getErrorMessage } from '@/app/admin/categories/lib/apiError';
@@ -24,11 +34,44 @@ interface Props {
 const ICON_PRESETS = [
   'MessageSquare', 'Layers', 'Megaphone', 'HelpCircle', 'Star', 'Flag',
   'BookOpen', 'Wrench', 'Gamepad2', 'Music', 'ImageIcon', 'Globe', 'Hash',
+  'Users', 'UserCheck', 'UserPlus', 'Shield', 'ShieldCheck', 'Crown',
+  'Gavel', 'ScrollText', 'Bell', 'BellRing', 'Pin', 'Bookmark',
+  'ThumbsUp', 'ThumbsDown', 'Heart', 'Flame', 'Zap', 'Trophy',
+  'Video', 'Camera', 'Tv', 'Film', 'Clapperboard', 'Mic',
+  'Image', 'FileImage', 'GalleryHorizontal', 'PlayCircle',
+  'Link', 'Globe2', 'Share2', 'ExternalLink', 'AtSign', 'Tag',
+  'ShoppingBag', 'Banknote', 'ArrowLeftRight', 'Package', 'Store',
+  'Lightbulb', 'LifeBuoy', 'GraduationCap', 'Newspaper', 'Search',
+  'Settings', 'Layout', 'FolderOpen', 'Eye', 'Lock', 'Unlock',
+  'Rocket', 'Sparkles', 'Rainbow', 'Moon', 'Sun', 'Box', 'PenLine',
 ];
 
 const PRESET_ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
+  // Original
   MessageSquare, Layers, Megaphone, HelpCircle, Star, Flag,
   BookOpen, Wrench, Gamepad2, Music, ImageIcon, Globe, Hash,
+
+  // Forum / Community
+  Users, UserCheck, UserPlus, Shield, ShieldCheck, Crown,
+  Gavel, ScrollText, Bell, BellRing, Pin, Bookmark,
+  ThumbsUp, ThumbsDown, Heart, Flame, Zap, Trophy,
+
+  // Content
+  Video, Camera, Tv, Film, Clapperboard, Mic,
+  Image, FileImage, GalleryHorizontal, PlayCircle,
+
+  // Platform / Social
+  Link, Globe2, Share2, ExternalLink, AtSign, Tag,
+
+  // Commerce
+  ShoppingBag, Banknote, ArrowLeftRight, Package, Store,
+
+  // Utility / Nav
+  Lightbulb, LifeBuoy, GraduationCap, Newspaper, Search,
+  Settings, Layout, FolderOpen, Eye, Lock, Unlock,
+
+  // Misc
+  Rocket, Sparkles, Rainbow, Moon, Sun, Box, PenLine,
 };
 
 // Resolves any valid lucide-react PascalCase icon name (not just presets).
