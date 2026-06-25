@@ -291,4 +291,20 @@ const RING_CSS = `
   .ae-celestial    { box-shadow: 0 0 0 2px #1e1f22, 0 0 0 3px #4db8ff; }
   .ae-toxic        { box-shadow: 0 0 0 2px #1e1f22, 0 0 0 3px #39ff14; }
 }
+
+/* ── Mobile: disable glitch/hologram pseudo-elements to prevent layout bleed ── */
+@media (max-width: 768px) {
+  .ue-glitch-before,
+  .ue-glitch-after {
+    display: none;
+  }
+
+  .ue-glitch {
+    animation: none;
+  }
+
+  .ue-hologram {
+    animation: none;
+  }
+}
 `;

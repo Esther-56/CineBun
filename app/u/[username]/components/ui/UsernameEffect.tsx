@@ -316,4 +316,20 @@ const EFFECT_CSS = `
     color: inherit;
   }
 }
+
+/* ── Mobile: disable glitch/hologram pseudo-elements to prevent layout bleed ── */
+@media (max-width: 768px) {
+  .ue-glitch-before,
+  .ue-glitch-after {
+    display: none;
+  }
+
+  .ue-glitch {
+    animation: none;
+  }
+
+  .ue-hologram {
+    animation: none;
+  }
+}
 `;
