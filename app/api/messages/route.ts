@@ -54,31 +54,62 @@ export async function POST(req: Request) {
       if (!content) return fail("Message content is required.");
 
       let conversation;
+      let recipientId: string;
 
       if (body.conversationId) {
         conversation = await DM.findOne({ _id: body.conversationId, participants: user._id });
-        if (!conversation) return fail("Conversation not found.", 404);
+        if (!conversation) return fail("Conversation not found.");
+        recipientId = conversation.participants
+          .find((p: any) => p.toString() !== user._id.toString())
+          ?.toString();
       } else {
         if (!body.recipientId) return fail("recipientId is required.");
-        if (body.recipientId == user._id) return fail("You cannot message yourself.");
+        if (body.recipientId === user._id.toString()) return fail("You cannot message yourself.");
+        recipientId = body.recipientId;
+      }
 
-        const recipientExists = await User.exists({ _id: body.recipientId });
-        if (!recipientExists) return fail("Recipient not found.", 404);
+     
 
-        conversation = await DM.findOne({ participants: { $all: [user._id, body.recipientId] } });
+      // ── Block / privacy checks ─────────────────────────────────────────
+      const recipient = await User.findById(recipientId)
+        .select("blockedUsers messagingPrivacy username")
+        .lean() as any;
+       
+      if (!recipient) return fail("Recipient not found.");
+
+      if (recipient.messagingPrivacy === "nobody") {
+        return fail(`@${recipient.username} is not accepting messages.`);
+      }
+
+      const isBlocked = recipient.blockedUsers
+        ?.some((id: any) => id.toString() === user._id.toString());
+      
+      if (isBlocked) {
+        return fail(`@${recipient.username} is not accepting messages.`);
+      }
+      // ──────────────────────────────────────────────────────────────────
+
+      if (!conversation) {
+        conversation = await DM.findOne({
+          participants: { $all: [user._id, recipientId] },
+        });
         if (!conversation) {
-          conversation = await DM.create({ participants: [user._id, body.recipientId], messages: [] });
+          conversation = await DM.create({
+            participants: [user._id, recipientId],
+            messages: [],
+          });
         }
       }
 
-      const otherParticipant = conversation.participants.find((p: any) => p.toString() !== user._id.toString());
-      if (!otherParticipant) return fail("Invalid conversation.", 400);
-
-      const message = { sender: user._id, content, createdAt: new Date(), readAt: null };
+      const message = {
+        sender: user._id,
+        content,
+        createdAt: new Date(),
+        readAt: null,
+      };
       conversation.messages.push(message);
       conversation.lastMessageAt = message.createdAt;
       await conversation.save();
-
 
       const saved = conversation.messages[conversation.messages.length - 1];
       return ok({ conversationId: conversation._id, message: saved });

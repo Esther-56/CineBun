@@ -136,6 +136,8 @@ export interface UserProfile {
 
   ipAddress: string;
   location:string;
+  isBlockedByMe:boolean
+  messagingPrivacy:'everyone' | 'nobody'
 }
 
 

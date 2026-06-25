@@ -6,6 +6,8 @@ import Role from "@/app/lib/models/Role";
 import Notification from "@/app/lib/models/Notification";
 import * as yup from "yup";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
+import { sendVerificationEmail } from "@/app/lib/mailer";
 
 const registrationSchema = yup.object().shape({
   username: yup.string().required('Username is required').min(3).max(15),
@@ -103,8 +105,16 @@ export const POST = async (req) => {
       type: "system",
       message: isBootstrap
         ? "Welcome, Admin! Your account has been set up with full administrative access."
-        : "Welcome to the forum! Glad to have you here — head over to the boards and introduce yourself.",
+        : "Welcome to the forum! Glad to have you here — head over to your email to verify account.",
     });
+
+    const verifyToken = crypto.randomBytes(32).toString("hex");
+    await User.findByIdAndUpdate(newUser._id, {
+      emailVerificationToken: verifyToken,
+      emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
+    });
+
+    await sendVerificationEmail(email, username, verifyToken);
 
     return NextResponse.json({ success: true, message: "Account created" }, { status: 201 });
   } catch (error) {

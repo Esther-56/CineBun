@@ -44,4 +44,6 @@ export const MessageService = {
 
   unreadCount: () =>
     api.get<{ success: boolean; data: { unreadConversations: number } }>('/messages/unread-count'),
+
+  
 };

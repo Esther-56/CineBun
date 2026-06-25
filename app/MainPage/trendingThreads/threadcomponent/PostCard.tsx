@@ -400,7 +400,7 @@ export default function PostCard({
                   {isReply && <span className="text-xs text-(--accent)">commented</span>}
                 </div>
 
-                <span className="text-[11px] font-semibold text-(--text-secondary)">
+                <span className="text-[11px] bg-(--bg-page) p-1 rounded-md  font-semibold text-(--text-secondary)">
                   {`${formatTimeAgo(post.createdAt)}`}
                 </span>
 
@@ -446,7 +446,7 @@ export default function PostCard({
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
                                   <div
-                  className={`prose-dark ${isReply ? 'text-[13px]' : 'text-[15px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-1' : 'mb-8'}`}
+                  className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[16px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'}`}
                   dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
                 />
 

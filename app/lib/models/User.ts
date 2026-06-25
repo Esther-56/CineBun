@@ -45,6 +45,19 @@ const User = new Schema({
     link:  String,
     website:    String,
   },
+  blockedUsers: {
+  type: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  default: [],
+},
+messagingPrivacy: {
+  type: String,
+  enum: ["everyone", "nobody"],
+  default: "everyone",
+},
+emailVerificationToken: { type: String, default: null },
+emailVerificationExpires: { type: Date, default: null },
+passwordResetToken: { type: String, default: null },
+passwordResetExpires: { type: Date, default: null },
 }, { timestamps: true });
 
 export default mongoose.models.User ||

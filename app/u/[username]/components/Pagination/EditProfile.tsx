@@ -89,9 +89,10 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           avatar:      formData.avatar,
           banner:      formData.banner,
         });
+        router.refresh();
         onSaved?.();
         flashSaved();
-        router.refresh();
+        
 
       } else if (tab === 'account') {
         const touchedPassword =
@@ -112,8 +113,9 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           });
           setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         }
-        flashSaved();
         router.refresh();
+        flashSaved();
+        
 
       } else if (tab === 'appearance') {
         await UserService.updateAppearance({
@@ -121,8 +123,9 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           usernameEffect: usernameEffect ?? null,
           avatarEffect:   avatarEffect   ?? null,
         });
+         router.refresh();
         flashSaved();
-        router.refresh();
+       
 
       } else {
         // notifications — local-only for now
