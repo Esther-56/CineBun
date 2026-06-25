@@ -517,3 +517,11 @@ body {
   --online:         #a3e635;
 }
 
+/* globals.css */
+[class^="ue-"] {
+  display: inline-block;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;       /* add this */
+  isolation: isolate;     /* add this */
+}
