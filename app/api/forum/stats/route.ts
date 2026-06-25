@@ -14,7 +14,7 @@ const TRENDING_LIMIT       = 4;
 export async function GET() {
   try {
     await mongoosedb();
-
+    
     const onlineSince   = new Date(Date.now() - ONLINE_WINDOW_MS);
     const trendingSince = new Date(Date.now() - TRENDING_WINDOW_MS);
 

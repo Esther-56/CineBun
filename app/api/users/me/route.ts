@@ -3,7 +3,7 @@
 import mongoosedb from "@/app/lib/db/db";
 import User from "@/app/lib/models/User";
 import bcrypt from "bcrypt";
-import { withAuth } from "../../../lib/middleware/auth";
+import { withAuth, withOptionalAuth } from "../../../lib/middleware/auth";
 import { ok, fail, serverError } from "../../../lib/response";
 
 const ALLOWED_THEMES = [
@@ -12,8 +12,12 @@ const ALLOWED_THEMES = [
 
 // GET /api/users/me — own full profile (with email)
 export async function GET(req: Request) {
-  return withAuth(req, async (user) => {
+  return withOptionalAuth(req, async (user) => {
+
     try {
+        if (!user) {
+        return ok(null);
+      }
       await mongoosedb();
       const full = await User.findById(user._id)
         .populate("role", "name color permissions priority")
