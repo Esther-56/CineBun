@@ -48,7 +48,7 @@ export function ProfileSidebar({ username, isOwnProfile }: ProfileSidebarProps) 
   }, [username]);
 
   return (
-    <aside className="w-52 shrink-0 hidden lg:flex flex-col gap-3 sticky top-16">
+    <aside className="w-52 shrink-0 hidden lg:flex flex-col gap-3 sm:sticky sm:top-16">
       <BadgesCard badges={badges} loading={loading} />
       <ActivityCard stats={activity} loading={loading} />
       {!isOwnProfile && <ModActionsCard />}

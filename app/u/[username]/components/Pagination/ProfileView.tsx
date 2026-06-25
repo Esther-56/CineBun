@@ -40,7 +40,7 @@ export function ProfileView({
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex gap-5">
           {/* Main */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 hidden">
             {/* Tab bar */}
             <div className="flex gap-0.5 border-b border-(--border-soft) mb-4">
               {TABS.map(t => (
