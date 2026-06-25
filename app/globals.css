@@ -530,3 +530,7 @@ body {
   animation: none !important;
   transition: none !important;
 }
+
+* {
+  filter: none !important;
+}
