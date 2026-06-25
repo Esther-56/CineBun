@@ -2,7 +2,7 @@
 import type { MetadataRoute } from "next";
 import { SubforumService } from "@/app/services/subforum-service";
 
-const BASE_URL = "https://bunnyforum.com"; // 🔁 Replace with your actual domain
+const BASE_URL = "https://bunnyforum.site"; // 🔁 Replace with your actual domain
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // fetch top-level subforums

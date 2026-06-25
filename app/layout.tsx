@@ -5,7 +5,7 @@ import ThemeInit from '@/app/components/ThemeInit';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bunnyforum.com"), // 🔁 Replace with your actual domain
+  metadataBase: new URL("https://bunnyforum.site"), // 🔁 Replace with your actual domain
   title: {
     default: "Bunny Forum – Share Videos & Links",
     template: "%s | Bunny Forum",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://bunnyforum.com", // 🔁 Replace with your actual domain
+    url: "https://bunnyforum.site", // 🔁 Replace with your actual domain
     siteName: "Bunny Forum",
     title: "Bunny Forum – Share Videos & Links",
     description:
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://bunnyforum.com", // 🔁 Replace with your actual domain
+    canonical: "https://bunnyforum.site", // 🔁 Replace with your actual domain
   },
 };
 

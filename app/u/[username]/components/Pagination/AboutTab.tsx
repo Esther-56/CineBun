@@ -29,7 +29,7 @@ export function AboutTab({ profile }: AboutTabProps) {
             <div className="text-(--text-primary) shrink-0">{detail.icon}</div>
             <span className="text-[12px] text-(--text-primary) w-16 shrink-0">{detail?.label}</span>
             {detail.link ? (
-              <a href="#" className="text-sm text-(--accent) hover:underline truncate">{detail?.value}</a>
+              <a href={detail?.value} className="text-sm text-(--accent) hover:underline truncate">{detail?.value}</a>
             ) : (
               <span className="text-sm text-(--text-muted) truncate">{detail?.value}</span>
             )}

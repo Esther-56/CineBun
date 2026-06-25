@@ -62,7 +62,7 @@ export async function generateMetadata({ params, searchParams }: ThreadPageProps
     thread.author?.username ??
     "Bunny Forum";
 
-  const baseUrl = `https://bunnyforum.com/f/${subforumId}/${threadId}`; // 🔁 Replace with your actual domain
+  const baseUrl = `https://bunnyforum.site/f/${subforumId}/${threadId}`; // 🔁 Replace with your actual domain
   const canonicalUrl = highlightPostId ? `${baseUrl}?post=${highlightPostId}` : baseUrl;
 
   const metaTitle = specificPost

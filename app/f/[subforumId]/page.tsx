@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: SubforumPageProps): Promise<M
   const description =
     subforum.description ??
     `Browse threads and content in the ${title} subforum on Bunny Forum.`;
-  const url = `https://bunnyforum.com/f/${subforumId}`; // 🔁 Replace with your actual domain
+  const url = `https://bunnyforum.site/f/${subforumId}`; // 🔁 Replace with your actual domain
 
   return {
     title: `${title} | Bunny Forum`,

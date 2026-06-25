@@ -1,7 +1,7 @@
 // app/robots.ts
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://bunnyforum.com"; // 🔁 Replace with your actual domain
+const BASE_URL = "https://bunnyforum.site"; // 🔁 Replace with your actual domain
 
 export default function robots(): MetadataRoute.Robots {
   return {
