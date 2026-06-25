@@ -1,6 +1,8 @@
 "use client";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams,  } from "next/navigation";
 import { useState } from "react";
+import { ExternalLink, Copy, Check, AlertTriangle, ArrowLeft, Link } from "lucide-react";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function LeavingPage() {
   const params = useSearchParams();
@@ -17,6 +19,11 @@ export default function LeavingPage() {
     }
   })();
 
+  const displayHost = (() => {
+    try { return new URL(destination).hostname; }
+    catch { return destination; }
+  })();
+
   const handleCopy = () => {
     navigator.clipboard.writeText(destination);
     setCopied(true);
@@ -25,58 +32,77 @@ export default function LeavingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-(--bg-base) px-4">
-      <div className="w-full max-w-md rounded-xl border border-(--border) bg-(--bg-card) p-8 flex flex-col gap-6 text-center shadow-lg">
 
-        {/* Icon */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-400 text-3xl">
-          ⚠️
-        </div>
+      {/* Card */}
+      <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-(--border) bg-(--bg-card)">
 
-        <div className="flex flex-col gap-2">
-          <h1 className="text-xl font-bold text-(--text-primary)">
-            You&apos;re leaving the forum
-          </h1>
-          <p className="text-sm text-(--text-muted)">
-            This link leads to an external site. We have no control over its content.
+        {/* Top accent bar */}
+        <div className="h-1 w-full bg-linear-to-r from-yellow-500 via-orange-400 to-yellow-500" />
+
+        <div className="flex flex-col items-center gap-5 p-8">
+
+          {/* Warning icon */}
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-yellow-500/10 border border-yellow-500/20">
+            <AlertTriangle size={26} className="text-yellow-400" strokeWidth={1.8} />
+          </div>
+
+          {/* Heading */}
+          <div className="flex flex-col gap-1.5 text-center">
+            <h1 className="text-lg font-bold tracking-tight text-(--text-primary)">
+              You&apos;re leaving
+            </h1>
+            <p className="text-sm text-(--text-muted) leading-relaxed">
+              You&apos;re about to visit an external site. We have no control over its content or safety.
+            </p>
+          </div>
+
+          {/* Destination card */}
+          <div className="w-full rounded-xl border border-(--border) bg-(--bg-base) p-3 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-(--bg-hover)">
+                <Link size={13} className="text-(--text-muted)" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-(--text-primary) truncate">{displayHost}</p>
+                <p className="text-[11px] text-(--text-muted) truncate">{isValid ? destination : "Invalid URL"}</p>
+              </div>
+              <button
+                onClick={handleCopy}
+                className="shrink-0 flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium border border-(--border) bg-(--bg-card) hover:bg-(--bg-hover) text-(--text-secondary) transition-colors"
+              >
+                {copied
+                  ? <><Check size={11} className="text-green-400" /> Copied</>
+                  : <><Copy size={11} /> Copy</>
+                }
+              </button>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="w-full flex flex-col gap-2.5">
+            {isValid ? (
+              <a
+                href={destination}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center cursor-pointer justify-center gap-2 rounded-xl bg-(--accent) hover:bg-(--accent-hover) text-white font-semibold py-3 text-sm transition-all active:scale-[0.98]"
+              >
+                <ExternalLink size={15} strokeWidth={2.2} />
+                Continue to site
+              </a>
+            ) : (
+              <div className="w-full rounded-xl border border-red-500/20 bg-red-500/5 py-3 text-center text-sm text-red-400">
+                This URL appears to be invalid.
+              </div>
+            )}
+          </div>
+
+          {/* Footer note */}
+          <p className="text-[11px] text-(--text-muted) text-center">
+            BF is not responsible for external content.
           </p>
+
         </div>
-
-        {/* Destination display */}
-        <div className="rounded-lg bg-(--bg-base) border border-(--border) px-4 py-3 flex items-center gap-2 text-left overflow-hidden">
-          <span className="text-(--text-muted) text-xs shrink-0">🔗</span>
-          <span className="text-xs text-(--text-secondary) truncate flex-1">
-            {isValid ? destination : "Invalid URL"}
-          </span>
-          <button
-            onClick={handleCopy}
-            className="shrink-0 text-xs text-(--accent) hover:underline"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          {isValid ? (
-            <a
-              href={destination}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full rounded-lg bg-(--accent) hover:bg-(--accent-hover) text-white font-semibold py-3 text-sm transition-colors"
-            >
-              Continue to site
-            </a>
-          ) : (
-            <div className="text-sm text-red-400">This URL appears to be invalid.</div>
-          )}
-
-          <button
-            onClick={() => router.back()}
-            className="w-full rounded-lg border border-(--border) bg-transparent hover:bg-(--bg-hover) text-(--text-secondary) font-medium py-3 text-sm transition-colors"
-          >
-            Go back
-          </button>
-        </div>
-
       </div>
     </div>
   );

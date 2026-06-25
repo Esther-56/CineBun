@@ -2,7 +2,7 @@
 import { useState, useEffect,useMemo  } from 'react';
 import * as LucideIcons from 'lucide-react';
 import {
-  Plus, Check, X, Pencil, Trash2, ChevronUp, ChevronDown,
+  Plus, Check, X,  Trash2, ChevronUp, ChevronDown,
   AlertTriangle, Loader2, MessageSquare, Layers, Lock,
   EyeOff, ChevronRight, ChevronDown as ChevronDownIcon,
   Megaphone, HelpCircle, Star, Flag, BookOpen, Wrench,
@@ -17,7 +17,16 @@ import {
   ShoppingBag, Banknote, ArrowLeftRight, Package, Store,
   Lightbulb, LifeBuoy, GraduationCap, Newspaper, Search,
   Settings, Layout, FolderOpen, Eye, Unlock,
-  Rocket, Sparkles, Rainbow, Moon, Sun, Box, PenLine
+  Rocket, Sparkles, Rainbow, Moon, Sun, Box, PenLine,
+    Sword, Swords, Skull, Ghost, Wand2, Wand,
+  Dice1, Dice5, Joystick, Puzzle, ChessKnight, Target,
+  Headphones, Radio, Drum, Guitar, Piano, Disc,
+  Brush, Palette, Pen, Pencil, Eraser, Crop,
+  Code, Code2, Terminal, Database, Server, Cpu,
+  Coffee, Pizza, Apple, Beef, Wine, Beer,
+  Car, Plane, Ship, Train, Bike, Footprints,
+  Mountain, Trees, Flower2, Leaf, Cloud, Waves,
+  
 } from 'lucide-react';
 import { SubforumService, type ApiSubforumFull, type SubforumInput } from '@/app/services/subforum-service';
 import { getErrorMessage } from '@/app/admin/categories/lib/apiError';
@@ -44,6 +53,16 @@ const ICON_PRESETS = [
   'Lightbulb', 'LifeBuoy', 'GraduationCap', 'Newspaper', 'Search',
   'Settings', 'Layout', 'FolderOpen', 'Eye', 'Lock', 'Unlock',
   'Rocket', 'Sparkles', 'Rainbow', 'Moon', 'Sun', 'Box', 'PenLine',
+
+  // Batch 3
+  'Sword', 'Swords', 'Skull', 'Ghost', 'Wand2', 'Wand',
+  'Dice1', 'Dice5', 'Joystick', 'Puzzle', 'ChessKnight', 'Target',
+  'Headphones', 'Radio', 'Drum', 'Guitar', 'Piano', 'Disc',
+  'Brush', 'Palette', 'Pen', 'Pencil', 'Eraser', 'Crop',
+  'Code', 'Code2', 'Terminal', 'Database', 'Server', 'Cpu',
+  'Coffee', 'Pizza', 'Apple', 'Beef', 'Wine', 'Beer',
+  'Car', 'Plane', 'Ship', 'Train', 'Bike', 'Footprints',
+  'Mountain', 'Trees', 'Flower2', 'Leaf', 'Cloud', 'Waves',
 ];
 
 const PRESET_ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -72,6 +91,14 @@ const PRESET_ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = 
 
   // Misc
   Rocket, Sparkles, Rainbow, Moon, Sun, Box, PenLine,
+    Sword, Swords, Skull, Ghost, Wand2, Wand,
+  Dice1, Dice5, Joystick, Puzzle, ChessKnight, Target,
+  Headphones, Radio, Drum, Guitar, Piano, Disc,
+  Brush, Palette, Pen, Pencil, Eraser, Crop,
+  Code, Code2, Terminal, Database, Server, Cpu,
+  Coffee, Pizza, Apple, Beef, Wine, Beer,
+  Car, Plane, Ship, Train, Bike, Footprints,
+  Mountain, Trees, Flower2, Leaf, Cloud, Waves,
 };
 
 // Resolves any valid lucide-react PascalCase icon name (not just presets).
