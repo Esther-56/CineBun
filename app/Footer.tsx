@@ -3,10 +3,10 @@
 import Link from 'next/link';
 
 const links = [
-  { label: 'Contact us',       href: '/contact' },
-  { label: 'Terms and rules',  href: '/terms' },
-  { label: 'Request takedown', href: '/takedown' },
-  { label: 'Privacy policy',   href: '/policy' },
+  { label: 'Contact us',       href: 'https://t.me/+1PeVNvX5IXVhNzI0' },
+  { label: 'Terms and rules',  href: '/' },
+  { label: 'Request takedown', href: '/' },
+  { label: 'Privacy policy',   href: '/' },
 ];
 
 export default function Footer() {
@@ -26,7 +26,7 @@ export default function Footer() {
         <nav className="grid grid-cols-2 gap-x-2 gap-y-1 sm:flex sm:flex-wrap sm:gap-0">
           {links.map((l, i) => (
             <Link
-              key={l.href}
+              key={i}
               href={l.href}
               className={`text-[13px] text-(--text-secondary) hover:text-(--text-primary) transition-colors py-1 whitespace-nowrap
                 sm:px-3

@@ -490,19 +490,19 @@ export default function ThreadRow({ thread, accentColor, subforumId, onDeleted, 
             )}
             <Link
               href={{ pathname: `/f/${subforumId}/${thread._id}`, query: { page: 1 } }}
-              className="text-(--text-primary) hover:underline font-semibold text-base transition-colors truncate"
+              className="text-(--text-primary) hover:underline font-semibold text-lg transition-colors truncate"
               onClick={(e) => e.stopPropagation()}
             >
               {thread.title}
             </Link>
           </div>
-          <p className="text-(--text-secondary) text-[13px] truncate">
-            by <span className="text-(--text-primary) hover:underline cursor-pointer"
+          <p className="text-(--text-secondary) font-medium text-[13px] truncate">
+            by <span className="text-(--text-primary) font-semibold text-[15px] hover:underline cursor-pointer"
               onClick={() => router.push(`/u/${thread?.author?.username}`)}>
               {thread.author?.username}
             </span>
             {thread?.tags?.length > 0 && (
-              <><span className="mx-1.5 text-[13px]">·</span>{thread.tags.map(t => `#${t}`).join(' ')}</>
+              <><span className="mx-1.5 text-[13px] ">·</span>{thread.tags.map(t => `#${t}`).join(' ')}</>
             )}
           </p>
 

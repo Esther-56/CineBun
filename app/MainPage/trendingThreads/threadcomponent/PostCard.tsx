@@ -446,7 +446,7 @@ export default function PostCard({
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
                                   <div
-                  className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[16px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'}`}
+                  className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'}`}
                   dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
                 />
 

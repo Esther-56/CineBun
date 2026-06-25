@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Bold, Italic, Underline, Strikethrough,
   Link, Code, Quote,
   List, ListOrdered, AlignLeft, AlignCenter, AlignRight,
   Smile, Table, Minus, Eye, EyeOff,
-  Heading1, Heading2, Type, MonitorPlay,
+  Heading1, Heading2, Type, MonitorPlay, Baseline, CaseSensitive,
 } from "lucide-react";
 import { FormatState } from "../../types/useRichEditor";
 
@@ -16,6 +16,32 @@ const EMOJIS = [
   "😀","😂","😍","😎","🤔","😭","😡","🥳","👍","👎",
   "❤️","🔥","💯","🎉","✅","❌","⚠️","💡","📌","🚀",
   "🤣","😊","😏","🙄","😴","🤯","👀","💪","🙏","⭐",
+];
+
+// ─── Text colors ──────────────────────────────────────────────────────────────
+const TEXT_COLORS = [
+  { label: "Default",  value: "inherit" },
+  { label: "White",    value: "#ffffff" },
+  { label: "Red",      value: "#ff4d4d" },
+  { label: "Orange",   value: "#ff9500" },
+  { label: "Yellow",   value: "#ffd60a" },
+  { label: "Green",    value: "#30d158" },
+  { label: "Cyan",     value: "#5ac8fa" },
+  { label: "Blue",     value: "#4b8ef1" },
+  { label: "Purple",   value: "#bf5af2" },
+  { label: "Pink",     value: "#ff375f" },
+  { label: "Gray",     value: "#8a8d91" },
+  { label: "Dark gray",value: "#4a4b50" },
+];
+
+// ─── Font sizes ───────────────────────────────────────────────────────────────
+const FONT_SIZES = [
+  { label: "Small",   value: "12px" },
+  { label: "Normal",  value: "16px" },
+  { label: "Medium",  value: "20px" },
+  { label: "Large",   value: "24px" },
+  { label: "XL",      value: "32px" },
+  { label: "XXL",     value: "40px" },
 ];
 
 // ─── Utility: detect video embed src ─────────────────────────────────────────
@@ -123,69 +149,114 @@ export function RichEditorToolbar({
   onInsertLinkCard,
   onSaveSelection,
 }: RichEditorToolbarProps) {
-  const [showEmoji, setShowEmoji] = useState(false);
-  const [showLink, setShowLink]   = useState(false);
-  const [linkUrl, setLinkUrl]     = useState("");
-  const [linkText, setLinkText]   = useState("");
-
-  const [showEmbed, setShowEmbed]       = useState(false);
-  const [embedUrl, setEmbedUrl]         = useState("");
+  const [showEmoji, setShowEmoji]     = useState(false);
+  const [showLink, setShowLink]       = useState(false);
+  const [linkUrl, setLinkUrl]         = useState("");
+  const [linkText, setLinkText]       = useState("");
+  const [showEmbed, setShowEmbed]     = useState(false);
+  const [embedUrl, setEmbedUrl]       = useState("");
   const [embedLoading, setEmbedLoading] = useState(false);
-  const [embedError, setEmbedError]     = useState("");
+  const [embedError, setEmbedError]   = useState("");
+  const [showColor, setShowColor]     = useState(false);
+  const [showSize, setShowSize]       = useState(false);
+  const [activeColor, setActiveColor] = useState("inherit");
+  const colorInputRef                 = useRef<HTMLInputElement>(null);
 
-  const closeAll = () => { setShowEmoji(false); setShowLink(false); setShowEmbed(false); };
-
-const handleInsertLink = () => {
-  if (!linkUrl.trim()) return;
-  const safeUrl = `/leaving?site=${encodeURIComponent(linkUrl)}`;
-  onInsertLink(safeUrl, linkText || linkUrl);
-  setShowLink(false);
-  setLinkUrl("");
-  setLinkText("");
-};
-
-const handleInsertEmbed = async () => {
-  const url = embedUrl.trim();
-  if (!url) return;
-
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
-  } catch {
-    setEmbedError("Enter a valid http(s) URL.");
-    return;
-  }
-
-  const videoSrc = getVideoEmbedSrc(url);
-  if (videoSrc) {
-    // Videos go direct — no leaving page for embeds
-    onInsertVideoEmbed(videoSrc);
+  const closeAll = () => {
+    setShowEmoji(false);
+    setShowLink(false);
     setShowEmbed(false);
-    setEmbedUrl("");
+    setShowColor(false);
+    setShowSize(false);
+  };
+
+  const handleInsertLink = () => {
+    if (!linkUrl.trim()) return;
+    const safeUrl = `/leaving?site=${encodeURIComponent(linkUrl)}`;
+    onInsertLink(safeUrl, linkText || linkUrl);
+    setShowLink(false);
+    setLinkUrl("");
+    setLinkText("");
+  };
+
+  const handleInsertEmbed = async () => {
+    const url = embedUrl.trim();
+    if (!url) return;
+
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
+    } catch {
+      setEmbedError("Enter a valid http(s) URL.");
+      return;
+    }
+
+    const videoSrc = getVideoEmbedSrc(url);
+    if (videoSrc) {
+      onInsertVideoEmbed(videoSrc);
+      setShowEmbed(false);
+      setEmbedUrl("");
+      setEmbedError("");
+      return;
+    }
+
+    setEmbedLoading(true);
     setEmbedError("");
-    return;
-  }
+    try {
+      const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const json = await res.json();
+      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
 
-  setEmbedLoading(true);
-  setEmbedError("");
-  try {
-    const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-    const json = await res.json();
-    if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
+      onInsertLinkCard({
+        ...json.data,
+        url: `/leaving?site=${encodeURIComponent(url)}`,
+      });
 
-    onInsertLinkCard({
-      ...json.data,
-      url: `/leaving?site=${encodeURIComponent(url)}`,
-    });
+      setShowEmbed(false);
+      setEmbedUrl("");
+    } catch (e: any) {
+      setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
+    } finally {
+      setEmbedLoading(false);
+    }
+  };
 
-    setShowEmbed(false);
-    setEmbedUrl("");
-  } catch (e: any) {
-    setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
-  } finally {
-    setEmbedLoading(false);
-  }
-};
+  const handleColorSelect = (color: string) => {
+    setActiveColor(color);
+    if (color === "inherit") {
+      onExec("removeFormat");
+    } else {
+      onExec("foreColor", color);
+    }
+    setShowColor(false);
+  };
+
+  const handleCustomColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const color = e.target.value;
+    setActiveColor(color);
+    onExec("foreColor", color);
+  };
+
+  const handleFontSize = (size: string) => {
+    // execCommand fontSize only accepts 1–7, so we wrap selection in a span instead
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    if (range.collapsed) return;
+
+    const span = document.createElement("span");
+    span.style.fontSize = size;
+    try {
+      range.surroundContents(span);
+    } catch {
+      // surroundContents fails on partial selections across elements — fallback
+      const fragment = range.extractContents();
+      span.appendChild(fragment);
+      range.insertNode(span);
+    }
+    sel.removeAllRanges();
+    setShowSize(false);
+  };
 
   return (
     <>
@@ -202,6 +273,95 @@ const handleInsertEmbed = async () => {
         <ToolbarButton icon={<Italic size={13} />}        label="Italic"        active={formatState.italic}    onClick={() => onExec("italic")} />
         <ToolbarButton icon={<Underline size={13} />}     label="Underline"     active={formatState.underline} onClick={() => onExec("underline")} />
         <ToolbarButton icon={<Strikethrough size={13} />} label="Strikethrough" active={formatState.strike}    onClick={() => onExec("strikeThrough")} />
+        <ToolbarDivider />
+
+        {/* Text color popover */}
+        <div className="relative">
+          <button
+            type="button"
+            title="Text color"
+            onClick={() => { onSaveSelection(); setShowColor((v) => !v); setShowSize(false); setShowEmoji(false); setShowLink(false); setShowEmbed(false); }}
+            className={`w-7 h-7 flex flex-col items-center justify-center rounded transition-all duration-100 cursor-pointer
+              ${showColor ? "bg-(--accent)" : "hover:bg-(--bg-elevated)"} gap-0.5`}
+          >
+            <Baseline size={12} className={showColor ? "text-white" : "text-(--text-muted)"} />
+            {/* color swatch underline */}
+            <div
+              className="w-4 h-1 rounded-sm"
+              style={{ backgroundColor: activeColor === "inherit" ? "var(--text-primary)" : activeColor }}
+            />
+          </button>
+
+          {showColor && (
+            <Popover>
+              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Text Color</p>
+              <div className="grid grid-cols-6 gap-1 mb-2">
+                {TEXT_COLORS.map((c) => (
+                  <button
+                    key={c.value}
+                    type="button"
+                    title={c.label}
+                    onClick={() => handleColorSelect(c.value)}
+                    className={`w-6 h-6 rounded border-2 transition-all ${
+                      activeColor === c.value
+                        ? "border-(--accent) scale-110"
+                        : "border-transparent hover:border-(--border-medium)"
+                    }`}
+                    style={{
+                      backgroundColor: c.value === "inherit" ? "var(--text-primary)" : c.value,
+                    }}
+                  />
+                ))}
+              </div>
+              {/* Custom color picker */}
+              <div className="flex items-center gap-2 pt-2 min-w-40 border-t border-(--border-soft)">
+                <span className="text-[10px] text-(--text-muted)">Custom</span>
+                <input
+                  ref={colorInputRef}
+                  type="color"
+                  defaultValue="#ffffff"
+                  onChange={handleCustomColor}
+                  className="w-6 h-6 rounded cursor-pointer border-0 bg-transparent p-0"
+                />
+              </div>
+            </Popover>
+          )}
+        </div>
+
+        {/* Font size popover */}
+        <div className="relative">
+          <button
+            type="button"
+            title="Font size"
+            onClick={() => { onSaveSelection(); setShowSize((v) => !v); setShowColor(false); setShowEmoji(false); setShowLink(false); setShowEmbed(false); }}
+            className={`h-7 px-1.5 flex items-center gap-0.5 rounded transition-all duration-100 cursor-pointer
+              ${showSize ? "bg-(--accent) text-white" : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-elevated)"}`}
+          >
+            <CaseSensitive size={13} />
+          </button>
+
+          {showSize && (
+            <Popover>
+              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Font Size</p>
+              <div className="flex flex-col gap-0.5 min-w-28">
+                {FONT_SIZES.map((s) => (
+                  <button
+                    key={s.value}
+                    type="button"
+                    onClick={() => handleFontSize(s.value)}
+                    className="flex items-center justify-between px-2 py-1.5 rounded hover:bg-(--bg-page) text-(--text-primary) transition-colors"
+                  >
+                    <span style={{ fontSize: s.value === "40px" ? "14px" : s.value === "32px" ? "13px" : s.value }} className="leading-none">
+                      A
+                    </span>
+                    <span className="text-[11px] text-(--text-muted) ml-3">{s.label}</span>
+                  </button>
+                ))}
+              </div>
+            </Popover>
+          )}
+        </div>
+
         <ToolbarDivider />
 
         {/* Alignment */}
@@ -228,7 +388,7 @@ const handleInsertEmbed = async () => {
             icon={<Link size={13} />}
             label="Insert link"
             active={showLink}
-            onClick={() => { onSaveSelection(); setShowLink((v) => !v); setShowEmbed(false); setShowEmoji(false); }}
+            onClick={() => { onSaveSelection(); setShowLink((v) => !v); setShowEmbed(false); setShowEmoji(false); setShowColor(false); setShowSize(false); }}
           />
           {showLink && (
             <Popover>
@@ -261,7 +421,7 @@ const handleInsertEmbed = async () => {
             icon={<MonitorPlay size={13} />}
             label="Embed video or link"
             active={showEmbed}
-            onClick={() => { onSaveSelection(); setShowEmbed((v) => !v); setShowLink(false); setShowEmoji(false); }}
+            onClick={() => { onSaveSelection(); setShowEmbed((v) => !v); setShowLink(false); setShowEmoji(false); setShowColor(false); setShowSize(false); }}
           />
           {showEmbed && (
             <Popover>
@@ -301,7 +461,7 @@ const handleInsertEmbed = async () => {
             icon={<Smile size={13} />}
             label="Emoji"
             active={showEmoji}
-            onClick={() => { onSaveSelection(); setShowEmoji((v) => !v); setShowLink(false); setShowEmbed(false); }}
+            onClick={() => { onSaveSelection(); setShowEmoji((v) => !v); setShowLink(false); setShowEmbed(false); setShowColor(false); setShowSize(false); }}
           />
           {showEmoji && (
             <Popover>
@@ -332,7 +492,7 @@ const handleInsertEmbed = async () => {
       </div>
 
       {/* Click-outside overlay to close all popovers */}
-      {(showEmoji || showLink || showEmbed) && (
+      {(showEmoji || showLink || showEmbed || showColor || showSize) && (
         <div className="fixed inset-0 z-40" onClick={closeAll} />
       )}
     </>

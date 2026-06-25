@@ -6,6 +6,7 @@ import { ApiSubforum } from '@/app/services/category-service';
 import Avatar from './Avatar';
 import CategoryIcon from '@/app/Lucide';
 import UsernameEffect from '@/app/u/[username]/components/ui/UsernameEffect';
+import { truncate } from './Truncate';
 
 interface SubforumRowProps {
   subforum: ApiSubforum;
@@ -45,7 +46,7 @@ export default function SubforumRow({ subforum, accentColor }: SubforumRowProps)
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <span
-            className="text-(--text-primary) font-semibold text-base group-hover:text-(--accent) transition-colors truncate"
+            className="text-(--text-primary) font-semibold text-lg group-hover:text-(--accent) transition-colors truncate"
             style={{ '--accent': accentColor } as React.CSSProperties}
           >
             {subforum.name}
@@ -64,19 +65,19 @@ export default function SubforumRow({ subforum, accentColor }: SubforumRowProps)
             </span>
           )}
         </div>
-        <p className="text-(--text-secondary) font-semibold text-xs truncate">{subforum.description}</p>
+        <p className="text-(--text-secondary) font-medium text-sm truncate">{truncate(subforum.description, 100)}</p>
       </div>
 
       {/* Stats */}
       {subforum.leadsToThreads && (
         <div className="hidden font-semibold sm:flex items-center gap-6 shrink-0">
           <div className="text-center">
-            <div className="text-(--text-primary) text-base font-semibold">{formatNumber(subforum.threadCount)}</div>
-            <div className="text-(--text-secondary) text-[10px] uppercase tracking-wide">Threads</div>
+            <div className="text-(--text-primary) text-base font-medium">{formatNumber(subforum.threadCount)}</div>
+            <div className="text-(--text-secondary) font-medium text-sm uppercase tracking-wide">Threads</div>
           </div>
           <div className="text-center">
-            <div className="text-(--text-primary) text-base font-semibold">{formatNumber(subforum.postCount)}</div>
-            <div className="text-(--text-secondary) text-[10px] uppercase tracking-wide">Posts</div>
+            <div className="text-(--text-primary) text-base font-medium">{formatNumber(subforum.postCount)}</div>
+            <div className="text-(--text-secondary) font-medium text-sm uppercase tracking-wide">Posts</div>
           </div>
         </div>
       )}
