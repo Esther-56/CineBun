@@ -2,19 +2,27 @@
 'use client';
 import { useEffect } from 'react';
 import { store } from '@/app/store';
+import { UserService } from '../services/users';
 
 export default function StoreHydrator() {
 
+  const Get = async () =>{
+
+    try{
+     const data = await UserService.getMyProfile()
+     if(data.success){
+      Object.assign(store, data.data);
+     }
+    }
+    catch(err){
+        console.log(err)
+    }finally{
+      store.hydrated = true;
+    }
+  }
+
   useEffect(() => {
-    fetch('/api/users/me')
-      .then(res => res.json())
-      .then((user) => {
-        if (user.success) Object.assign(store, user.data);
-      })
-      .catch(() => {})
-      .finally(() => {
-        store.hydrated = true;
-      });
+    Get()
   }, []);
 
   return null;

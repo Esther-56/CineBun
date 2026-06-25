@@ -4,9 +4,7 @@ import { ProfileView } from './components/Pagination/ProfileView';
 import { EditProfile } from './components/Pagination/EditProfile';
 import { UserService } from '@/app/services/users';
 import { UserProfile, RecentThread } from './types';
-import { store } from '@/app/store';
-import { useSnapshot } from 'valtio';
-import { useRouter } from 'nextjs-toploader/app';
+
 
 interface ProfilePageProps {
   params: { username: string };
@@ -14,7 +12,7 @@ interface ProfilePageProps {
 
 export default function Body({ params }: ProfilePageProps) {
   const { username } = params;
-  const router = useRouter()
+
   const [editing, setEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -25,15 +23,12 @@ const [threadsPage, setThreadsPage] = useState(1);
 const [threadsTotalPages, setThreadsTotalPages] = useState(1);
 const [threadsLoading, setThreadsLoading] = useState(false);
 const [totalCount, setTotalCount] = useState(0)
-const snap = useSnapshot(store)
-const id = snap._id
+
+
 
 
 const loadProfile = useCallback(async () => {
-  if(!id) {
-    router.replace('/auth/login')
-    return
-  }
+
   setLoading(true);
   setError(null);
   try {

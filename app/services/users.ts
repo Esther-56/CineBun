@@ -7,7 +7,7 @@ const api = new ForumApi();
 
 export const UserService = {
   getMyProfile: () =>
-    api.get<{ data:  UserProfile  }>(`/users/me`),
+    api.get<{ data:  UserProfile , success: boolean  }>(`/users/me`),
 
   getProfile: (username: string) =>
     api.get<{ data: { profile: UserProfile } }>(`/users/${username}`),
