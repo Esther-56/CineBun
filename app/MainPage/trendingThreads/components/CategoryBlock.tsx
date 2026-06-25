@@ -8,7 +8,7 @@ interface CategoryBlockProps {
 
 export default function CategoryBlock({ category }: CategoryBlockProps) {
   return (
-    <div className="rounded-lg overflow-hidden border border-(--border-soft) bg-(--bg-surface)">
+    <div className="rounded-lg overflow-hidden border my-3 border-(--border-soft) bg-(--bg-surface)">
       {/* Category header */}
       <div
         className="flex items-center gap-3 px-4 py-2.5 border-b border-(--border-soft)"

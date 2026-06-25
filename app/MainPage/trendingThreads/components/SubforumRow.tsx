@@ -73,11 +73,11 @@ export default function SubforumRow({ subforum, accentColor }: SubforumRowProps)
         <div className="hidden font-semibold sm:flex items-center gap-6 shrink-0">
           <div className="text-center">
             <div className="text-(--text-primary) text-base font-medium">{formatNumber(subforum.threadCount)}</div>
-            <div className="text-(--text-secondary) font-medium text-sm uppercase tracking-wide">Threads</div>
+            <div className="text-(--text-secondary) font-medium text-xs uppercase tracking-wide">Threads</div>
           </div>
           <div className="text-center">
             <div className="text-(--text-primary) text-base font-medium">{formatNumber(subforum.postCount)}</div>
-            <div className="text-(--text-secondary) font-medium text-sm uppercase tracking-wide">Posts</div>
+            <div className="text-(--text-secondary) font-medium text-xs uppercase tracking-wide">Posts</div>
           </div>
         </div>
       )}
