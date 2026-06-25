@@ -217,7 +217,7 @@ export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
         </div>
 
         {/* Identity — mobile only */}
-        <div className="sm:hidden mb-3 px-1 overflow-hidden isolate">
+        <div className="hidden mb-3 px-1 overflow-hidden isolate">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-base font-bold text-(--text-primary) leading-none">
               <UsernameEffect name={profile.username} effect={profile.usernameEffect} />
