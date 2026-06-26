@@ -245,7 +245,7 @@ export function ProfileHeader({ profile, onEdit, total }: ProfileHeaderProps) {
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 gap-2 mb-4 sm:flex sm:gap-3 sm:mb-5 sm:overflow-x-auto sm:pb-1">
+        <div className=" hidden grid-cols-2 gap-2 mb-4 sm:flex sm:gap-3 sm:mb-5 sm:overflow-x-auto sm:pb-1">
           <StatPill icon={<FileText size={13} />} label="Posts" value={profile.postCount.toLocaleString()} />
           <StatPill icon={<MessageSquare size={13} />} label="Threads" value={total} />
           <StatPill icon={<ThumbsUp size={13} />} label="Reputation" value={profile.reputation} />
