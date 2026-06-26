@@ -89,7 +89,7 @@ export default function ForumHome() {
             ))}
           </div>
 
-          <ForumSidebar />
+          {/* <ForumSidebar /> */}
         </div>
       </main>
       <Footer />
