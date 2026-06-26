@@ -55,20 +55,20 @@ function ThreadSkeleton() {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5">
             {/* subforum badge */}
-            <div className="h-5 w-20 rounded bg-(--bg-elevated) pulse-safe" />
+            <div className="h-5 w-20 rounded bg-(--bg-elevated) sm:animate-pulse" />
             {/* title */}
-            <div className="h-5 w-40 rounded bg-(--bg-elevated) pulse-safe" />
+            <div className="h-5 w-40 rounded bg-(--bg-elevated) sm:animate-pulse" />
           </div>
           {/* excerpt lines */}
-          <div className="h-3.5 w-full rounded bg-(--bg-elevated) pulse-safe mb-1.5" />
-          <div className="h-3.5 w-3/4 rounded bg-(--bg-elevated) pulse-safe" />
+          <div className="h-3.5 w-full rounded bg-(--bg-elevated) sm:animate-pulse mb-1.5" />
+          <div className="h-3.5 w-3/4 rounded bg-(--bg-elevated) sm:animate-pulse" />
         </div>
         {/* chevron placeholder */}
-        <div className="h-4 w-4 rounded bg-(--bg-elevated)pulse-safe shrink-0 mt-1" />
+        <div className="h-4 w-4 rounded bg-(--bg-elevated) sm:animate-pulse shrink-0 mt-1" />
       </div>
       <div className="flex items-center gap-4 mt-3 pt-3 border-t border-(--border-soft)">
-        <div className="h-3.5 w-16 rounded bg-(--bg-elevated) pulse-safe" />
-        <div className="h-3.5 w-14 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3.5 w-16 rounded bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-3.5 w-14 rounded bg-(--bg-elevated) sm:animate-pulse" />
       </div>
     </div>
   );

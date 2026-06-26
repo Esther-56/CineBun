@@ -21,8 +21,8 @@ interface SubforumPageProps {
 function SubforumHeaderSkeleton() {
   return (
     <div className="mb-5">
-      <div className="h-5 w-48 rounded bg-(--bg-elevated) animate-pulse mb-2" />
-      <div className="h-3 w-72 rounded bg-(--bg-elevated) animate-pulse" />
+      <div className="h-5 w-48 rounded bg-(--bg-elevated) sm:animate-pulse mb-2" />
+      <div className="h-3 w-72 rounded bg-(--bg-elevated) sm:animate-pulse" />
     </div>
   );
 }
@@ -30,12 +30,12 @@ function SubforumHeaderSkeleton() {
 function RowSkeleton() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 border-b border-(--border-soft) last:border-b-0">
-      <div className="w-9 h-9 rounded-full bg-(--bg-elevated) animate-pulse shrink-0" />
+      <div className="w-9 h-9 rounded-full bg-(--bg-elevated) sm:animate-pulse shrink-0" />
       <div className="flex-1 min-w-0 flex flex-col gap-2">
-        <div className="h-3 w-1/2 rounded bg-(--bg-elevated) animate-pulse" />
-        <div className="h-2.5 w-1/3 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3 w-1/2 rounded bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-2.5 w-1/3 rounded bg-(--bg-elevated) sm:animate-pulse" />
       </div>
-      <div className="hidden sm:block w-14 h-2.5 rounded bg-(--bg-elevated) animate-pulse shrink-0" />
+      <div className="hidden sm:block w-14 h-2.5 rounded bg-(--bg-elevated) sm:animate-pulse shrink-0" />
     </div>
   );
 }

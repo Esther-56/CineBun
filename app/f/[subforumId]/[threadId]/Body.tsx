@@ -20,8 +20,8 @@ interface ThreadPageProps {
 function ThreadHeaderSkeleton() {
   return (
     <div className="mb-5">
-      <div className="h-5 w-2/3 rounded bg-(--bg-elevated) animate-pulse mb-2" />
-      <div className="h-3 w-40 rounded bg-(--bg-elevated) animate-pulse" />
+      <div className="h-5 w-2/3 rounded bg-(--bg-elevated) sm:animate-pulse mb-2" />
+      <div className="h-3 w-40 rounded bg-(--bg-elevated) sm:animate-pulse" />
     </div>
   );
 }
@@ -31,16 +31,16 @@ function PostSkeleton() {
     <div className="flex gap-3 px-4 py-4 border-b border-(--border-soft) last:border-b-0">
       {/* author column */}
       <div className="w-20 shrink-0 flex flex-col items-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-(--bg-elevated) animate-pulse" />
-        <div className="h-2.5 w-14 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="w-12 h-12 rounded-full bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-2.5 w-14 rounded bg-(--bg-elevated) sm:animate-pulse" />
       </div>
 
       {/* content column */}
       <div className="flex-1 min-w-0 flex flex-col gap-2.5">
-        <div className="h-2.5 w-24 rounded bg-(--bg-elevated) animate-pulse" />
-        <div className="h-3 w-full rounded bg-(--bg-elevated) animate-pulse" />
-        <div className="h-3 w-11/12 rounded bg-(--bg-elevated) animate-pulse" />
-        <div className="h-3 w-3/5 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-2.5 w-24 rounded bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-3 w-full rounded bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-3 w-11/12 rounded bg-(--bg-elevated) sm:animate-pulse" />
+        <div className="h-3 w-3/5 rounded bg-(--bg-elevated) sm:animate-pulse" />
       </div>
     </div>
   );

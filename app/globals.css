@@ -519,16 +519,7 @@ body {
 
 /* globals.css */
 
-@keyframes pulse-safe {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
 
-.pulse-safe {
-  animation: pulse-safe 2s ease-in-out infinite;
-  will-change: opacity;
-  transform: translateZ(0);  /* forces its own layer, isolates it from parent */
-}
 
 * {
   filter: none !important;
