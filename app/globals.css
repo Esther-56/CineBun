@@ -526,10 +526,6 @@ body {
   isolation: isolate;     /* add this */
 }
 
-* {
-  animation: none !important;
-  transition: none !important;
-}
 
 * {
   filter: none !important;
