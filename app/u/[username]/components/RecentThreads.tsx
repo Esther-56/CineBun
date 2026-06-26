@@ -29,7 +29,7 @@ export function RecentThreads({ threads, page, totalPages, loading, onPageChange
       </div>
     );
   }
-
+console.log(threads)
   return (
     <div>
       <div className="flex flex-col gap-3">
