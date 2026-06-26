@@ -29,7 +29,7 @@ export function RecentThreads({ threads, page, totalPages, loading, onPageChange
       </div>
     );
   }
-console.log(threads)
+
   return (
     <div>
       <div className="flex flex-col gap-3">
@@ -37,13 +37,13 @@ console.log(threads)
           <ThreadCard key={thread.id} thread={thread} />
         ))}
       </div>
-      {/* {totalPages > 1 && (
+      {totalPages > 1 && (
         <Pagination
           currentPage={page}
           totalPages={totalPages}
           onPageChange={onPageChange}
         />
-      )} */}
+      )}
     </div>
   );
 }
@@ -55,19 +55,19 @@ function ThreadSkeleton() {
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5">
             {/* subforum badge */}
-            <div className="h-5 w-20 rounded bg-(--bg-elevated) animate-pulse" />
+            <div className="h-5 w-20 rounded bg-(--bg-elevated) pulse-safe" />
             {/* title */}
-            <div className="h-5 w-40 rounded bg-(--bg-elevated) animate-pulse" />
+            <div className="h-5 w-40 rounded bg-(--bg-elevated) pulse-safe" />
           </div>
           {/* excerpt lines */}
-          <div className="h-3.5 w-full rounded bg-(--bg-elevated) animate-pulse mb-1.5" />
-          <div className="h-3.5 w-3/4 rounded bg-(--bg-elevated) animate-pulse" />
+          <div className="h-3.5 w-full rounded bg-(--bg-elevated) pulse-safe mb-1.5" />
+          <div className="h-3.5 w-3/4 rounded bg-(--bg-elevated) pulse-safe" />
         </div>
         {/* chevron placeholder */}
-        <div className="h-4 w-4 rounded bg-(--bg-elevated) animate-pulse shrink-0 mt-1" />
+        <div className="h-4 w-4 rounded bg-(--bg-elevated)pulse-safe shrink-0 mt-1" />
       </div>
       <div className="flex items-center gap-4 mt-3 pt-3 border-t border-(--border-soft)">
-        <div className="h-3.5 w-16 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3.5 w-16 rounded bg-(--bg-elevated) pulse-safe" />
         <div className="h-3.5 w-14 rounded bg-(--bg-elevated) animate-pulse" />
       </div>
     </div>

@@ -13,17 +13,17 @@ function CategoryBlockSkeleton() {
   return (
     <div className="rounded-lg border border-(--border-soft) bg-(--bg-surface) overflow-hidden">
       <div className="px-4 py-3 border-b border-(--border-soft)">
-        <div className="h-3.5 w-40 rounded bg-(--bg-elevated) animate-pulse" />
+        <div className="h-3.5 w-40 rounded bg-(--bg-elevated) pulse-safe" />
       </div>
       <div className="divide-y divide-(--border-soft)">
         {[0, 1, 2].map(i => (
           <div key={i} className="flex items-center gap-3 px-4 py-3">
-            <div className="w-9 h-9 rounded bg-(--bg-elevated) animate-pulse shrink-0" />
+            <div className="w-9 h-9 rounded bg-(--bg-elevated) pulse-safe shrink-0" />
             <div className="flex-1 min-w-0 flex flex-col gap-2">
-              <div className="h-3 w-1/3 rounded bg-(--bg-elevated) animate-pulse" />
-              <div className="h-2.5 w-2/3 rounded bg-(--bg-elevated) animate-pulse" />
+              <div className="h-3 w-1/3 rounded bg-(--bg-elevated) pulse-safe" />
+              <div className="h-2.5 w-2/3 rounded bg-(--bg-elevated) pulse-safe" />
             </div>
-            <div className="hidden sm:block w-12 h-2.5 rounded bg-(--bg-elevated) animate-pulse shrink-0" />
+            <div className="hidden sm:block w-12 h-2.5 rounded bg-(--bg-elevated) pulse-safe shrink-0" />
           </div>
         ))}
       </div>

@@ -16,11 +16,11 @@ import UsernameEffect from '@/app/u/[username]/components/ui/UsernameEffect';
 function NavbarAuthSkeleton() {
   return (
     <div className="ml-auto flex items-center gap-2">
-      <div className="w-8 h-8 rounded-md bg-(--bg-elevated) animate-pulse" />
-      <div className="w-8 h-8 rounded-md bg-(--bg-elevated) animate-pulse" />
+      <div className="w-8 h-8 rounded-md bg-(--bg-elevated) pulse-safe" />
+      <div className="w-8 h-8 rounded-md bg-(--bg-elevated) pulse-safe" />
       <div className="flex items-center gap-2 pl-2 ml-1 border-l border-(--border-soft)">
-        <div className="w-7 h-7 rounded-full bg-(--bg-elevated) animate-pulse" />
-        <div className="w-14 h-3 rounded bg-(--bg-elevated) animate-pulse hidden sm:block" />
+        <div className="w-7 h-7 rounded-full bg-(--bg-elevated) pulse-safe" />
+        <div className="w-14 h-3 rounded bg-(--bg-elevated) pulse-safe hidden sm:block" />
       </div>
     </div>
   );
