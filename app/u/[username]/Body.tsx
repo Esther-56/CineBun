@@ -54,10 +54,36 @@ const loadThreads = useCallback(async (page: number) => {
   }
 }, [username]);
 
-  useEffect(() => {
-    loadProfile();
-    loadThreads(1);
-  }, [loadProfile, loadThreads]);
+
+
+
+useEffect(() => {
+  let cancelled = false;
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [profileRes, threadsRes] = await Promise.all([
+        UserService.getProfile(username),
+        UserService.getThreads(username, 1),
+      ]);
+      if (cancelled) return;
+      setProfile(profileRes?.data?.profile);
+      setThreads(threadsRes.data.items);
+      setThreadsTotalPages(threadsRes.data.pages);
+      setTotalCount(threadsRes.data.total);
+      setThreadsPage(1);
+    } catch {
+      if (!cancelled) setError('Could not load this profile.');
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  };
+
+  load();
+  return () => { cancelled = true; };
+}, [username]);
 
 if (loading) {
     return (
