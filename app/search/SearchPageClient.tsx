@@ -368,7 +368,7 @@ export default function SearchPageClient() {
         {loading && (
           <div className="space-y-2">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-(--bg-surface) rounded-xl animate-pulse" />
+              <div key={i} className="h-20 bg-(--bg-surface) rounded-xl sm:animate-pulse" />
             ))}
           </div>
         )}
