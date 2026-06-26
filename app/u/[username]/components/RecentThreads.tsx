@@ -22,7 +22,7 @@ export function RecentThreads({ threads, page, totalPages, loading, onPageChange
 
   return (
     <div>
-      <div className={`sm:flex flex-col gap-3 transition-opacity hidden ${loading ? 'opacity-50' : ''}`}>
+      <div className={`flex flex-col gap-3  ${loading ? 'opacity-50' : ''}`}>
         {threads.map(thread => (
           <ThreadCard key={thread.id} thread={thread} />
         ))}
