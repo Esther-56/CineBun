@@ -1,4 +1,4 @@
-import { MapPin, Globe, Bird, GitFork, Clock } from 'lucide-react';
+import { MapPin, Globe, Clock } from 'lucide-react';
 import { UserProfile } from '../../types';
 import { formatTimeAgo } from '@/app/n/component/utils';
 interface AboutTabProps {

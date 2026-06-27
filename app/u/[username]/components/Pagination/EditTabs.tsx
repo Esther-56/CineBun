@@ -193,7 +193,7 @@ export function AppearanceTab({
   onAvatarEffectChange,
 }: AppearanceTabProps) {
   return (
-    <div className="space-y-4 hidden sm:block">
+    <div className="space-y-4">
 
       {/* ── Username Effect ── */}
       <SectionCard title="Username Effect">
