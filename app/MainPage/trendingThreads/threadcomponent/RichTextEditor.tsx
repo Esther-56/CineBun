@@ -112,7 +112,7 @@ export default function RichTextEditor({
           autoFocus={autoFocus}
           onInput={syncEmptyState}
           dangerouslySetInnerHTML={{ __html: initialContent }}
-          className="min-h-[110px] max-h-80 overflow-y-auto px-3.5 py-3 text-sm text-[#e4e6eb] outline-none rich-text-editor"
+          className="min-h-27.5 max-h-80 overflow-y-auto px-3.5 py-3 text-sm text-[#e4e6eb] outline-none rich-text-editor"
           suppressContentEditableWarning
         />
         {isEmpty && (

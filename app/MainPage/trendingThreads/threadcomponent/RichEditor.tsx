@@ -101,6 +101,7 @@ export function RichEditor({
 
         {/* Toolbar */}
         <RichEditorToolbar
+          editorRef={editor.editorRef}
           formatState={editor.formatState}
           preview={preview}
           onTogglePreview={() => setPreview((v) => !v)}

@@ -525,10 +525,33 @@ body {
   filter: none !important;
 }
 
-.rich-text-editor .editor-image{
-    display:block;
-    width:100%;
-    max-width:700px;
-    margin:12px auto;
-    border-radius:10px;
+/* Image grids inserted by the rich text editor — XenForo-style thumbnail row */
+.editor-image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.editor-image-grid .editor-image {
+  height: 220px;
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-page);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.editor-image-grid .editor-image:hover {
+  opacity: 0.9;
+}
+
+/* Smaller thumbnails on narrow screens so 2+ images can still sit side by side */
+@media (max-width: 600px) {
+  .editor-image-grid .editor-image {
+    height: 140px;
+  }
 }
