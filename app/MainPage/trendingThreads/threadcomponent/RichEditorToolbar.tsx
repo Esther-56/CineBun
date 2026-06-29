@@ -49,6 +49,8 @@ function getVideoEmbedSrc(url: string): string | null {
   try {
     const u    = new URL(url);
     const host = u.hostname.replace(/^www\./, "");
+
+    // YouTube
     if (host === "youtube.com" || host === "m.youtube.com") {
       const id =
         u.searchParams.get("v") ??
@@ -56,14 +58,25 @@ function getVideoEmbedSrc(url: string): string | null {
         u.pathname.match(/\/embed\/([a-zA-Z0-9_-]+)/)?.[1];
       if (id) return `https://www.youtube.com/embed/${id}`;
     }
+
+    // YouTube short link
     if (host === "youtu.be") {
       const id = u.pathname.slice(1);
       if (id) return `https://www.youtube.com/embed/${id}`;
     }
+
+    // Vimeo
     if (host === "vimeo.com") {
       const id = u.pathname.match(/\/(\d+)/)?.[1];
       if (id) return `https://player.vimeo.com/video/${id}`;
     }
+
+    // Generic embed links — any site that already provides an embed URL
+    // with /e/, /embed/, or /player/ in the path (e.g. https://playmogo.com/e/n9lnxhhp94ga)
+    if (/\/(e|embed|player)\/[a-zA-Z0-9_-]+/.test(u.pathname)) {
+      return url;
+    }
+
     return null;
   } catch {
     return null;
