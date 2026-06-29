@@ -490,7 +490,7 @@ export default function ThreadRow({ thread, accentColor, subforumId, onDeleted, 
             )}
             <Link
               href={{ pathname: `/f/${subforumId}/${thread._id}`, query: { page: 1 } }}
-              className="text-(--text-primary) hover:underline font-semibold text-lg transition-colors truncate"
+              className="text-(--text-primary) hover:underline font-semibold sm:text-lg transition-colors truncate"
               onClick={(e) => e.stopPropagation()}
             >
               {thread.title}
