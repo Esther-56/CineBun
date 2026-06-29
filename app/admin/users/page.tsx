@@ -47,6 +47,8 @@ export default function AdminUsersPage() {
     UserService.getMyProfile()
       .then((data: {data:  UserProfile }) => setMyPriority(data?.data?.role?.priority ?? -1))
       .catch(() => {});
+
+      
   }, []);
 
   // Fetch users — debounced on query/filter change

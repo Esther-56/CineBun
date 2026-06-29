@@ -29,4 +29,8 @@ export const BadgeService = {
 
   setDefault: (id: string) =>
     api.patch<{ badge: Badge }>(`/admin/badges/${id}`, { isDefault: true }),
+
+  getUser: (id: string)=>
+    api.get<{ data: { badges: Badge} }>(`/api/admin/users/${id}}/badges`),
+  
 };
