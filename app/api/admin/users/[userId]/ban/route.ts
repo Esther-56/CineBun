@@ -2,10 +2,8 @@
 
 import mongoosedb from "@/app/lib/db/db";
 import User from "@/app/lib/models/User";
-import Warning from "@/app/lib/models/WarningSchema";
-import Notification from "@/app/lib/models/Notification";
 import { withPermission } from "@/app/lib/middleware/auth";
-import { ok, created, fail, serverError } from "@/app/lib/response";
+import { ok,  fail, serverError } from "@/app/lib/response";
 
 export async function PATCH(req: Request, { params }: { params: Promise<{ userId: string }> }) {
   return withPermission(req, "canBanUser", async (mod) => {

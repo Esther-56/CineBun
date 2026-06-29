@@ -7,7 +7,7 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-   return withPermission(_req, "canAccessAdmin", async () => {
+   return withPermission(_req, "canManageRoles", async () => {
   try {
     await mongoosedb();
     const { id } = await params;
@@ -29,7 +29,7 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-   return withPermission(req, "canAccessAdmin", async () => {
+   return withPermission(req, "canManageRoles", async () => {
   try {
     await mongoosedb();
     const { id } = await params;
@@ -92,7 +92,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
 
-   return withPermission(_req, "canAccessAdmin", async () => {
+   return withPermission(_req, "canManageRoles", async () => {
   try {
     await mongoosedb();
     const { id } = await params;

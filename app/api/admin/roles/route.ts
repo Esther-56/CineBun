@@ -5,7 +5,7 @@ import { withPermission } from "@/app/lib/middleware/auth";
 
 // GET /api/admin/roles — list all roles, highest priority first
 export async function GET(req: Request) {
-   return withPermission(req, "canAccessAdmin", async () => {
+   return withPermission(req, "canManageRoles", async () => {
   try {
     await mongoosedb();
     const roles = await Role.find().sort({ priority: -1 });
@@ -18,7 +18,7 @@ export async function GET(req: Request) {
 
 // POST /api/admin/roles — create a new role
 export async function POST(req: NextRequest) {
-   return withPermission(req, "canAccessAdmin", async () => {
+   return withPermission(req, "canManageRoles", async () => {
   try {
     await mongoosedb();
     const body = await req.json();
