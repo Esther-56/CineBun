@@ -13,7 +13,7 @@ export async function GET() {
 
 // POST /api/media-resources
 export async function POST(req: NextRequest) {
-    return withPermission(req,"canAccessAdmin", async (user) => {
+    return withPermission(req,"canAccessAdmin", async () => {
     await mongoosedb();
     const body = await req.json();
     const resource = await MediaResource.create(body);
@@ -23,22 +23,3 @@ export async function POST(req: NextRequest) {
 
 
 
-// ── app/api/media-resources/[id]/route.ts ────────────────────────────────────
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-    return withPermission(req,"canAccessAdmin", async (user) => {
-    await mongoosedb();
-    const body = await req.json();
-    const resource = await MediaResource.findByIdAndUpdate(params.id, body, { new: true });
-    if (!resource) return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    return NextResponse.json({ resource });
-  });
-}
-
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  return withPermission(req,"canAccessAdmin", async (user) => {
-
-    await mongoosedb();
-    await MediaResource.findByIdAndDelete(params.id);
-    return NextResponse.json({ success: true });
-  });
-}

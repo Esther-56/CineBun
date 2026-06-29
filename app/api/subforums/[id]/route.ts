@@ -5,8 +5,7 @@ import mongoosedb from "@/app/lib/db/db";
 import Subforum from "@/app/lib/models/SubforumSchema";
 import Thread from "@/app/lib/models/ThreadSchema";
 import Post from "@/app/lib/models/Post";
-import User from "@/app/lib/models/User";
-import { withAuth, withPermission, withOptionalAuth } from "@/app/lib/middleware/auth";
+import {  withPermission, withOptionalAuth } from "@/app/lib/middleware/auth";
 import { ok,  fail, serverError, getPagination } from "@/app/lib/response";
 import "@/app/lib/models/CategorySchema"
 
