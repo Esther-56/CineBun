@@ -61,7 +61,7 @@ export function MessagesBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-(--bg-surface) border border-(--border-medium) rounded-lg shadow-2xl z-50 overflow-hidden"
+        <div className="absolute sm:right-0 top-full mt-2 w-40 sm:w-80 bg-(--bg-surface) border border-(--border-medium) rounded-lg shadow-2xl z-50 overflow-hidden"
           style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
           <div className="px-3 py-2.5 border-b border-(--border-soft)">
             <span className="text-sm font-bold text-(--text-primary)">Messages</span>
