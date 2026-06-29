@@ -107,12 +107,7 @@ function insertIntoEditor(
   const editor = editorRef.current;
   if (!editor) return;
 
-  // 1. Give focus back to the editor so execCommand targets it.
   editor.focus();
-
-  // 2. Restore the snapshot we took when the toolbar button was clicked.
-  //    This must happen synchronously — no setTimeout — so the range is
-  //    still live when we call getSelection() on the very next line.
   restoreSelection();
 
   const sel = window.getSelection();
@@ -124,16 +119,20 @@ function insertIntoEditor(
       const lastNode = frag.lastChild;
       range.insertNode(frag);
       if (lastNode) {
-        range.setStartAfter(lastNode);
+        const p = document.createElement("p");
+        p.innerHTML = "<br>";
+        lastNode.parentNode?.insertBefore(p, lastNode.nextSibling);
+        range.setStart(p, 0);
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
+        p.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
       return;
     }
   }
 
-  // Fallback: no usable selection, append at end.
+  // Fallback: no usable selection, append at end
   editor.innerHTML += html;
   editor.focus();
 }
@@ -349,7 +348,7 @@ export function RichEditorToolbar({
     const imgs = imageUrls
       .map((u) => `<img src="${u}" class="editor-image" alt="" />`)
       .join("");
-    const html = `<div class="editor-image-grid editor-image-grid--${cols}">${imgs}</div><p><br></p>`;
+    const html = `<div class="editor-image-grid editor-image-grid--${cols}">${imgs}</div>`;
 
     // insertIntoEditor handles focus + restoreSelection internally
     insertIntoEditor(editorRef, html, onRestoreSelection);
