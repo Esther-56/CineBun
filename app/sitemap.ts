@@ -1,21 +1,22 @@
 // app/sitemap.ts
 import type { MetadataRoute } from "next";
-import { SubforumService } from "@/app/services/subforum-service";
+import { CategoryService } from "@/app/services/category-service";
 
-const BASE_URL = "https://bunnyforum.site"; // 🔁 Replace with your actual domain
+const BASE_URL = "https://bunnyforum.site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // fetch top-level subforums
-  const subforumsRes = await SubforumService.get("root", 1).catch(() => null);
+  const categoriesRes = await CategoryService.list().catch(() => null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const subforums: any[] = subforumsRes?.data?.items ?? [];
+  const categories: any[] = Array.isArray(categoriesRes?.data) ? categoriesRes.data : [];
 
-  const subforumUrls: MetadataRoute.Sitemap = subforums.map((sf) => ({
-    url: `${BASE_URL}/f/${sf._id ?? sf.id}`,
-    lastModified: sf.updatedAt ? new Date(sf.updatedAt) : new Date(),
-    changeFrequency: "daily",
-    priority: 0.8,
-  }));
+  const subforumUrls: MetadataRoute.Sitemap = categories.flatMap((cat) =>
+    (cat.subforums ?? []).map((sf: any) => ({
+      url: `${BASE_URL}/f/${sf._id}`,
+      lastModified: sf.updatedAt ? new Date(sf.updatedAt) : new Date(),
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    }))
+  );
 
   return [
     {
@@ -25,8 +26,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     ...subforumUrls,
-    // NOTE: threads are too dynamic/numerous to statically list here.
-    // Google will crawl them naturally via internal links.
-    // If you want thread URLs too, loop subforums and fetch threads per subforum below.
   ];
 }
