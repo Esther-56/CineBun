@@ -145,7 +145,7 @@ function ToolbarDivider() {
 // regardless of how much content (staged images, long lists) they hold.
 function Popover({ children }: { children: React.ReactNode }) {
   return (
-    <div className="absolute top-8 left-0 z-50 max-h-[min(32vh,220px)] overflow-y-auto bg-(--bg-elevated) border border-(--border-medium) rounded-lg p-3 shadow-xl">
+    <div className="absolute top-8 left-0 right-auto sm:left-auto sm:right-0 z-50 max-h-[min(32vh,220px)] overflow-y-auto bg-(--bg-elevated) border border-(--border-medium) rounded-lg p-3 shadow-xl">
       {children}
     </div>
   );
