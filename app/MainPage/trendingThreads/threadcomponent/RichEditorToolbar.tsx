@@ -179,47 +179,67 @@ export function RichEditorToolbar({
     setLinkText("");
   };
 
+
+    function isImageUrl(url: string) {
+  return /\.(png|jpe?g|gif|webp|svg|bmp|avif)(\?.*)?$/i.test(url);
+}
+
   const handleInsertEmbed = async () => {
-    const url = embedUrl.trim();
-    if (!url) return;
+  const url = embedUrl.trim();
+  if (!url) return;
 
-    try {
-      const parsed = new URL(url);
-      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
-    } catch {
-      setEmbedError("Enter a valid http(s) URL.");
-      return;
-    }
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") throw new Error();
+  } catch {
+    setEmbedError("Enter a valid http(s) URL.");
+    return;
+  }
 
-    const videoSrc = getVideoEmbedSrc(url);
-    if (videoSrc) {
-      onInsertVideoEmbed(videoSrc);
-      setShowEmbed(false);
-      setEmbedUrl("");
-      setEmbedError("");
-      return;
-    }
-
-    setEmbedLoading(true);
+  // Video
+  const videoSrc = getVideoEmbedSrc(url);
+  if (videoSrc) {
+    onInsertVideoEmbed(videoSrc);
+    setShowEmbed(false);
+    setEmbedUrl("");
     setEmbedError("");
-    try {
-      const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-      const json = await res.json();
-      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
+    return;
+  }
 
-      onInsertLinkCard({
-        ...json.data,
-        url: `/leaving?site=${encodeURIComponent(url)}`,
-      });
+  // Direct image
+  if (isImageUrl(url)) {
+    document.execCommand(
+      "insertHTML",
+      false,
+      `<img src="${url}" class="editor-image" alt="" />`
+    );
+    setShowEmbed(false);
+    setEmbedUrl("");
+    setEmbedError("");
+    return;
+  }
 
-      setShowEmbed(false);
-      setEmbedUrl("");
-    } catch (e: any) {
-      setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
-    } finally {
-      setEmbedLoading(false);
-    }
-  };
+  // Link card
+  setEmbedLoading(true);
+  setEmbedError("");
+  try {
+    const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+    const json = await res.json();
+    if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
+
+    onInsertLinkCard({
+      ...json.data,
+      url: `/leaving?site=${encodeURIComponent(url)}`,
+    });
+
+    setShowEmbed(false);
+    setEmbedUrl("");
+  } catch (e: any) {
+    setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
+  } finally {
+    setEmbedLoading(false);
+  }
+};
 
   const handleColorSelect = (color: string) => {
     setActiveColor(color);
