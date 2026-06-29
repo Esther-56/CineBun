@@ -1,7 +1,7 @@
 // app/admin/components/BadgeForm.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Save, Check, Loader2 } from 'lucide-react';
 import IconPicker from './IconPicker';
 import type { Badge } from '@/app/services/badges';
@@ -33,6 +33,18 @@ export default function BadgeForm({ mode, initial, onSubmit, onCancel }: BadgeFo
     setLabel(val);
     if (mode === 'create') setKey(slugify(val)); // key only auto-derives on creation
   };
+
+  useEffect(() => {
+  if (!initial) return;
+
+  setLabel(initial.label);
+  setKey(initial.key);
+  setDescription(initial.description);
+  setIcon(initial.icon);
+  setColor(initial.color);
+  setTier(initial.tier as typeof TIERS[number]);
+}, [initial]);
+
 
   const handleSubmit = async () => {
     if (!label.trim() || !key.trim()) return;
