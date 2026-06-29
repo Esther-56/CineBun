@@ -346,9 +346,9 @@ export function RichEditorToolbar({
     if (imageUrls.length === 0) return;
     const cols = Math.min(imageUrls.length, 3);
     const imgs = imageUrls
-      .map((u) => `<img src="${u}" class="editor-image" alt="" />`)
+      .map((u) => `<img src="${u}" class="editor-image" alt="" style="display:block;margin:0;padding:0;vertical-align:top" />`)
       .join("");
-    const html = `<div class="editor-image-grid editor-image-grid--${cols}">${imgs}</div>`;
+    const html = `<div class="editor-image-grid editor-image-grid--${cols}" style="margin:0;padding:0;line-height:0;font-size:0">${imgs}</div>`;
 
     // insertIntoEditor handles focus + restoreSelection internally
     insertIntoEditor(editorRef, html, onRestoreSelection);
