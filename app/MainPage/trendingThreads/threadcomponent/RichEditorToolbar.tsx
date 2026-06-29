@@ -547,7 +547,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
                   value={embedUrl}
                   onChange={(e) => { setEmbedUrl(e.target.value); setEmbedError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddUrl()}
-                  className="flex-1 min-w-0 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-56"
+                  className="flex-1 min-w-0 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-32"
                 />
                 <button
                   type="button"
@@ -566,7 +566,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
               {/* Staged image grid preview — scrolls on its own so it can't
                   eat the whole popover even with many staged images */}
               {imageUrls.length > 0 && (
-                <div className="mb-3 max-h-48 overflow-y-auto pr-1">
+                <div className="mb-3 max-h-32 overflow-y-auto pr-1">
                   <p className="text-[10px] text-(--text-muted) mb-1.5 sticky top-0 bg-(--bg-elevated)">
                     {imageUrls.length} image{imageUrls.length > 1 ? "s" : ""} staged
                     — add more or insert
