@@ -1,5 +1,5 @@
 'use client';
-import { Shield, Users, Hash, Palette, Settings,Badge, Speaker } from 'lucide-react';
+import { Shield, Users, Hash, Palette, Medal,Badge, Speaker } from 'lucide-react';
 
 const SECTIONS = [
   { id: 'roles',      label: 'Roles & Permissions', icon: <Shield size={13} /> },
@@ -8,7 +8,7 @@ const SECTIONS = [
   { id: 'announcements',   label: 'Announcements',  icon: <Speaker size={13} /> },
   { id: 'themes',     label: 'Themes',              icon: <Palette size={13} /> },
   { id: 'badges',     label: 'Badges',              icon: <Badge size={13} /> },
-  { id: 'settings',   label: 'Settings',            icon: <Settings size={13} /> },
+  { id: 'media-resources',   label: 'Media',        icon: <Medal size={13} /> },
 ];
 
 export default function AdminSidebar({ activeSection, onNav }: {

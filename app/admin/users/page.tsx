@@ -89,6 +89,7 @@ export default function AdminUsersPage() {
       categories: '/admin/categories',
       badges: '/admin/badges',
       announcements: '/admin/announcements',
+      media:'/admin/media-resources'
     };
     if (routes[section]) { router.push(routes[section]); return; }
     setActiveSection(section);

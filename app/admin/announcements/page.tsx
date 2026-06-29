@@ -46,6 +46,11 @@ export default function AdminAnnouncementsPage() {
     if (section === 'roles') { router.push('/admin/roles'); return; }
     if (section === 'categories') { router.push('/admin/categories'); return; }
     if (section === 'badges') { router.push('/admin/badges'); return; }
+    if(section === 'media-resources')
+    {
+      router.push('/admin/media-resources')
+      return;
+    }
     setActiveSection(section);
   };
 

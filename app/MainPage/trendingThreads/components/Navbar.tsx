@@ -85,10 +85,10 @@ export default function Navbar() {
 
           {/* Desktop nav links */}
           <nav className="hidden md:flex items-center gap-0.5 ml-2">
-            {["WHAT'S NEW"].map(item => (
+            {["MEDIA"].map(item => (
               <a
                 key={item}
-                href="#"
+                href="/media"
                 className="px-3 py-1.5 text-sm font-medium text-(--text-primary) hover:text-(--text-primary) hover:bg-(--bg-elevated) rounded transition-colors"
               >
                 {item}

@@ -60,6 +60,11 @@ export default function AdminBadgesPage() {
       router.push('/admin/announcements');
       return;
     }
+     else if(section === 'media-resources')
+    {
+      router.push('/admin/media-resources')
+      return;
+    }
     setActiveSection(section);
   };
 

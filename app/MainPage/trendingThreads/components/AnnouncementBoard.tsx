@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { X, Megaphone, AlertTriangle, CheckCircle2, AlertCircle } from 'lucide-react';
 import { AnnouncementService, type Announcement } from '@/app/services/announcement';
+import { RichText } from '@/app/admin/announcements/components/AnnouncementForm'; // re-use the same parser
 
 const TYPE_STYLES: Record<Announcement['type'], { bg: string; border: string; text: string; Icon: typeof Megaphone }> = {
   info:    { bg: 'var(--bg-page)',    border: 'var(--accent)',  text: 'var(--accent)',  Icon: Megaphone },
@@ -49,7 +50,9 @@ export default function AnnouncementBoard() {
             style={{ backgroundColor: style.bg, borderColor: style.border }}
           >
             <style.Icon size={18} className="shrink-0 mt-0.5" style={{ color: style.text }} />
-            <p className="flex-1 font-medium  text-base text-(--text-secondary)">{a.message}</p>
+            <div className="flex-1 text-sm text-(--text-secondary) leading-relaxed">
+              <RichText text={a.message} />
+            </div>
             <button
               onClick={() => handleDismiss(a._id)}
               className="shrink-0 opacity-60 hover:opacity-100 transition-opacity"
