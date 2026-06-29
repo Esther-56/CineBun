@@ -5,7 +5,7 @@ import mongoosedb from "@/app/lib/db/db";
 import { MediaResource } from '@/app/lib/models/MediaResource';
 import { withPermission } from "../../../lib/middleware/auth"; // your existing auth middleware
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }>  }) {
     return withPermission(req,"canAccessAdmin", async () => {
     await mongoosedb();
     const { id } = await params;
@@ -16,7 +16,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }>  }) {
   return withPermission(req,"canAccessAdmin", async () => {
 
     await mongoosedb();
