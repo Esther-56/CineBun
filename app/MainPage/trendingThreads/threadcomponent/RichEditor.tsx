@@ -35,12 +35,11 @@ export function RichEditor({
 
   const editor = useRichEditor();
 
-  // Set initialContent exactly once via a ref callback.
-  // dangerouslySetInnerHTML on a contentEditable causes React to clobber the
-  // DOM on every re-render, which resets selection and prevents typing.
+  // Wire the hook's ref to the DOM node and set initial content exactly once.
+  // We deliberately avoid dangerouslySetInnerHTML on the editable div — React
+  // would clobber the DOM on every re-render, resetting the selection.
   const editorRefCallback = useCallback(
     (node: HTMLDivElement | null) => {
-      // Wire the editor hook's ref to the same DOM node
       (editor.editorRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
       if (!node) return;
       if (initialContent) {
@@ -48,9 +47,8 @@ export function RichEditor({
       }
       if (autoFocus) {
         node.focus();
-        // Move caret to end of content
         const range = document.createRange();
-        const sel = window.getSelection();
+        const sel   = window.getSelection();
         range.selectNodeContents(node);
         range.collapse(false);
         sel?.removeAllRanges();
@@ -58,7 +56,7 @@ export function RichEditor({
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [] // intentionally empty — run once on mount only
+    [], // intentionally empty — run once on mount only
   );
 
   const handleSubmit = async () => {
@@ -116,6 +114,7 @@ export function RichEditor({
           onInsertVideoEmbed={editor.insertVideoEmbed}
           onInsertLinkCard={editor.insertLinkCard}
           onSaveSelection={editor.saveSelection}
+          onRestoreSelection={editor.restoreSelection}
         />
 
         {/* Preview pane */}
@@ -128,19 +127,17 @@ export function RichEditor({
           }}
         />
 
-        {/* Editable area — uses ref callback, never dangerouslySetInnerHTML */}
+        {/* Editable area */}
         <div
           ref={editorRefCallback}
           contentEditable
           suppressContentEditableWarning
           onMouseUp={safeUpdate}
           onKeyUp={safeUpdate}
+          onClick={editor.handleEditorClick}
           onInput={() => {
             safeUpdate();
             editor.handleInput();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Escape") { /* toolbar handles its own state */ }
           }}
           data-placeholder={placeholder}
           className={`${height} ${preview ? "hidden" : "block"} px-4 py-3 text-(--text-primary) leading-relaxed focus:outline-none empty:before:content-[attr(data-placeholder)] empty:before:text-(--text-muted) empty:before:pointer-events-none prose-dark`}

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { FormatState } from "../../types/useRichEditor";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants ─────────────────────────────────────────────────────────────────
 
 const EMOJIS = [
   "😀","😂","😍","😎","🤔","😭","😡","🥳","👍","👎",
@@ -43,7 +43,7 @@ const FONT_SIZES = [
   { label: "XXL",    value: "40px" },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function getVideoEmbedSrc(url: string): string | null {
   try {
@@ -74,16 +74,46 @@ function isImageUrl(url: string) {
   return /\.(png|jpe?g|gif|webp|svg|bmp|avif)(\?.*)?$/i.test(url);
 }
 
-// Accepts a nullable ref (matches the MutableRefObject<HTMLDivElement | null>
-// that useRichEditor / RichEditor actually hand down).
+function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    let done = false;
+    const settle = (result: boolean) => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    const timer = setTimeout(() => settle(false), timeoutMs);
+    img.onload  = () => settle(true);
+    img.onerror = () => settle(false);
+    img.src = url;
+  });
+}
+
+/**
+ * Inserts HTML at the saved cursor position.
+ *
+ * The key fix: we call restoreSelection() HERE — synchronously — before
+ * reading window.getSelection(). By the time the user clicks "Insert" the
+ * editor has lost focus to the popover, so getSelection() would return an
+ * empty / wrong range without the restore step.
+ */
 function insertIntoEditor(
   editorRef: React.RefObject<HTMLDivElement | null>,
-  html: string
+  html: string,
+  restoreSelection: () => void,
 ) {
   const editor = editorRef.current;
   if (!editor) return;
 
+  // 1. Give focus back to the editor so execCommand targets it.
   editor.focus();
+
+  // 2. Restore the snapshot we took when the toolbar button was clicked.
+  //    This must happen synchronously — no setTimeout — so the range is
+  //    still live when we call getSelection() on the very next line.
+  restoreSelection();
 
   const sel = window.getSelection();
   if (sel && sel.rangeCount > 0) {
@@ -102,12 +132,13 @@ function insertIntoEditor(
       return;
     }
   }
-  // Fallback: append at end
+
+  // Fallback: no usable selection, append at end.
   editor.innerHTML += html;
   editor.focus();
 }
 
-// ─── Primitive components ─────────────────────────────────────────────────────
+// ─── Primitive components ──────────────────────────────────────────────────────
 
 interface ToolbarButtonProps {
   icon: React.ReactNode;
@@ -141,8 +172,6 @@ function ToolbarDivider() {
   return <div className="w-px h-5 bg-(--border-soft) mx-0.5 shrink-0" />;
 }
 
-// Capped + scrollable so popovers never grow past the editor / viewport,
-// regardless of how much content (staged images, long lists) they hold.
 function Popover({ children }: { children: React.ReactNode }) {
   return (
     <div className="absolute top-8 left-0 right-auto sm:left-auto sm:right-0 z-50 max-h-[min(32vh,220px)] overflow-y-auto bg-(--bg-elevated) border border-(--border-medium) rounded-lg p-3 shadow-xl">
@@ -151,7 +180,7 @@ function Popover({ children }: { children: React.ReactNode }) {
   );
 }
 
-// ─── Props ────────────────────────────────────────────────────────────────────
+// ─── Props ─────────────────────────────────────────────────────────────────────
 
 export interface RichEditorToolbarProps {
   editorRef: React.RefObject<HTMLDivElement | null>;
@@ -170,10 +199,13 @@ export interface RichEditorToolbarProps {
   onInsertLinkCard: (meta: {
     url: string; title: string; description: string; image: string; siteName: string;
   }) => void;
+  /** Save the editor's current selection before focus leaves (popover opens). */
   onSaveSelection: () => void;
+  /** Restore the saved selection so insertions land at the right position. */
+  onRestoreSelection: () => void;
 }
 
-// ─── Toolbar ──────────────────────────────────────────────────────────────────
+// ─── Toolbar ───────────────────────────────────────────────────────────────────
 
 export function RichEditorToolbar({
   editorRef,
@@ -191,6 +223,7 @@ export function RichEditorToolbar({
   onInsertVideoEmbed,
   onInsertLinkCard,
   onSaveSelection,
+  onRestoreSelection,
 }: RichEditorToolbarProps) {
   // Popovers
   const [showEmoji,  setShowEmoji]  = useState(false);
@@ -223,9 +256,15 @@ export function RichEditorToolbar({
     setShowSize(false);
   };
 
-  const openOnly = (open: () => void) => {
+  /**
+   * Snapshot the selection THEN open exactly one popover.
+   * The snapshot must happen before focus leaves the editor, so we call
+   * onSaveSelection first, then toggle the popover state.
+   */
+  const openOnly = (setter: (v: boolean) => void) => {
+    onSaveSelection(); // ← always first
     closeAll();
-    open();
+    setter(true);
   };
 
   // ── Link ───────────────────────────────────────────────────────────────────
@@ -238,28 +277,6 @@ export function RichEditorToolbar({
     setLinkUrl("");
     setLinkText("");
   };
-
-  // Probes whether a URL actually loads as an image — catches CDN/thumbnail
-// URLs that have no file extension (e.g. gstatic, imgix, presigned S3 links).
-function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
-  return new Promise((resolve) => {
-    const img = new window.Image();
-    let done = false;
-
-    const settle = (result: boolean) => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      resolve(result);
-    };
-
-    const timer = setTimeout(() => settle(false), timeoutMs);
-
-    img.onload = () => settle(true);
-    img.onerror = () => settle(false);
-    img.src = url;
-  });
-}
 
   // ── Embed / images ─────────────────────────────────────────────────────────
 
@@ -286,7 +303,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
       return;
     }
 
-    // Image — stage it
+    // Quick extension check
     if (isImageUrl(url)) {
       setImageUrls((prev) => [...prev, url]);
       setEmbedUrl("");
@@ -294,17 +311,19 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
       return;
     }
 
-    // Link preview card
+    // Probe unknown URLs — might be an image CDN link with no extension
     setEmbedLoading(true);
     setEmbedError("");
 
     const looksLikeImage = await probeIsImage(url);
-  if (looksLikeImage) {
-    setImageUrls((prev) => [...prev, url]);
-    setEmbedUrl("");
-    setEmbedLoading(false);
-    return;
-  }
+    if (looksLikeImage) {
+      setImageUrls((prev) => [...prev, url]);
+      setEmbedUrl("");
+      setEmbedLoading(false);
+      return;
+    }
+
+    // Link preview card
     try {
       const res  = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
       const json = await res.json();
@@ -326,14 +345,15 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
 
   const handleInsertImages = () => {
     if (imageUrls.length === 0) return;
-
-    const cols  = Math.min(imageUrls.length, 3);
-    const imgs  = imageUrls
+    const cols = Math.min(imageUrls.length, 3);
+    const imgs = imageUrls
       .map((u) => `<img src="${u}" class="editor-image" alt="" />`)
       .join("");
-    const html  = `<div class="editor-image-grid editor-image-grid--${cols}">${imgs}</div><p><br></p>`;
+    const html = `<div class="editor-image-grid editor-image-grid--${cols}">${imgs}</div><p><br></p>`;
 
-    insertIntoEditor(editorRef, html);
+    // insertIntoEditor handles focus + restoreSelection internally
+    insertIntoEditor(editorRef, html, onRestoreSelection);
+
     setImageUrls([]);
     setShowEmbed(false);
     setEmbedUrl("");
@@ -402,7 +422,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
           <button
             type="button"
             title="Text color"
-            onClick={() => { onSaveSelection(); openOnly(() => setShowColor(true)); }}
+            onClick={() => openOnly(setShowColor)}
             className={`w-7 h-7 flex flex-col items-center justify-center rounded gap-0.5 transition-all duration-100 cursor-pointer
               ${showColor ? "bg-(--accent)" : "hover:bg-(--bg-elevated)"}`}
           >
@@ -448,7 +468,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
           <button
             type="button"
             title="Font size"
-            onClick={() => { onSaveSelection(); openOnly(() => setShowSize(true)); }}
+            onClick={() => openOnly(setShowSize)}
             className={`h-7 px-1.5 flex items-center gap-0.5 rounded transition-all duration-100 cursor-pointer
               ${showSize ? "bg-(--accent) text-white" : "text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-elevated)"}`}
           >
@@ -500,7 +520,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
             icon={<Link size={13} />}
             label="Insert link"
             active={showLink}
-            onClick={() => { onSaveSelection(); openOnly(() => setShowLink(true)); }}
+            onClick={() => openOnly(setShowLink)}
           />
           {showLink && (
             <Popover>
@@ -533,13 +553,12 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
             icon={<MonitorPlay size={13} />}
             label="Embed image, video or link"
             active={showEmbed}
-            onClick={() => { onSaveSelection(); openOnly(() => setShowEmbed(true)); }}
+            onClick={() => openOnly(setShowEmbed)}
           />
           {showEmbed && (
             <Popover>
               <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Embed image, video or link</p>
 
-              {/* URL input row */}
               <div className="flex gap-1.5 mb-2">
                 <input
                   autoFocus
@@ -563,13 +582,10 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
                 <p className="text-[11px] text-(--danger) mb-2">{embedError}</p>
               )}
 
-              {/* Staged image grid preview — scrolls on its own so it can't
-                  eat the whole popover even with many staged images */}
               {imageUrls.length > 0 && (
                 <div className="mb-3 max-h-32 overflow-y-auto pr-1">
                   <p className="text-[10px] text-(--text-muted) mb-1.5 sticky top-0 bg-(--bg-elevated)">
-                    {imageUrls.length} image{imageUrls.length > 1 ? "s" : ""} staged
-                    — add more or insert
+                    {imageUrls.length} image{imageUrls.length > 1 ? "s" : ""} staged — add more or insert
                   </p>
                   <div
                     className="grid gap-1 rounded-lg overflow-hidden"
@@ -578,11 +594,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
                     {imageUrls.map((u, i) => (
                       <div key={i} className="relative group aspect-square bg-(--bg-page)">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={u}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={u} alt="" className="w-full h-full object-cover" />
                         <button
                           type="button"
                           onClick={() => removeImage(i)}
@@ -596,8 +608,6 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
                 </div>
               )}
 
-              {/* Action buttons — pinned to the bottom so they're always
-                  reachable regardless of how tall the content above gets */}
               <div className="flex gap-2 sticky bottom-0 bg-(--bg-elevated) pt-2 pb-1 -mb-1">
                 {imageUrls.length > 0 ? (
                   <button
@@ -639,7 +649,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
             icon={<Smile size={13} />}
             label="Emoji"
             active={showEmoji}
-            onClick={() => { onSaveSelection(); openOnly(() => setShowEmoji(true)); }}
+            onClick={() => openOnly(setShowEmoji)}
           />
           {showEmoji && (
             <Popover>
