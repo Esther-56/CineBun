@@ -547,7 +547,7 @@ function probeIsImage(url: string, timeoutMs = 6000): Promise<boolean> {
                   value={embedUrl}
                   onChange={(e) => { setEmbedUrl(e.target.value); setEmbedError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddUrl()}
-                  className="flex-1 min-w-0 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-32"
+                  className="flex-1 min-w-20 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:min-w-36"
                 />
                 <button
                   type="button"
