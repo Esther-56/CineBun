@@ -12,7 +12,7 @@ export async function GET(req: Request) {
   return  withPermission(req, "canAccessAdmin", async (user) => {
     try {
       await mongoosedb();
-      if (!user.role?.permissions?.canManageRoles) {
+      if (!user.role?.permissions?.canAccessAdmin) {
         return fail("You cannot view announcements.", 403);
       }
       
