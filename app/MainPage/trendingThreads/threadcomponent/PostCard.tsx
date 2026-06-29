@@ -14,6 +14,7 @@ import { formatTimeAgo } from '@/app/n/component/utils';
 import { store } from '@/app/store';
 import { useSnapshot } from 'valtio';
 import UsernameEffect from '@/app/u/[username]/components/ui/UsernameEffect';
+import { Lightbox } from "./Lightbox";
 
 export interface PostNode extends Post {
   children: PostNode[];
@@ -212,6 +213,22 @@ export default function PostCard({
   const flattenedReplies  = flattenChildren(children);
   const visibleChildren   = flattenedReplies.slice(0, visibleReplies);
   const hiddenCount       = flattenedReplies.length - visibleReplies;
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
+
+// Add click handler
+function handleContentClick(e: React.MouseEvent<HTMLDivElement>) {
+  const target = e.target as HTMLElement;
+  if (target.tagName !== "IMG") return;
+  const img = target as HTMLImageElement;
+  // Find all images in the same grid as the clicked image
+  const grid = img.closest(".editor-image-grid");
+  const imgs = grid
+    ? Array.from(grid.querySelectorAll("img")).map((i) => (i as HTMLImageElement).src)
+    : [img.src];
+  const index = imgs.indexOf(img.src);
+  setLightbox({ images: imgs, index: index === -1 ? 0 : index });
+}
+
 
   function handleReplyCreated(newPost: Post) {
     setChildren((prev) => [...prev, { ...newPost, children: [] }]);
@@ -446,9 +463,19 @@ export default function PostCard({
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
                                   <div
-                  className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'}`}
-                  dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
-                />
+                                      className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'} [&_.editor-image]:cursor-zoom-in`}
+                                      dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
+                                      onClick={handleContentClick}
+                                    />
+                                    {lightbox && (
+                                    <Lightbox
+                                      images={lightbox.images}
+                                      index={lightbox.index}
+                                      onClose={() => setLightbox(null)}
+                                      onNavigate={(i) => setLightbox((lb) => lb ? { ...lb, index: i } : null)}
+                                    />
+                                  )}
+                
 
                     {id&&<div>
                       {/* Reaction bubbles */}
