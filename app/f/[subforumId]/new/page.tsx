@@ -73,7 +73,6 @@ export default function NewThreadPage() {
   const handleSubmit = async (html: string) => {
     setError("");
     if (!title.trim()) { setError("Please enter a title."); return; }
-    if (!image.trim()) { setError("Please enter an image link."); return; }
     if (!subforumId)   { setError("No subforum selected."); return; }
 
     const { data, success } = await ThreadService.create({
@@ -274,9 +273,6 @@ export default function NewThreadPage() {
                 }}
                 className="flex-1 bg-transparent font-medium  text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none"
               />
-              <span className="text-[10px] uppercase tracking-wide text-(--accent) font-semibold shrink-0">
-                Required
-              </span>
             </div>
             {imageError && (
               <span className="flex items-center gap-1 text-[#ff6b6b] text-xs">

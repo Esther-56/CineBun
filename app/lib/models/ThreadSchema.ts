@@ -9,7 +9,7 @@ const Thread = new Schema({
   isPinned:     { type: Boolean, default: false },
   isLocked:     { type: Boolean, default: false },        // no new replies
   isDeleted:    { type: Boolean, default: false },
-  image:        {type: String, default: 'https://www.seriouseats.com/thmb/zbUmGgWw0URFMLyWudIwJC4v4QA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__recipes__images__2015__01__20150126-popcorn-flavors-2-daniel-gritzer-10-f5d82f71cd3b47a08463fde4760282cd.jpg'},        // soft delete
+  image:        {type: String, default: '/opengraph.png'},        // soft delete
   views:        { type: Number, default: 0 },
   replyCount:   { type: Number, default: 0 },
   prefix:       { type: String, default: null },          // e.g. "[GUIDE]", "[WIP]"

@@ -190,7 +190,6 @@ function EditModal({ thread, canModerate, onSaved, onCancel }: {
   const handleSaveClick = async () => {
     setSubmitError("");
     if (!title.trim()) { setSubmitError("Please enter a title."); return; }
-    if (!image.trim()) { setSubmitError("Please enter an image link."); return; }
     setSubmitLoading(true);
     try {
       const payload: ThreadUpdateBody = {
@@ -355,7 +354,6 @@ function EditModal({ thread, canModerate, onSaved, onCancel }: {
                   onChange={(e) => { setImage(e.target.value); setImageError(""); }}
                   className="flex-1 bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none"
                 />
-                <span className="text-[10px] uppercase tracking-wide text-(--accent) font-semibold shrink-0">Required</span>
               </div>
               {imageError && (
                 <span className="flex items-center gap-1 text-[#ff6b6b] text-xs">
@@ -472,11 +470,15 @@ export default function ThreadRow({ thread, accentColor, subforumId, onDeleted, 
         <div className="w-0.5 h-10 rounded-full shrink-0 mt-1"
           style={{ backgroundColor: accentColor, opacity: thread.isPinned ? 1 : 0.35 }} />
 
-        <div className="hidden sm:block shrink-0 cursor-pointer"
-          onClick={() => router.push(`/f/${subforumId}/${thread._id}?page=1`)}>
-          <img src={thread.image ?? ''} alt={thread.title ?? 'thread'}
-            className="object-cover rounded-md h-20 w-20" />
-        </div>
+      <div className="block shrink-0 cursor-pointer"
+      onClick={() => router.push(`/f/${subforumId}/${thread._id}?page=1`)}>
+        <img
+        src={thread.image || '/opengraph.png'}
+        alt={thread.title ?? 'thread'}
+        onError={(e) => { (e.target as HTMLImageElement).src = '/opengraph.png'; }}
+        className="object-cover rounded-md sm:h-20 sm:w-20 h-10 w-14"
+      />
+      </div>
 
         <div className="flex-1 min-w-0 font-semibold">
           <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
