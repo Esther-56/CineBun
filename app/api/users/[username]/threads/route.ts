@@ -28,7 +28,7 @@ export async function GET(
           .sort({ createdAt: -1 })
           .skip((page - 1) * limit)
           .limit(limit)
-          .populate("subforum", "name slug")
+          .populate("subforum", "name _id")
           .select("title subforum replyCount views createdAt")
           .lean(),
         Thread.countDocuments(filter),
@@ -67,6 +67,7 @@ function formatThread(thread: any, firstPostContent?: string) {
   return {
     id: thread._id.toString(),
     subforum: thread.subforum?.name ?? "General",
+    subforumId: thread.subforum?._id?.toString() ?? null,
     threadTitle: thread.title,
     excerpt: makeExcerpt(firstPostContent),
     replyCount: thread.replyCount ?? 0,

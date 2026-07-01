@@ -14,6 +14,7 @@ export interface RecentThread {
   replyCount: number;
   views: number;
   timeAgo: string;
+  subforumId: string;
 }
 
 
