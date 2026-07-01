@@ -89,8 +89,8 @@ export default function LoginPage() {
             <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-(--text-muted)" />
             <input
               id="login-id"
-              type="text"
-              autoComplete="username"
+              type="email"
+              autoComplete="email"
               placeholder="example@email.com"
               {...formik.getFieldProps('email')}
               className={`w-full bg-(--bg-input) border rounded-lg pl-10 pr-4 py-3 text-sm font-medium text-(--text-primary) placeholder:text-(--text-muted) outline-none transition-colors
