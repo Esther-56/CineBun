@@ -51,7 +51,7 @@ export function NotificationBell({ notifications, onRead, onReadAll }: Notificat
       </button>
 
       {open && (
-        <div className="absolute sm:right-0 top-full mt-2 sm:w-80 w-40 bg-(--bg-surface) border border-(--border-medium) rounded-lg shadow-2xl z-50 overflow-hidden"
+        <div className="absolute right-0 top-full mt-2 sm:w-80 w-56 bg-(--bg-surface) border border-(--border-medium) rounded-lg shadow-2xl z-50 overflow-hidden"
           style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.5)' }}>
           <div className="flex items-center justify-between px-3 py-2.5 border-b border-(--border-soft)">
             <div className="flex items-center gap-2">
