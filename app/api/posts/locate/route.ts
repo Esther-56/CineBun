@@ -3,7 +3,7 @@ import mongoosedb from "@/app/lib/db/db";
 import Post from "@/app/lib/models/Post";
 import { ok, fail, serverError } from "@/app/lib/response";
 
-const PAGE_SIZE = 3; // ⚠️ must match the PAGE_SIZE in your posts list route exactly
+const PAGE_SIZE = 10; // ⚠️ must match the PAGE_SIZE in your posts list route exactly
 
 export async function GET(req: Request) {
   try {
