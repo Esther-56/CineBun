@@ -78,7 +78,7 @@ function ThreadSkeleton() {
 function ThreadCard({ thread }: { thread: RecentThread }) {
   const router = useRouter();
   return (
-    <div className="bg-(--bg-surface) cursor-pointer rounded-lg border border-(--border-soft) p-4 hover:border-(--border-medium) transition-colors group cursor-pointer" onClick={() => router.push(`/f/${thread.subforumId}/${thread.id}`)}>
+    <div className="bg-(--bg-surface) cursor-pointer rounded-lg border border-(--border-soft) p-4 hover:border-(--border-medium) transition-colors group" onClick={() => router.push(`/f/${thread.subforumId}/${thread.id}`)}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 mb-1.5">
