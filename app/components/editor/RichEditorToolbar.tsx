@@ -43,7 +43,7 @@ const FONT_SIZES = [
   { label: "XXL",    value: "40px" },
 ];
 
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024; // 8MB, matches the API route
+const MAX_UPLOAD_BYTES = 1 * 1024 * 1024; // 8MB, matches the API route
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -261,7 +261,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
     try {
       for (const file of files) {
         if (file.size > MAX_UPLOAD_BYTES) {
-          setImageError(`${file.name} is over 8MB and was skipped.`);
+          setImageError(`${file.name} is over 1MB and was skipped.`);
           continue;
         }
         const form = new FormData();

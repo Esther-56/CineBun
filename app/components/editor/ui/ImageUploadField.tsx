@@ -14,7 +14,7 @@ interface ImageUploadFieldProps {
   hint?: string;
 }
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 1 * 1024 * 1024;
 
 /**
  * Pairs a plain URL text field with a "upload from device" button.
@@ -37,7 +37,7 @@ export function ImageUploadField({ label, value, onChange, field, icon, placehol
     if (!file) return;
 
     if (file.size > MAX_BYTES) {
-      setError("File too large. Max 8MB.");
+      setError("File too large. Max 1MB.");
       return;
     }
 

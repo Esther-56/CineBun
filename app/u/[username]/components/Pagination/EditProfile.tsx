@@ -6,7 +6,7 @@ import { UserService } from '@/app/services/users';
 import { UserProfile, EditTab } from '../../types';
 import { UsernameEffectKey } from '../ui/UsernameEffect';
 import { AvatarEffectKey } from '@/app/MainPage/trendingThreads/components/Avatar';
-import { useRouter } from 'nextjs-toploader/app';
+
 
 
 interface EditProfileProps {
@@ -40,7 +40,6 @@ const TABS: { id: EditTab; label: string; icon: React.ReactNode }[] = [
 ];
 
 export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
-  const router = useRouter()
   const [tab, setTab]       = useState<EditTab>('profile');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved]   = useState(false);
