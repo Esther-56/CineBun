@@ -1,6 +1,6 @@
 // services/posts.ts
 import ForumApi from '../ApiCore';
-
+import { Post } from '../MainPage/types/forum';
 const api = new ForumApi();
 
 export const PostService = {
@@ -27,4 +27,9 @@ export const PostService = {
 
   react: (postId: string, type: 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry') =>
     api.post(`/posts/${postId}/reactions`, { type }),
+  poll: (threadId: string, since: string) =>
+    api.get<{
+      success: boolean;
+      data: { posts: Post[]; newTopLevelCount: number; latestCreatedAt: string };
+    }>(`/threads/${threadId}/posts/poll`, { since }),
 };

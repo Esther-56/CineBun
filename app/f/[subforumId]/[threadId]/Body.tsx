@@ -193,7 +193,14 @@ export function Body({ params_cc }: ThreadPageProps) {
                 basePath={`/f/${subforumId}/${threadId}`}
               />
             )}
-            <ThreadView thread={thread} initialPosts={posts} highlightPostId={highlightPostId} />
+            <ThreadView
+              thread={thread}
+              initialPosts={posts}
+              highlightPostId={highlightPostId}
+              isLastPage={currentPage === totalPages}
+              onNewTopLevelPosts={(count) => setTotalPosts(t => t + count)}
+              lastPageHref={`/f/${subforumId}/${threadId}?page=${totalPages}`}
+            />
 
             {totalPages > 1 && (
               <Pagination
