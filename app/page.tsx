@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, PanelRightOpen } from 'lucide-react';
 import Navbar from './MainPage/trendingThreads/components/Navbar';
 import CategoryBlock from './MainPage/trendingThreads/components/CategoryBlock';
 import ForumSidebar from './MainPage/trendingThreads/components/ForumSidebar';
@@ -35,6 +35,7 @@ export default function ForumHome() {
   const [categories, setCategories] = useState<ApiCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -57,6 +58,15 @@ export default function ForumHome() {
   return (
     <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
       <Navbar />
+
+      {/* Mobile-only sidebar toggle, sits just below the navbar */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="lg:hidden w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-(--text-secondary) bg-(--bg-surface) border-b border-(--border-soft)"
+      >
+        <PanelRightOpen size={16} />
+        Forum Info
+      </button>
 
       <main className="max-w-8xl mx-auto px-4 py-3">
         <div className="flex items-center justify-between mb-2">
@@ -89,7 +99,7 @@ export default function ForumHome() {
             ))}
           </div>
 
-          <ForumSidebar />
+          <ForumSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         </div>
       </main>
       <Footer />
