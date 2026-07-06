@@ -8,7 +8,7 @@ import { uploadBuffer, deleteIfOwned } from "@/lib/cloudinary/helpers";
 // TODO: same note as /api/upload — wire this to your real session/auth helper.
 import { withAuth } from "@/app/lib/middleware/auth";
 
-const MAX_BYTES = 8 * 1024 * 1024; // 8MB
+const MAX_BYTES = 1 * 1024 * 1024; // 8MB
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
 const ALLOWED_FIELDS = new Set(["avatar", "banner"]);
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       return fail("field must be 'avatar' or 'banner'.");
     }
     if (!ALLOWED_TYPES.has(file.type)) return fail("Unsupported file type. Use PNG, JPEG, WEBP, or GIF.");
-    if (file.size > MAX_BYTES) return fail("File too large. Max 8MB.");
+    if (file.size > MAX_BYTES) return fail("File too large. Max 1MB.");
 
     await mongoosedb();
 
