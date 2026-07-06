@@ -83,7 +83,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="sm:scrollbar-thin sm:scrollbar-track-black sm:scrollbar-thumb-white select-none"
+      className="sm:scrollbar-thin sm:scrollbar-track-black sm:scrollbar-thumb-white select-none bg-(--bg-page)"
       suppressHydrationWarning
     >
       <head>
