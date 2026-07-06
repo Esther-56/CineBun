@@ -1,6 +1,6 @@
 "use server";
 
-
+import Post from "@/app/lib/models/Post";
 import mongoosedb from "@/app/lib/db/db";
 import Category from "@/app/lib/models/CategorySchema";
 import Subforum from "@/app/lib/models/SubforumSchema";
@@ -77,7 +77,7 @@ export async function GET() {
   try {
     await mongoosedb();
 
-    const [categories, allSubforums] = await Promise.all([
+    const [categories, allSubforums, postCounts] = await Promise.all([
       Category.find().sort({ order: 1 }).lean(),
       Subforum.find()
         .sort({ order: 1 })
@@ -85,14 +85,40 @@ export async function GET() {
         .populate("lastPost.thread", "title")
         .populate("allowedRoles",    "name color")
         .lean(),
+      // Live post count per subforum, joined through Thread since Post only stores `thread`
+      Post.aggregate([
+        { $match: { isDeleted: { $ne: true } } },
+        {
+          $lookup: {
+            from: "threads",
+            localField: "thread",
+            foreignField: "_id",
+            as: "threadInfo",
+          },
+        },
+        { $unwind: "$threadInfo" },
+        {
+          $group: {
+            _id: "$threadInfo.subforum",
+            count: { $sum: 1 },
+          },
+        },
+      ]),
     ]);
 
-   
+    // Map: subforumId (string) -> live post count
+    const postCountMap = new Map<string, number>(
+      postCounts.map((p) => [p._id.toString(), p.count])
+    );
 
     const result = categories.map((cat) => {
       const catSubs = allSubforums
         .filter((s) => s.category.toString() === cat._id.toString())
-        .map((s) => ({ ...s, lastPost: shapeLastPost(s.lastPost) }));
+        .map((s) => ({
+          ...s,
+          lastPost: shapeLastPost(s.lastPost),
+          postCount: postCountMap.get(s._id.toString()) ?? 0,
+        }));
 
       const tree = buildSubforumTree(catSubs, null);
       return { ...cat, subforums: tree };
