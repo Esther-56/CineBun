@@ -6,7 +6,7 @@ import Link from 'next/link';
 import {
   Pin, Lock, MessageSquare, Eye, Pencil, Trash2,
   AlertTriangle, X, ChevronDown, ImageIcon as ImageLucide,
-  AlertCircle, Loader2, Save, LockOpen,
+  AlertCircle, Loader2, Save, LockOpen, Upload,
 } from 'lucide-react';
 import Avatar from '../components/Avatar';
 import { formatNumber, prefixStyles } from '../../Interfaces/lib/utils';
@@ -34,6 +34,7 @@ interface ThreadRowProps {
 }
 
 const MAX_TAGS = 5;
+const MAX_IMAGE_BYTES = 1 * 1024 * 1024; // 1MB, matches /api/upload server-side cap
 
 const PREFIXES = [
   { value: "Discussion", color: "#1877f2", desc: "General conversation" },
@@ -132,10 +133,12 @@ function EditModal({ thread, canModerate, onSaved, onCancel }: {
   const [tagInput, setTagInput]     = useState("");
   const [image, setImage]           = useState(thread.image ?? "");
   const [imageError, setImageError] = useState("");
+  const [uploading, setUploading]   = useState(false);
   const [prefixOpen, setPrefixOpen] = useState(false);
   const [isPinned, setIsPinned]     = useState(thread.isPinned ?? false);
   const [isLocked, setIsLocked]     = useState(thread.isLocked ?? false);
-  const prefixRef = useRef<HTMLDivElement>(null);
+  const prefixRef    = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -185,6 +188,30 @@ function EditModal({ thread, canModerate, onSaved, onCancel }: {
   const handleTagKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(tagInput); }
     else if (e.key === "Backspace" && !tagInput && tags.length) removeTag(tags[tags.length - 1]);
+  };
+
+  const handleFilePick = () => fileInputRef.current?.click();
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file later
+    if (!file) return;
+
+    if (file.size > MAX_IMAGE_BYTES) {
+      setImageError("File too large. Max 1MB.");
+      return;
+    }
+
+    setImageError("");
+    setUploading(true);
+    try {
+      const url = await ThreadService.uploadImage(file);
+      setImage(url);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSaveClick = async () => {
@@ -340,21 +367,41 @@ function EditModal({ thread, canModerate, onSaved, onCancel }: {
               <span className="text-[11px] text-(--text-muted)">{tags.length}/{MAX_TAGS} tags · press Enter or comma to add</span>
             </div>
 
-            {/* Image */}
+            {/* Image — paste a link, or upload from device */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[11px] uppercase tracking-wider text-(--text-muted) font-semibold">Image</label>
-              <div className={`flex items-center gap-2 h-10 px-3 bg-(--bg-surface) border rounded-lg focus-within:border-(--accent) transition-colors ${
-                imageError ? 'border-(--danger)' : 'border-(--border-soft)'
-              }`}>
-                <ImageLucide size={14} className="text-(--text-secondary) shrink-0" />
+              <div className="flex items-center gap-2">
+                <div className={`flex-1 flex items-center gap-2 h-10 px-3 bg-(--bg-surface) border rounded-lg focus-within:border-(--accent) transition-colors ${
+                  imageError ? 'border-(--danger)' : 'border-(--border-soft)'
+                }`}>
+                  <ImageLucide size={14} className="text-(--text-secondary) shrink-0" />
+                  <input
+                    type="url"
+                    placeholder="Image URL…"
+                    value={image}
+                    onChange={(e) => { setImage(e.target.value); setImageError(""); }}
+                    className="flex-1 bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none"
+                  />
+                </div>
+
                 <input
-                  type="url"
-                  placeholder="Image URL…"
-                  value={image}
-                  onChange={(e) => { setImage(e.target.value); setImageError(""); }}
-                  className="flex-1 bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-secondary) focus:outline-none"
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="hidden"
+                  onChange={handleFileSelected}
                 />
+                <button
+                  type="button"
+                  onClick={handleFilePick}
+                  disabled={uploading}
+                  className="shrink-0 flex items-center gap-1.5 h-10 px-3 bg-(--bg-elevated) hover:bg-(--border-soft) disabled:opacity-50 text-(--text-primary) text-xs font-medium rounded-lg transition-colors"
+                >
+                  {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                  {uploading ? "Uploading…" : "Upload"}
+                </button>
               </div>
+
               {imageError && (
                 <span className="flex items-center gap-1 text-[#ff6b6b] text-xs">
                   <AlertCircle size={12} /> {imageError}

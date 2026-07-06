@@ -66,4 +66,25 @@ export const ThreadService = {
 
   pin: (threadId: string | undefined) =>
     api.patch<ApiResponse<Thread>>(`/threads/${threadId}/pin`),
+
+  /**
+   * Uploads a File to Cloudinary via /api/upload (the general editor/thread
+   * upload route — 1MB cap, PNG/JPEG/WEBP/GIF only, enforced server-side).
+   * Unlike UserService.uploadImage, this route does NOT delete any previous
+   * image first — it's a plain "upload and get a url back" endpoint, since a
+   * thread's old image isn't tied to a single Cloudinary asset the way a
+   * user's avatar/banner is. Returns the new url; caller decides what to do
+   * with it (here: just fill the `image` field, same as pasting a link).
+   */
+  uploadImage: async (file: File): Promise<string> => {
+    const form = new FormData();
+    form.append('file', file);
+
+    const res = await fetch('/api/upload', { method: 'POST', body: form });
+    const json = await res.json();
+    if (!res.ok || !json?.data?.url) {
+      throw new Error(json?.error ?? "Couldn't upload image.");
+    }
+    return json.data.url as string;
+  },
 };

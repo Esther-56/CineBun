@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
-import {  useSearchParams } from "next/navigation";
-import { X, Image as ImageIcon, AlertCircle, ChevronDown } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { X, Image as ImageIcon, AlertCircle, ChevronDown, Loader2, Upload } from "lucide-react";
 import { ThreadService } from "@/app/services/threads";
 import { RichEditor } from "@/app/MainPage/trendingThreads/threadcomponent/RichEditor";
 import { useRouter } from "nextjs-toploader/app";
+
 const MAX_TAGS = 5;
+const MAX_IMAGE_BYTES = 1 * 1024 * 1024; // 1MB, matches /api/upload server-side cap
 
 const PREFIXES = [
   { value: "Discussion", color: "#1877f2", desc: "General conversation" },
@@ -31,9 +33,11 @@ export default function NewThreadPage() {
   const [tagInput, setTagInput]     = useState("");
   const [image, setImage]           = useState("");
   const [imageError, setImageError] = useState("");
+  const [uploading, setUploading]   = useState(false);
   const [error, setError]           = useState("");
 
-  const prefixRef = useRef<HTMLDivElement>(null);
+  const prefixRef     = useRef<HTMLDivElement>(null);
+  const fileInputRef  = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -70,6 +74,30 @@ export default function NewThreadPage() {
     }
   };
 
+  const handleFilePick = () => fileInputRef.current?.click();
+
+  const handleFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking the same file later
+    if (!file) return;
+
+    if (file.size > MAX_IMAGE_BYTES) {
+      setImageError("File too large. Max 1MB.");
+      return;
+    }
+
+    setImageError("");
+    setUploading(true);
+    try {
+      const url = await ThreadService.uploadImage(file);
+      setImage(url);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Upload failed. Try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (html: string) => {
     setError("");
     if (!title.trim()) { setError("Please enter a title."); return; }
@@ -99,7 +127,7 @@ export default function NewThreadPage() {
       <div className="max-w-4xl mx-auto px-4 py-6">
 
         {/* Breadcrumb */}
-        <div className="flex font-medium  items-center gap-2 text-sm text-(--text-muted) mb-5">
+        <div className="flex font-medium items-center gap-2 text-sm text-(--text-muted) mb-5">
           <button onClick={() => router.back()} className="hover:text-(--text-primary) transition-colors">
             Forums
           </button>
@@ -128,11 +156,11 @@ export default function NewThreadPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={200}
-            className="w-full font-medium  h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) transition-colors"
+            className="w-full font-medium h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) transition-colors"
           />
 
           {/* Prefix dropdown */}
-          <div className="relative font-medium " ref={prefixRef}>
+          <div className="relative font-medium" ref={prefixRef}>
             <button
               type="button"
               onClick={() => setPrefixOpen((o) => !o)}
@@ -163,7 +191,7 @@ export default function NewThreadPage() {
                     e.stopPropagation();
                     setPrefix("");
                   }}
-                  className="flex items-center font-medium  justify-center w-4 h-4 rounded hover:bg-white/10 text-(--text-muted) hover:text-(--text-primary) transition-colors"
+                  className="flex items-center font-medium justify-center w-4 h-4 rounded hover:bg-white/10 text-(--text-muted) hover:text-(--text-primary) transition-colors"
                 >
                   <X size={10} />
                 </span>
@@ -181,7 +209,7 @@ export default function NewThreadPage() {
                 className="absolute top-[calc(100%+4px)] left-0 right-0 z-50 bg-(--bg-elevated) border border-(--border-medium) rounded-lg overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
                 role="listbox"
               >
-                <div className="px-3 pt-2  pb-1 text-[11px] uppercase tracking-wider text-(--text-muted) font-medium">
+                <div className="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wider text-(--text-muted) font-medium">
                   Thread prefix
                 </div>
 
@@ -207,7 +235,7 @@ export default function NewThreadPage() {
                     role="option"
                     aria-selected={prefix === p.value}
                     onClick={() => { setPrefix(p.value); setPrefixOpen(false); }}
-                    className={`flex items-center gap-2.5 font-medium  w-full px-3 py-2.5 text-sm transition-colors ${
+                    className={`flex items-center gap-2.5 font-medium w-full px-3 py-2.5 text-sm transition-colors ${
                       prefix === p.value
                         ? "bg-(--accent-subtle) text-(--accent)"
                         : "text-(--text-primary) hover:bg-white/5"
@@ -227,7 +255,7 @@ export default function NewThreadPage() {
 
           {/* Tags */}
           <div className="flex flex-col gap-1">
-            <div className="flex flex-wrap font-medium  items-center gap-1.5 min-h-10 px-3 py-1.5 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
+            <div className="flex flex-wrap font-medium items-center gap-1.5 min-h-10 px-3 py-1.5 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
               {tags.map((tag) => (
                 <span
                   key={tag}
@@ -251,7 +279,7 @@ export default function NewThreadPage() {
                 onBlur={() => addTag(tagInput)}
                 placeholder={tags.length ? "" : "Add tags… (press Enter)"}
                 disabled={tags.length >= MAX_TAGS}
-                className="flex-1 min-w-25 font-medium  bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none disabled:cursor-not-allowed"
+                className="flex-1 min-w-25 font-medium bg-transparent text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none disabled:cursor-not-allowed"
               />
             </div>
             <span className="text-[11px] text-(--text-muted)">
@@ -259,21 +287,41 @@ export default function NewThreadPage() {
             </span>
           </div>
 
-          {/* Image link — compulsory */}
-          <div className="flex font-medium  flex-col gap-1">
-            <div className="flex items-center gap-2 h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
-              <ImageIcon size={14} className="text-(--text-muted) shrink-0" />
+          {/* Image — paste a link, or upload from device */}
+          <div className="flex font-medium flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 flex items-center gap-2 h-10 px-3 bg-(--bg-surface) border border-(--border-soft) rounded-lg focus-within:border-(--accent) transition-colors">
+                <ImageIcon size={14} className="text-(--text-muted) shrink-0" />
+                <input
+                  type="url"
+                  placeholder="Image link…"
+                  value={image}
+                  onChange={(e) => {
+                    setImage(e.target.value);
+                    if (imageError) setImageError("");
+                  }}
+                  className="flex-1 bg-transparent font-medium text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none"
+                />
+              </div>
+
               <input
-                type="url"
-                placeholder="Image link…"
-                value={image}
-                onChange={(e) => {
-                  setImage(e.target.value);
-                  if (imageError) setImageError("");
-                }}
-                className="flex-1 bg-transparent font-medium  text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none"
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                className="hidden"
+                onChange={handleFileSelected}
               />
+              <button
+                type="button"
+                onClick={handleFilePick}
+                disabled={uploading}
+                className="shrink-0 flex items-center gap-1.5 h-10 px-3 bg-(--bg-elevated) hover:bg-(--border-soft) disabled:opacity-50 text-(--text-primary) text-xs font-medium rounded-lg transition-colors"
+              >
+                {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                {uploading ? "Uploading…" : "Upload"}
+              </button>
             </div>
+
             {imageError && (
               <span className="flex items-center gap-1 text-[#ff6b6b] text-xs">
                 <AlertCircle size={12} />
