@@ -79,7 +79,7 @@ export default function Navbar() {
           <Link href="/" className="flex text-(--text-primary) hover:text-(--accent) items-center gap-2 shrink-0">
             <img src="/logo.png" className="w-10" alt="BUNNYFORUM" />
             <span className="font-semibold text-sm tracking-tight hidden sm:block">
-              BUNNY FORUM
+              C-BUNNY
             </span>
           </Link>
 

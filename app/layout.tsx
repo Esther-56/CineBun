@@ -5,51 +5,53 @@ import ThemeInit from '@/app/components/ThemeInit';
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://bunnyforum.site"), // 🔁 Replace with your actual domain
+  metadataBase: new URL("https://cbunny.site"), // 🔁 Replace with your actual domain
   title: {
-    default: "Bunny Forum – Share Videos & Links",
-    template: "%s | Bunny Forum",
+    default: "C-Bunny Forum – K-Pop, K-Drama & Asian Entertainment Community",
+    template: "%s | C-Bunny Forum",
   },
   description:
-    "Bunny Forum is your go-to community for sharing videos, links, and discovering trending content. Join the conversation today.",
+    "C-Bunny Forum is a community for fans of K-pop, K-drama, and Asian entertainment to share videos, links, news, and discussions. Join the conversation today.",
   keywords: [
-    "bunny forum",
-    "video sharing",
-    "link sharing",
-    "community forum",
-    "trending videos",
-    "content sharing platform",
+    "kpop forum",
+    "kdrama forum",
+    "asian entertainment community",
+    "kpop community",
+    "kdrama discussion",
+    "korean drama fans",
+    "kpop news",
+    "asian pop culture forum",
   ],
-  authors: [{ name: "Bunny Forum" }],
-  creator: "Bunny Forum",
-  publisher: "Bunny Forum",
-  applicationName: "Bunny Forum",
+  authors: [{ name: "C-Bunny Forum" }],
+  creator: "C-Bunny Forum",
+  publisher: "C-Bunny Forum",
+  applicationName: "C-Bunny Forum",
 
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://bunnyforum.site", // 🔁 Replace with your actual domain
-    siteName: "Bunny Forum",
-    title: "Bunny Forum – Share Videos & Links",
+    url: "https://cbunny.site", // 🔁 Replace with your actual domain
+    siteName: "C-Bunny Forum",
+    title: "C-Bunny Forum – K-Pop, K-Drama & Asian Entertainment Community",
     description:
-      "Discover and share videos, links, and trending content on Bunny Forum. A community built for content lovers.",
+      "Join C-Bunny Forum to discuss K-pop, K-drama, and Asian entertainment, share videos and links, and connect with fellow fans.",
     images: [
       {
-        url: "/opengraph-image.png", // your existing OG image in /public
+        url: "/opengraph-image.png",
         width: 1200,
         height: 630,
-        alt: "Bunny Forum – Share Videos & Links",
+        alt: "C-Bunny Forum – K-Pop, K-Drama & Asian Entertainment Community",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Bunny Forum – Share Videos & Links",
+    title: "C-Bunny Forum – K-Pop, K-Drama & Asian Entertainment Community",
     description:
-      "Discover and share videos, links, and trending content on Bunny Forum.",
+      "Join C-Bunny Forum to discuss K-pop, K-drama, and Asian entertainment, share videos and links, and connect with fellow fans.",
     images: ["/opengraph-image.png"],
-    creator: "@bunnyforum", // 🔁 Replace with your Twitter handle if you have one
+    creator: "@cbunnyforum", // 🔁 Replace with your Twitter handle if you have one
   },
 
   icons: {
@@ -71,7 +73,7 @@ export const metadata: Metadata = {
   },
 
   alternates: {
-    canonical: "https://bunnyforum.site", // 🔁 Replace with your actual domain
+    canonical: "https://cbunny.site", // 🔁 fixed: was pointing to a different domain than metadataBase
   },
 };
 

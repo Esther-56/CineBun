@@ -28,8 +28,8 @@ export async function generateMetadata({
 
   if (!thread) {
     return {
-      title: "Thread Not Found | Bunny Forum",
-      description: "This thread could not be found on Bunny Forum.",
+      title: "Thread Not Found | C-Bunny Forum",
+      description: "This thread could not be found on C-Bunny Forum.",
     };
   }
 
@@ -64,21 +64,21 @@ export async function generateMetadata({
   const rawContent = targetPost?.content ?? targetPost?.body ?? "";
   const description = rawContent
     ? rawContent.replace(/<[^>]*>/g, "").slice(0, 155).trim() + "…"
-    : `Join the discussion on "${title}" in the Bunny Forum community.`;
+    : `Join the discussion on "${title}" in the C-Bunny Forum community.`;
 
   const author =
     specificPost?.author?.username ??
     thread.author?.username ??
-    "Bunny Forum";
+    "C-Bunny Forum";
 
-  const baseUrl = `https://bunnyforum.site/f/${subforumId}/${threadId}`;
+  const baseUrl = `https://cbunny.site/f/${subforumId}/${threadId}`;
   const canonicalUrl = highlightPostId
     ? `${baseUrl}?post=${highlightPostId}`
     : baseUrl;
 
   const metaTitle = specificPost
-    ? `${author} in "${title}" | Bunny Forum`
-    : `${title} | Bunny Forum`;
+    ? `${author} in "${title}" | C-Bunny Forum`
+    : `${title} | C-Bunny Forum`;
 
   return {
     title: metaTitle,
@@ -89,7 +89,7 @@ export async function generateMetadata({
     openGraph: {
       type: "article",
       url: canonicalUrl,
-      siteName: "Bunny Forum",
+      siteName: "C-Bunny Forum",
       title: metaTitle,
       description,
       publishedTime: new Date(

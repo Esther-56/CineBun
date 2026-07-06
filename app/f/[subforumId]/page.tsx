@@ -20,19 +20,19 @@ export async function generateMetadata({ params }: SubforumPageProps): Promise<M
 
   if (!subforum) {
     return {
-      title: "Subforum Not Found | Bunny Forum",
-      description: "This subforum could not be found on Bunny Forum.",
+      title: "Subforum Not Found | C-Bunny Forum",
+      description: "This subforum could not be found on C-Bunny Forum.",
     };
   }
 
   const title = subforum.name ?? "Subforum";
   const description =
     subforum.description ??
-    `Browse threads and content in the ${title} subforum on Bunny Forum.`;
-  const url = `https://bunnyforum.site/f/${subforumId}`;
+    `Browse K-pop, K-drama, and Asian entertainment threads in the ${title} subforum on C-Bunny Forum.`;
+  const url = `https://cbunny.site/f/${subforumId}`;
 
   return {
-    title: `${title} | Bunny Forum`,
+    title: `${title} | C-Bunny Forum`,
     description,
     alternates: {
       canonical: url,
@@ -40,21 +40,21 @@ export async function generateMetadata({ params }: SubforumPageProps): Promise<M
     openGraph: {
       type: "website",
       url,
-      siteName: "Bunny Forum",
-      title: `${title} | Bunny Forum`,
+      siteName: "C-Bunny Forum",
+      title: `${title} | C-Bunny Forum`,
       description,
       images: [
         {
           url: "/opengraph-image.png",
           width: 1200,
           height: 630,
-          alt: `${title} – Bunny Forum`,
+          alt: `${title} – C-Bunny Forum`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | Bunny Forum`,
+      title: `${title} | C-Bunny Forum`,
       description,
       images: ["/opengraph-image.png"],
     },

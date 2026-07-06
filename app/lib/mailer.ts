@@ -14,7 +14,7 @@ export const transporter = nodemailer.createTransport({
 export async function sendVerificationEmail(email: string, username: string, token: string) {
   const url = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${token}`;
   await transporter.sendMail({
-    from: `"Bunny Forum" <${process.env.GMAIL_USER}>`,
+    from: `"C-Bunny Forum" <${process.env.GMAIL_USER}>`,
     to: email,
     subject: "Verify your email address",
     html: `
@@ -32,7 +32,7 @@ export async function sendVerificationEmail(email: string, username: string, tok
 export async function sendPasswordResetEmail(email: string, username: string, token: string) {
   const url = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
   await transporter.sendMail({
-    from: `"Bunny Forum" <${process.env.GMAIL_USER}>`,
+    from: `"C-Bunny Forum" <${process.env.GMAIL_USER}>`,
     to: email,
     subject: "Reset your password",
     html: `

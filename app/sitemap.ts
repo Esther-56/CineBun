@@ -2,7 +2,7 @@
 import type { MetadataRoute } from "next";
 import { CategoryService } from "@/app/services/category-service";
 
-const BASE_URL = "https://bunnyforum.site";
+const BASE_URL = "https://cbunny.site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const categoriesRes = await CategoryService.list().catch(() => null);
