@@ -16,11 +16,11 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import Image from "@tiptap/extension-image";
 
-import { FontSize } from "@/app/components/editor/extensions/FontSize";
-import { VideoEmbed } from "@/app/components/editor/extensions/VideoEmbed";
-import { ImageGrid } from "@/app/components/editor/extensions/ImageGrid";
-import { LinkCard } from "@/app/components/editor/extensions/LinkCard";
-import { RichEditorToolbar } from "@/app/components/editor/RichEditorToolbar";
+import { FontSize } from "./extensions/FontSize";
+import { VideoEmbed } from "./extensions/VideoEmbed";
+import { ImageGrid } from "./extensions/ImageGrid";
+import { LinkCard } from "./extensions/LinkCard";
+import { RichEditorToolbar } from "./RichEditorToolbar";
 
 export interface RichEditorProps {
   placeholder?: string;

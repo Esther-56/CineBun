@@ -11,6 +11,7 @@ import { ProfileFormData, PasswordFormData } from './EditProfile';
 import { storeTheme } from '@/app/store';
 import type { ThemeId } from '@/app/store';
 import { useSnapshot } from 'valtio';
+import { ImageUploadField } from '@/app/components/editor/ui/ImageUploadField';
 
 interface AppearanceTabProps {
   profile: UserProfile;
@@ -23,127 +24,23 @@ interface AppearanceTabProps {
 }
 
 const THEMES: { id: ThemeId; name: string; bg: string; surface: string; accent: string }[] = [
-  {
-    id: 'default',
-    name: 'Default',
-    bg: '#1b1c1f',
-    surface: '#242528',
-    accent: '#4b8ef1',
-  },
-  {
-    id: 'midnight',
-    name: 'Midnight Blue',
-    bg: '#0d1117',
-    surface: '#161b22',
-    accent: '#58a6ff',
-  },
-  {
-    id: 'charcoal',
-    name: 'Charcoal',
-    bg: '#111111',
-    surface: '#1a1a1a',
-    accent: '#ff6b35',
-  },
-  {
-    id: 'forest',
-    name: 'Forest',
-    bg: '#0f1a14',
-    surface: '#162210',
-    accent: '#4caf50',
-  },
-  {
-    id: 'amoled',
-    name: 'Amoled',
-    bg: '#000000',
-    surface: '#0a0a0a',
-    accent: '#bb86fc',
-  },
-
-  {
-    id: 'obsidian',
-    name: 'Obsidian',
-    bg: '#0e0c14',
-    surface: '#16131f',
-    accent: '#a78bfa',
-  },
-  {
-    id: 'blood-moon',
-    name: 'Blood Moon',
-    bg: '#120a0a',
-    surface: '#1c1010',
-    accent: '#e05252',
-  },
-  {
-    id: 'deep-sea',
-    name: 'Deep Sea',
-    bg: '#080f12',
-    surface: '#0d1a20',
-    accent: '#22d3ee',
-  },
-  {
-    id: 'noir',
-    name: 'Noir',
-    bg: '#0c0c0d',
-    surface: '#141416',
-    accent: '#c0c0c8',
-  },
-  {
-    id: 'toxic',
-    name: 'Toxic',
-    bg: '#080c08',
-    surface: '#0e130e',
-    accent: '#39ff14',
-  },
-  {
-    id: 'rust',
-    name: 'Rust',
-    bg: '#100c08',
-    surface: '#1a1410',
-    accent: '#d4622a',
-  },
-  {
-    id: 'dusk',
-    name: 'Dusk',
-    bg: '#110d14',
-    surface: '#1a1420',
-    accent: '#d879f0',
-  },
-  {
-    id: 'ember',
-    name: 'Ember',
-    bg: '#100e08',
-    surface: '#1a180e',
-    accent: '#f59e0b',
-  },
-  {
-    id: 'void',
-    name: 'Void',
-    bg: '#030305',
-    surface: '#08080d',
-    accent: '#00f0ff',
-  },
-  {
-    id: 'sepia-noir',
-    name: 'Sepia Noir',
-    bg: '#0e0b07',
-    surface: '#181410',
-    accent: '#c9a85c',
-  },
-  {
-    id: 'phantom',
-    name: 'Phantom',
-    bg: '#0a0c10',
-    surface: '#121520',
-    accent: '#6c8ef5',
-  },
-  {
-    id: 'infrared',
-    name: 'Infrared',
-    bg: '#0d080f',
-    surface: '#160d18',
-    accent: '#f040c0',
-  },
-  
+  { id: 'default', name: 'Default', bg: '#1b1c1f', surface: '#242528', accent: '#4b8ef1' },
+  { id: 'midnight', name: 'Midnight Blue', bg: '#0d1117', surface: '#161b22', accent: '#58a6ff' },
+  { id: 'charcoal', name: 'Charcoal', bg: '#111111', surface: '#1a1a1a', accent: '#ff6b35' },
+  { id: 'forest', name: 'Forest', bg: '#0f1a14', surface: '#162210', accent: '#4caf50' },
+  { id: 'amoled', name: 'Amoled', bg: '#000000', surface: '#0a0a0a', accent: '#bb86fc' },
+  { id: 'obsidian', name: 'Obsidian', bg: '#0e0c14', surface: '#16131f', accent: '#a78bfa' },
+  { id: 'blood-moon', name: 'Blood Moon', bg: '#120a0a', surface: '#1c1010', accent: '#e05252' },
+  { id: 'deep-sea', name: 'Deep Sea', bg: '#080f12', surface: '#0d1a20', accent: '#22d3ee' },
+  { id: 'noir', name: 'Noir', bg: '#0c0c0d', surface: '#141416', accent: '#c0c0c8' },
+  { id: 'toxic', name: 'Toxic', bg: '#080c08', surface: '#0e130e', accent: '#39ff14' },
+  { id: 'rust', name: 'Rust', bg: '#100c08', surface: '#1a1410', accent: '#d4622a' },
+  { id: 'dusk', name: 'Dusk', bg: '#110d14', surface: '#1a1420', accent: '#d879f0' },
+  { id: 'ember', name: 'Ember', bg: '#100e08', surface: '#1a180e', accent: '#f59e0b' },
+  { id: 'void', name: 'Void', bg: '#030305', surface: '#08080d', accent: '#00f0ff' },
+  { id: 'sepia-noir', name: 'Sepia Noir', bg: '#0e0b07', surface: '#181410', accent: '#c9a85c' },
+  { id: 'phantom', name: 'Phantom', bg: '#0a0c10', surface: '#121520', accent: '#6c8ef5' },
+  { id: 'infrared', name: 'Infrared', bg: '#0d080f', surface: '#160d18', accent: '#f040c0' },
 ];
 
 function ThemePicker() {
@@ -162,7 +59,6 @@ function ThemePicker() {
                 : 'border-(--border-soft) hover:border-(--border-medium)'
             }`}
           >
-            {/* Mini preview */}
             <div className="h-14 flex flex-col gap-1 p-2" style={{ backgroundColor: theme.bg }}>
               <div className="h-1.5 rounded w-3/4" style={{ backgroundColor: theme.accent }} />
               <div className="h-1 rounded w-full" style={{ backgroundColor: theme.surface }} />
@@ -194,25 +90,15 @@ export function AppearanceTab({
 }: AppearanceTabProps) {
   return (
     <div className="space-y-4">
-
-      {/* ── Username Effect ── */}
       <SectionCard title="Username Effect">
         <div className="p-4 space-y-3">
           <p className="text-xs text-(--text-muted)">
             Pick an animated style for your username shown on posts and threads.
           </p>
-
-          {/* Live preview */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-(--border-soft) border border-(--border-soft)">
             <span className="text-xs text-(--text-muted)">Preview:</span>
-            <UsernameEffect
-              name={profile?.username ?? 'YourName'}
-              effect={usernameEffect}
-              className="text-sm"
-            />
+            <UsernameEffect name={profile?.username ?? 'YourName'} effect={usernameEffect} className="text-sm" />
           </div>
-
-          {/* Grid of options */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {USERNAME_EFFECTS.map(fx => (
               <button
@@ -224,41 +110,24 @@ export function AppearanceTab({
                     : 'border-(--border-soft) hover:border-(--border-strong) bg-(--border-soft)'
                   }`}
               >
-                <UsernameEffect
-                  name={fx.label}
-                  effect={fx.id}
-                  className="text-xs pointer-events-none"
-                />
-                {usernameEffect === fx.id && (
-                  <Check size={10} className="ml-auto text-(--accent) shrink-0" />
-                )}
+                <UsernameEffect name={fx.label} effect={fx.id} className="text-xs pointer-events-none" />
+                {usernameEffect === fx.id && <Check size={10} className="ml-auto text-(--accent) shrink-0" />}
               </button>
             ))}
           </div>
         </div>
       </SectionCard>
 
-      {/* ── Avatar Effect ── */}
       <SectionCard title="Avatar Ring Effect">
         <div className="p-4 space-y-3">
           <p className="text-xs text-(--text-muted)">
             Adds an animated ring or glow around your profile picture.
           </p>
-
-          {/* Live preview */}
           <div className="flex items-center gap-3 px-3 py-2 rounded-md bg-(--border-soft) border border-(--border-soft)">
             <span className="text-xs text-(--text-primary)">Preview:</span>
-            <Avatar
-              name={profile?.username}
-              src={profile?.avatar}
-              size="md"
-              effect={avatarEffect}
-              noLink
-            />
+            <Avatar name={profile?.username} src={profile?.avatar} size="md" effect={avatarEffect} noLink />
             <span className="text-xs text-(--text-primary)">{profile?.username}</span>
           </div>
-
-          {/* Grid of options */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {AVATAR_EFFECTS?.map(fx => (
               <button
@@ -270,24 +139,15 @@ export function AppearanceTab({
                     : 'border-(--border-soft) hover:border-(--border-strong) bg-(--border-soft)'
                   }`}
               >
-                <Avatar
-                  name={profile?.username}
-                  src={profile?.avatar}
-                  size="sm"
-                  effect={fx.id}
-                  noLink
-                />
+                <Avatar name={profile?.username} src={profile?.avatar} size="sm" effect={fx.id} noLink />
                 <span className="text-(--text-primary)">{fx.label}</span>
-                {avatarEffect === fx.id && (
-                  <Check size={10} className="ml-auto text-(--accent) shrink-0" />
-                )}
+                {avatarEffect === fx.id && <Check size={10} className="ml-auto text-(--accent) shrink-0" />}
               </button>
             ))}
           </div>
         </div>
       </SectionCard>
 
-      {/* ── Forum Theme ── */}
       <ThemePicker />
     </div>
   );
@@ -311,27 +171,35 @@ export function ProfileTab({ profile, formData, onChange }: ProfileTabProps) {
         <div className="p-4 flex flex-col sm:flex-row gap-6">
           <div className="flex flex-col items-center gap-2 w-full sm:w-56">
             <div className="border-3 border-black rounded-full">
-              <Avatar name={profile?.username} src={profile?.avatar} size={'xl'} />
+              <Avatar name={profile?.username} src={formData?.avatar || profile?.avatar} size={'xl'} />
             </div>
             <div className="w-full space-y-2">
-              <Field
-                label="Avatar image URL"
+              {/*
+                ImageUploadField: "Upload" hits /api/users/me/image, which deletes the
+                OLD Cloudinary avatar first, then stores the new one — onChange fires
+                with the already-persisted URL. Typing a URL directly just updates local
+                form state (saved when the user hits "Save changes", same as before).
+              */}
+              <ImageUploadField
+                label="Avatar image"
+                field="avatar"
                 value={formData?.avatar}
                 onChange={set('avatar')}
                 placeholder="https://example.com/avatar.png"
                 icon={<Camera size={12} />}
-                hint="Paste a direct link to an image."
+                hint="Paste a link, or upload directly from your device."
               />
             </div>
           </div>
           <div className="w-full space-y-2">
-            <Field
-              label="Banner image URL"
+            <ImageUploadField
+              label="Banner image"
+              field="banner"
               value={formData?.banner}
               onChange={set('banner')}
               placeholder="https://example.com/banner.png"
               icon={<Camera size={12} />}
-              hint="Paste a direct link to an image."
+              hint="Paste a link, or upload directly from your device."
             />
           </div>
         </div>
@@ -396,11 +264,7 @@ export function AccountTab({ profile, passwordData, onPasswordChange }: AccountT
         </div>
       </SectionCard>
 
-      <SectionCard
-        title="Danger Zone"
-        danger
-        headerExtra={<AlertTriangle size={13} className="text-(--danger)" />}
-      >
+      <SectionCard title="Danger Zone" danger headerExtra={<AlertTriangle size={13} className="text-(--danger)" />}>
         <div className="p-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-(--text-primary)">Delete account</p>

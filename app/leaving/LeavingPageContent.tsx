@@ -31,7 +31,7 @@ export default function LeavingPageContent() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-(--bg-base) px-4">
+    <div className="min-h-screen flex items-center justify-center bg-(--bg-page) px-4">
       <div className="relative w-full max-w-sm overflow-hidden rounded-2xl border border-(--border) bg-(--bg-card)">
         <div className="h-1 w-full bg-linear-to-r from-yellow-500 via-orange-400 to-yellow-500" />
         <div className="flex flex-col items-center gap-5 p-8">

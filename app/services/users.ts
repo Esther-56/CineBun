@@ -36,6 +36,26 @@ export const UserService = {
   updateTheme: (themeId: string) =>
     api.patch('/users/me/theme', { themeId }),
 
+  /**
+   * Uploads a File to Cloudinary via /api/users/me/image.
+   * The server deletes the user's current avatar/banner on Cloudinary first
+   * (only if it's one of ours), then uploads the new one and saves the URL.
+   * Returns the new, already-persisted URL.
+   */
+  uploadImage: async (field: 'avatar' | 'banner', file: File): Promise<string> => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('field', field);
+
+    // Uses fetch directly (not ApiCore) since this is a multipart body, not JSON.
+    const res = await fetch('/api/users/me/image', { method: 'POST', body: form });
+    const json = await res.json();
+    if (!res.ok || !json?.data?.url) {
+      throw new Error(json?.error ?? `Couldn't upload ${field}.`);
+    }
+    return json.data.url as string;
+  },
+
   list: (params?: { query?: string; status?: UserStatus | 'all'; page?: number }) =>
     api.get<{ data: { users: UserProfile[]; total?: number } }>('/admin/users', params),
 
@@ -54,5 +74,5 @@ export const UserService = {
   unban: (userId: string) =>
     api.patch<{ user: UserProfile }>(`/admin/users/${userId}/unban`),
 
-  
+
 };
