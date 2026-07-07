@@ -64,6 +64,7 @@ function VerifyBanner({ userId }: { userId: string }) {
     } catch (err) {
       
       setFeedback({ type: 'error', text:  "Couldn't send the email. Try again in a bit." });
+      const message = "Couldn't send the email. Try again in a bit." 
       // If it's a rate-limit message like "Please wait 42s...", start a local cooldown too
       const match = message.match(/(\d+)s/);
       if (match) setCooldown(parseInt(match[1], 10));
