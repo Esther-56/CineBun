@@ -53,7 +53,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ userId
         });
       return created(warning);
     } catch (err) {
-      return serverError(err, "PATCH /api/admin/subpend");
+      return serverError(err, "PATCH /api/admin/warn");
     }
   });
 }
