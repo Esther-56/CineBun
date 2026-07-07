@@ -77,7 +77,8 @@ export interface SubforumMeta {
   name: string;
   description: string;
   accentColor: string;
-  category:string
+  category:string;
+  isReadOnly:boolean
 }
 
 export interface canEdit{

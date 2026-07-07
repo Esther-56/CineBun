@@ -6,7 +6,7 @@ import Thread from "@/app/lib/models/ThreadSchema";
 import Post from "@/app/lib/models/Post";
 import User from "@/app/lib/models/User";
 import { withAuth, withPermission } from "@/app/lib/middleware/auth";
-import { ok, created, fail, serverError, getPagination } from "@/app/lib/response";
+import {  created, fail, serverError,  } from "@/app/lib/response";
 
 
 
