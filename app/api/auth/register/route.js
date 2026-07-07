@@ -111,7 +111,7 @@ export const POST = async (req) => {
     const verifyToken = crypto.randomBytes(32).toString("hex");
     await User.findByIdAndUpdate(newUser._id, {
       emailVerificationToken: verifyToken,
-      emailVerificationExpires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24h
+      emailVerificationExpires: new Date(Date.now() + 72 * 60 * 60 * 1000), // 24h
     });
 
     await sendVerificationEmail(email, username, verifyToken);

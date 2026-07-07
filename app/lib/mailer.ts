@@ -20,7 +20,7 @@ export async function sendVerificationEmail(email: string, username: string, tok
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#0f1117;color:#e2e8f0;border-radius:12px;">
         <h2 style="color:#ffffff;margin-bottom:8px;">Welcome, ${username}!</h2>
-        <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to verify your email address. This link expires in <strong style="color:#e2e8f0">24 hours</strong>.</p>
+        <p style="color:#94a3b8;margin-bottom:24px;">Click the button below to verify your email address. This link expires in <strong style="color:#e2e8f0">72 hours</strong>.</p>
         <a href="${url}" style="display:inline-block;background:#e8912d;color:#ffffff;font-weight:600;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:15px;">Verify Email</a>
         <p style="color:#ffffff;font-size:12px;margin-top:32px;">If you didn't create an account, ignore this email.</p>
         <p style="color:#ffffff;font-size:11px;margin-top:4px;word-break:break-all;">${url}</p>

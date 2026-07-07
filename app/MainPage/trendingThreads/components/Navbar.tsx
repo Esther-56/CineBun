@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Power, Menu, X, UserPlus } from 'lucide-react';
+import { Search, Power, Menu, X, UserPlus, AlertTriangle } from 'lucide-react';
 import Avatar from './Avatar';
 import { useSnapshot } from 'valtio';
 import { store } from '@/app/store';
 import { NotificationBell } from '@/app/n/component/NotificationBell';
 import { Notification } from '@/app/n/component/types';
 import { NotificationService } from '@/app/services/notifications';
+import { AuthService } from '@/app/services/auth';
 import { useRouter } from 'nextjs-toploader/app';
 import { MessagesBell } from '@/app/messages/component/MessagesBell';
 import LogoutButton from './LogoutButton';
@@ -26,6 +28,85 @@ function NavbarAuthSkeleton() {
   );
 }
 
+function VerifyBanner({ userId }: { userId: string }) {
+  const dismissKey = `verify-banner-dismissed:${userId}`;
+  const [dismissed, setDismissed] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
+  const [feedback, setFeedback] = useState<{ type: 'ok' | 'error'; text: string } | null>(null);
+
+  // Session-only dismissal, scoped per user so switching accounts doesn't inherit it
+  useEffect(() => {
+    setDismissed(sessionStorage.getItem(dismissKey) === '1');
+  }, [dismissKey]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown(c => Math.max(0, c - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
+
+  if (dismissed) return null;
+
+  const handleDismiss = () => {
+    sessionStorage.setItem(dismissKey, '1');
+    setDismissed(true);
+  };
+
+  const handleResend = async () => {
+    if (resending || cooldown > 0) return;
+    setResending(true);
+    setFeedback(null);
+    try {
+      const res = await AuthService.resendVerification();
+      setFeedback({ type: 'ok', text: "Verification email sent. Check your inbox — and your spam folder." });
+      setCooldown(60);
+    } catch (err) {
+      
+      setFeedback({ type: 'error', text:  "Couldn't send the email. Try again in a bit." });
+      // If it's a rate-limit message like "Please wait 42s...", start a local cooldown too
+      const match = message.match(/(\d+)s/);
+      if (match) setCooldown(parseInt(match[1], 10));
+    } finally {
+      setResending(false);
+    }
+  };
+
+  return (
+    <div className="w-full bg-amber-500/10 border-b border-amber-500/30 text-amber-200">
+      <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center gap-3 text-sm">
+        <AlertTriangle size={15} className="shrink-0 text-amber-400" />
+        <p className="flex-1">
+          {feedback ? (
+            feedback.text
+          ) : (
+            <>
+              Please verify your email address.{" "}
+              <span className="text-amber-300/80">
+                Don&apos;t see it? Check your spam or junk folder.
+              </span>
+            </>
+          )}
+        </p>
+        <button
+          onClick={handleResend}
+          disabled={resending || cooldown > 0}
+          className="shrink-0 px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 font-medium text-xs disabled:opacity-50 cursor-pointer transition-colors"
+        >
+          {resending ? "Sending..." : cooldown > 0 ? `Resend in ${cooldown}s` : "Resend email"}
+        </button>
+        <button
+          onClick={handleDismiss}
+          className="shrink-0 hover:opacity-70"
+          aria-label="Dismiss"
+        >
+          <X size={16} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -37,6 +118,7 @@ export default function Navbar() {
   const avatar = snap.avatar;
   const usernameEffect = snap.usernameEffect;
   const avatarEffect = snap.avatarEffect;
+  const isVerified = snap.isVerified;
 
   const router = useRouter();
   const [search, setSearch] = useState("");
@@ -170,6 +252,9 @@ export default function Navbar() {
 
         </div>
       </header>
+
+      {/* Verification banner — shown for logged-in, unverified users */}
+      {hydrated && id && !isVerified && <VerifyBanner userId={id} />}
 
       {/* Mobile dropdown */}
       {mobileOpen && (

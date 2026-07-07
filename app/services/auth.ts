@@ -46,6 +46,8 @@ export const AuthService = {
 
   me: () =>
     api.get<AuthUser>('/users/me'),
+  resendVerification: () =>
+    api.post<{ message: string }>('/auth/resend-verification', {}),
 };
 
 
