@@ -8,13 +8,13 @@ import Reaction from "@/app/lib/models/Reaction";
 import { withOptionalAuth } from "@/app/lib/middleware/auth";
 import User from "@/app/lib/models/User";
 import '@/app/lib/models/Badge';
+import { attachAuthorBadges } from "@/app/lib/helpers/attachAuthorBadges";
 
 const AUTHOR_POPULATE = {
   path: 'author',
   select: 'username avatar customTitle role badges postCount avatarEffect usernameEffect ',
   populate: [
     { path: 'role', select: 'name color permissions' },
-    { path: 'badges.badge', select: 'key label icon color tier' },
   ],
 };
 
@@ -83,9 +83,10 @@ export async function GET(
       // How many are new *top-level* posts, so the client can keep its
       // pagination total in sync without a full re-count.
       const newTopLevelCount = newPosts.filter((p) => !p.parentPost).length;
+      const postsWithBadges = await attachAuthorBadges(postsWithMyReaction);
 
       return ok({
-        posts: postsWithMyReaction,
+        posts: postsWithBadges,
         newTopLevelCount,
         latestCreatedAt:
           newPosts.length > 0 ? newPosts[newPosts.length - 1].createdAt : since,

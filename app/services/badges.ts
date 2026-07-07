@@ -4,15 +4,27 @@ import ForumApi from '../ApiCore';
 const api = new ForumApi();
 
 export interface Badge {
-  _id: string;
+ _id: string;
   key: string;
   label: string;
-  description: string;
+  description?: string;
   icon: string;
   color: string;
-  tier: 'bronze' | 'silver' | 'gold' | 'special';
+  tier: "bronze" | "silver" | "gold" | "special";
   isDefault: boolean;
+  isAutomatic: boolean;
 }
+
+export interface BadgeUser {
+  _id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  isAssigned?: boolean; // new
+}
+
+
+const BASE = "/admin/badges";
 
 export const BadgeService = {
   list: () =>
@@ -31,6 +43,18 @@ export const BadgeService = {
     api.patch<{ badge: Badge }>(`/admin/badges/${id}`, { isDefault: true }),
 
   getUser: (id: string)=>
-    api.get<{ data: { badges: Badge} }>(`/api/admin/users/${id}}/badges`),
+    api.get<{ data: { badges: Badge} }>(`/admin/users/${id}}/badges`),
+   assignToUser: (badgeId: string, userId: string) => api.post(`${BASE}/assign`, { badgeId, userId }),
+ 
+  revokeFromUser: (badgeId: string, userId: string) =>
+     api.delete(`${BASE}/assign?badgeId=${badgeId}&userId=${userId}`),
+ 
+  getUserBadges: (userId: string) => api.get<{ data:{badges: Badge[]} }>(`${BASE}/assign`,  { userId }),
+ 
+  searchUsers: (q: string, badgeId?: string) =>
+  api.get<{ data: { users: BadgeUser[] } }>("/admin/users/search", { q, badgeId }),
   
 };
+
+  // list: (params?: { query?: string; status?: UserStatus | 'all'; page?: number }) =>
+  //   api.get<{ data: { users: UserProfile[]; total?: number } }>('/admin/users', params),

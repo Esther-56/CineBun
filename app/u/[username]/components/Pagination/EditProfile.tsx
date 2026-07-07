@@ -6,6 +6,7 @@ import { UserService } from '@/app/services/users';
 import { UserProfile, EditTab } from '../../types';
 import { UsernameEffectKey } from '../ui/UsernameEffect';
 import { AvatarEffectKey } from '@/app/MainPage/trendingThreads/components/Avatar';
+import { store } from '@/app/store';
 
 
 
@@ -88,7 +89,7 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           avatar:      formData.avatar,
           banner:      formData.banner,
         });
-        
+        store.avatar = formData?.avatar || null
         onSaved?.();
         flashSaved();
         

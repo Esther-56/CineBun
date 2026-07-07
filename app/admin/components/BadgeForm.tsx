@@ -39,7 +39,7 @@ export default function BadgeForm({ mode, initial, onSubmit, onCancel }: BadgeFo
 
   setLabel(initial.label);
   setKey(initial.key);
-  setDescription(initial.description);
+  setDescription(initial.description  || "");
   setIcon(initial.icon);
   setColor(initial.color);
   setTier(initial.tier as typeof TIERS[number]);
@@ -50,7 +50,10 @@ export default function BadgeForm({ mode, initial, onSubmit, onCancel }: BadgeFo
     if (!label.trim() || !key.trim()) return;
     setSaving(true);
     try {
-      await onSubmit({ key, label, description, icon, color, tier });
+      await onSubmit({
+        key, label, description, icon, color, tier,
+        isAutomatic: false
+      });
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
     } finally {

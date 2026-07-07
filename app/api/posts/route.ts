@@ -7,23 +7,23 @@ import Subforum from "@/app/lib/models/SubforumSchema";
 import Notification from "@/app/lib/models/Notification";
 import User from "@/app/lib/models/User";
 import { withAuth } from "../../lib/middleware/auth";
-import { ok, created, fail, serverError } from "../../lib/response";
+import {  created, fail, serverError } from "../../lib/response";
+import { sendThreadMilestoneEmail } from "@/app/lib/mailer";
 
-
-
+const MILESTONES = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000];
 
 // POST /api/posts — create a reply, either top-level or attached to another post
 export async function POST(req: Request) {
   return withAuth(req, async (user) => {
     try {
       await mongoosedb();
-      
+
       if (!user.role?.permissions?.canReplyToThread) {
         return fail("You cannot reply to threads.", 403);
       }
 
       const body = await req.json();
-  
+
       if (!body.threadId)        return fail("threadId is required.");
       if (!body.content?.trim()) return fail("Content is required.");
 
@@ -61,11 +61,17 @@ export async function POST(req: Request) {
         ipAddress:  req.headers.get("x-forwarded-for") ?? "",
       });
 
-      // Update thread last post — every reply counts toward the thread total
-      await Thread.findByIdAndUpdate(body.threadId, {
-        $inc: { replyCount: 1 },
-        lastPost: { user: user._id, createdAt: new Date() },
-      });
+      // Update thread last post — every reply counts toward the thread total.
+      // `{ new: true }` so we get back the post-increment replyCount for the
+      // milestone check below, instead of firing a second read.
+      const updatedThread = await Thread.findByIdAndUpdate(
+        body.threadId,
+        {
+          $inc: { replyCount: 1 },
+          lastPost: { user: user._id, createdAt: new Date() },
+        },
+        { new: true }
+      );
 
       // Update subforum last post
       await Subforum.findByIdAndUpdate(thread.subforum, {
@@ -134,21 +140,49 @@ export async function POST(req: Request) {
         }
       }
 
-          const populated = await post.populate({
-          path: "author",
-          select: "username avatar role customTitle postCount avatarEffect usernameEffect",
-          populate: { path: "role", select: "name" },
-        });
+      // ── Thread milestone email (10, 25, 50, 100... replies) ─────────────
+      const hitMilestone = MILESTONES.find(
+        (m) => updatedThread.replyCount >= m && !updatedThread.milestonesSent?.includes(m)
+      );
 
-        const responseData = populated.toObject();
-        if (responseData.author?.role) {
-          responseData.author.role = responseData.author.role.name;
+      if (hitMilestone && thread.author.toString() !== user._id.toString()) {
+        const threadAuthor = await User.findById(thread.author).select(
+          "email username milestoneEmailsEnabled"
+        );
+        if (threadAuthor?.email && threadAuthor.milestoneEmailsEnabled !== false) {
+          // Reserve the milestone first so a slow send / retry can't double-fire it
+          await Thread.findByIdAndUpdate(body.threadId, {
+            $addToSet: { milestonesSent: hitMilestone },
+          });
+          try {
+            await sendThreadMilestoneEmail({
+              email: threadAuthor.email,
+              username: threadAuthor.username,
+              threadTitle: thread.title,
+              threadId: body.threadId,
+              milestone: hitMilestone,
+            });
+          } catch (err) {
+            console.error("Failed to send milestone email:", err);
+            // Don't fail the whole request over an email hiccup
+          }
         }
+      }
 
-        return created(responseData)
+      const populated = await post.populate({
+        path: "author",
+        select: "username avatar role customTitle postCount avatarEffect usernameEffect",
+        populate: { path: "role", select: "name" },
+      });
+
+      const responseData = populated.toObject();
+      if (responseData.author?.role) {
+        responseData.author.role = responseData.author.role.name;
+      }
+
+      return created(responseData);
     } catch (err) {
       return serverError(err, "POST /api/posts");
     }
   });
 }
-

@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 import User from "@/app/lib/models/User";
 import mongoosedb from "@/app/lib/db/db";
 import "@/app/lib/models/Role";
+import { updateStreak } from "@/app/lib/badges/updateStreak";
 
 export interface AuthUser {
   _id: string;
@@ -85,6 +86,14 @@ export async function withAuth(
       { _id: user._id, $or: [{ lastSeenAt: { $exists: false } }, { lastSeenAt: { $lt: new Date(Date.now() - FIVE_MIN) } }] },
       { $set: { lastSeenAt: new Date() } }
     ).catch(() => {}); // fire-and-forget
+    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+      const lastStreakDay = user.lastStreakDate
+        ? new Date(user.lastStreakDate).toISOString().slice(0, 10)
+        : null;
+
+      if (lastStreakDay !== today) {
+        updateStreak(String(user._id)).catch(() => {}); // fire-and-forget, same pattern as lastSeenAt
+      }
 
     return handler(user as AuthUser);
   } catch (err) {

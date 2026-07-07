@@ -18,10 +18,11 @@ export interface Announcement {
 export interface AnnouncementInput {
   message: string;
   type?: Announcement['type'];
-  startsAt?: string;
-  expiresAt?: string | null;
-  durationHours?: number;
   isActive?: boolean;
+  notifyByEmail?: boolean; // create-only, ignored server-side on update
+  durationHours?: number;
+  expiresAt?: string;
+  startsAt?: string;
 }
 
 export const AnnouncementService = {
