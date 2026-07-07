@@ -78,6 +78,7 @@ body {
   color: #8a7bc7;
 }
 
+
 /* ────────────────────────────────────────────────
    THEME TOKENS
    ──────────────────────────────────────────────── */
@@ -507,11 +508,6 @@ body {
 /* globals.css */
 
 
-
-* {
-  filter: none !important;
-}
-
 /* Image grids inserted by the rich text editor — XenForo-style thumbnail row */
 .editor-image-grid {
   display: flex;
@@ -534,6 +530,11 @@ body {
 
 .editor-image-grid .editor-image:hover {
   opacity: 0.9;
+}
+
+.prose-dark .editor-mention {
+  color: #4b8ef1;
+  font-weight: 600;
 }
 
 /* Smaller thumbnails on narrow screens so 2+ images can still sit side by side */

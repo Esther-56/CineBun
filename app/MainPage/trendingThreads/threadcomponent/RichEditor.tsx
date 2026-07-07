@@ -10,12 +10,13 @@ import Color from "@tiptap/extension-color";
 import Link from "@tiptap/extension-link";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
-import {Table} from "@tiptap/extension-table";
+import { Table } from "@tiptap/extension-table";
 import TableRow from "@tiptap/extension-table-row";
 import TableHeader from "@tiptap/extension-table-header";
 import TableCell from "@tiptap/extension-table-cell";
 import Image from "@tiptap/extension-image";
-
+import { MentionSuggestion } from "@/app/components/editor/extensions/MentionSuggestion";
+import { highlightMentions } from "@/app/lib/helpers/highlightMentions";
 import { FontSize } from "@/app/components/editor/extensions/FontSize";
 import { VideoEmbed } from "@/app/components/editor/extensions/VideoEmbed";
 import { ImageGrid } from "@/app/components/editor/extensions/ImageGrid";
@@ -77,6 +78,7 @@ export function RichEditor({
       TableCell,
       Placeholder.configure({ placeholder }),
       CharacterCount,
+      MentionSuggestion,
     ],
     editorProps: {
       attributes: {
@@ -106,6 +108,9 @@ export function RichEditor({
     }
   };
 
+  const rawHtml = editor?.getHTML() ?? "";
+  const hasPreviewContent = rawHtml.trim() && rawHtml !== "<p></p>";
+
   return (
     <div className="flex flex-col gap-3">
       {error && (
@@ -124,8 +129,8 @@ export function RichEditor({
         <div
           className={`${preview ? "block" : "hidden"} ${height} px-4 py-3 text-(--text-primary) leading-relaxed overflow-auto prose-dark`}
           dangerouslySetInnerHTML={{
-            __html: editor?.getHTML()?.trim() && editor.getHTML() !== "<p></p>"
-              ? editor.getHTML()
+            __html: hasPreviewContent
+              ? highlightMentions(rawHtml)
               : "<em class='text-(--text-muted)'>Nothing to preview yet.</em>",
           }}
         />
