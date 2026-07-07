@@ -7,6 +7,7 @@ import Subforum from "@/app/lib/models/SubforumSchema";
 import { withAuth, withOptionalAuth } from "../../../lib/middleware/auth";
 import { ok, fail, serverError, getPagination } from "../../../lib/response";
 import User from "@/app/lib/models/User";
+import { IRole } from "@/app/lib/models/Role";
 
 // GET /api/threads/[id] — thread info + paginated posts
 export async function GET(
@@ -65,10 +66,21 @@ export async function POST(req: Request) {
       if (!content?.trim()) return fail("Content is required.");
       if (!subforumId)      return fail("subforumId is required.");
 
-      const subforum = await Subforum.findById(subforumId).lean();
+
+      // Staff (mods/admins) bypass the read-only restriction.
+      // Populate the user's role to check permission/priority rather than
+      // trusting anything client-supplied.
+     const subforum = await Subforum.findById(subforumId).lean();
       if (!subforum)                return fail("Subforum not found.", 404);
       if (!subforum.leadsToThreads) return fail("This subforum does not accept threads.", 400);
-      if (subforum.isReadOnly)      return fail("This subforum is read-only.", 403);
+
+      const dbUser = await User.findById(user._id).populate("role").lean();
+      const role = dbUser?.role as IRole;
+      const isStaff = !!role?.permissions?.canAccessAdmin;
+
+      if (subforum.isReadOnly && !isStaff) {
+        return fail("This subforum is read-only.", 403);
+      }
 
       const session = await mongoose.startSession();
       let thread, firstPost;
@@ -111,7 +123,6 @@ export async function POST(req: Request) {
     }
   });
 }
-
 
 // PATCH /api/threads/[id] — edit title (author or mod)
 export async function PATCH(

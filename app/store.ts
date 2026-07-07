@@ -8,6 +8,7 @@ interface t {
   canDeleteOwnThread:boolean
   canPinThread:boolean
   canLockThread:boolean
+  canAccessAdmin:boolean
 }
 
 interface RoleInfo {
