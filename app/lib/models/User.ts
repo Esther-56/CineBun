@@ -49,6 +49,10 @@ const User = new Schema({
   type: [{ type: Schema.Types.ObjectId, ref: "User" }],
   default: [],
 },
+lastMissYouSentAt:   { type: Date, default: null },
+missYouEmailsEnabled:{ type: Boolean, default: true },
+streak:           { type: Number, default: 0 },        // current consecutive-day login streak
+lastStreakDate:   { type: Date, default: null }, 
 messagingPrivacy: {
   type: String,
   enum: ["everyone", "nobody"],

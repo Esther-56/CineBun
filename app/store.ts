@@ -31,7 +31,7 @@ export const store = proxy({
   bio: "",
   signature: "",
   customTitle: "",
-  avatarEffect:null,
+  avatarEffect:null ,
   usernameEffect:null,
   // role & permissions (populate role on the server, send just what the UI needs)
   role: null as RoleInfo | null,

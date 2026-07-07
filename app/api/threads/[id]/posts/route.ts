@@ -9,6 +9,7 @@ const PAGE_SIZE = 10;
 import { withOptionalAuth  } from "@/app/lib/middleware/auth";
 import User from "@/app/lib/models/User";
 import '@/app/lib/models/Badge'
+import { attachAuthorBadges } from "@/app/lib/helpers/attachAuthorBadges";
 
 // Shared populate config so the top-level and replies queries can't drift
 // out of sync with each other.
@@ -18,7 +19,6 @@ const AUTHOR_POPULATE = {
   select: 'username avatar customTitle role badges postCount avatarEffect usernameEffect ', // add `badges` to select
   populate: [
     { path: 'role', select: 'name color permissions' },
-    { path: 'badges.badge', select: 'key label icon color tier' }, // nested populate for the badge ref inside the array
   ],
 };
 
@@ -98,9 +98,9 @@ export async function GET(
         myReaction: reactionsByPost[p._id.toString()] ?? null,
       }));
 
-
+      const postsWithBadges = await attachAuthorBadges(postsWithMyReaction);
       return ok({
-        posts: postsWithMyReaction,
+        posts: postsWithBadges,
         page,
         pageSize: PAGE_SIZE,
         total,

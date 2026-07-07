@@ -1,6 +1,7 @@
 import mongoosedb from "@/app/lib/db/db";
 import User from "@/app/lib/models/User";
 import { withAuth } from "@/app/lib/middleware/auth";
+import UserBadge from "@/app/lib/models/UserBadge";
 import { ok, fail, serverError } from "@/app/lib/response";
 
 // GET /api/users/[username] — public profile

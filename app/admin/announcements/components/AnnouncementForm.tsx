@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef } from 'react';
-import { Link2, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Link2, Eye, EyeOff, Loader2, Mail } from 'lucide-react';
 import type { Announcement, AnnouncementInput } from '@/app/services/announcement';
 
 interface Props {
@@ -16,6 +16,7 @@ export default function AnnouncementForm({ mode, initial, onSubmit, onCancel }: 
   const [message, setMessage] = useState(initial?.message ?? '');
   const [type, setType] = useState<Announcement['type']>(initial?.type ?? 'info');
   const [isActive, setIsActive] = useState(initial?.isActive ?? true);
+  const [notifyByEmail, setNotifyByEmail] = useState(false);
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -49,7 +50,12 @@ export default function AnnouncementForm({ mode, initial, onSubmit, onCancel }: 
     if (!message.trim()) return;
     setSaving(true);
     try {
-      await onSubmit({ message: message.trim(), type, isActive });
+      await onSubmit({
+        message: message.trim(),
+        type,
+        isActive,
+        ...(mode === 'create' ? { notifyByEmail } : {}),
+      });
     } finally {
       setSaving(false);
     }
@@ -151,16 +157,38 @@ export default function AnnouncementForm({ mode, initial, onSubmit, onCancel }: 
         </div>
       )}
 
-      {/* Active toggle */}
-      <label className="flex items-center gap-2 cursor-pointer w-fit">
-        <div
-          onClick={() => setIsActive(v => !v)}
-          className={`w-7 h-4 rounded-full transition-colors relative ${isActive ? 'bg-[#4b8ef1]' : 'bg-[#2d2e32]'}`}
-        >
-          <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
-        </div>
-        <span className="text-[11px] text-[#8a8d91]">{isActive ? 'Active' : 'Inactive'}</span>
-      </label>
+      {/* Active + notify toggles */}
+      <div className="flex items-center gap-4 flex-wrap">
+        <label className="flex items-center gap-2 cursor-pointer w-fit">
+          <div
+            onClick={() => setIsActive(v => !v)}
+            className={`w-7 h-4 rounded-full transition-colors relative ${isActive ? 'bg-[#4b8ef1]' : 'bg-[#2d2e32]'}`}
+          >
+            <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${isActive ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+          </div>
+          <span className="text-[11px] text-[#8a8d91]">{isActive ? 'Active' : 'Inactive'}</span>
+        </label>
+
+        {mode === 'create' && (
+          <label className="flex items-center gap-2 cursor-pointer w-fit">
+            <div
+              onClick={() => setNotifyByEmail(v => !v)}
+              className={`w-7 h-4 rounded-full transition-colors relative ${notifyByEmail ? 'bg-[#f59e0b]' : 'bg-[#2d2e32]'}`}
+            >
+              <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-transform ${notifyByEmail ? 'translate-x-3.5' : 'translate-x-0.5'}`} />
+            </div>
+            <span className="text-[11px] text-[#8a8d91] flex items-center gap-1">
+              <Mail size={10} /> Email all users
+            </span>
+          </label>
+        )}
+      </div>
+
+      {mode === 'create' && notifyByEmail && (
+        <p className="text-[10px] text-[#f59e0b]/80 -mt-1.5">
+          This will send an email to every verified user. Use for important updates only.
+        </p>
+      )}
 
       {/* Actions */}
       <div className="flex gap-2 pt-1">
@@ -187,7 +215,6 @@ export default function AnnouncementForm({ mode, initial, onSubmit, onCancel }: 
 
 // Shared rich text renderer — exported so AnnouncementBoard can use it too
 export function RichText({ text }: { text: string }) {
-  // Split into paragraphs by \n, then parse [label](url) within each
   const paragraphs = text.split('\n');
   return (
     <>
@@ -201,7 +228,6 @@ export function RichText({ text }: { text: string }) {
 }
 
 function ParsedLine({ text }: { text: string }) {
-  // Parse [label](url) syntax
   const parts: Array<{ type: 'text' | 'link'; content: string; href?: string }> = [];
   const regex = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
   let last = 0;

@@ -15,6 +15,7 @@ const Thread = new Schema({
   prefix:       { type: String, default: null },          // e.g. "[GUIDE]", "[WIP]"
   tags: {
   type: [String],
+  milestonesSent: { type: [Number], default: [] },
   default: [],
   set: (arr: string[]) =>
     [...new Set(arr.map((t) => t.trim().toLowerCase()).filter(Boolean))],
