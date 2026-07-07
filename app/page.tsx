@@ -8,6 +8,7 @@ import ForumSidebar from './MainPage/trendingThreads/components/ForumSidebar';
 import { CategoryService, ApiCategory } from './services/category-service';
 import AnnouncementBoard from './MainPage/trendingThreads/components/AnnouncementBoard';
 import Footer from './Footer';
+import { ScrollToTop } from './components/scroll-to-top';
 
 function CategoryBlockSkeleton() {
   return (
@@ -58,7 +59,7 @@ export default function ForumHome() {
   return (
     <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
       <Navbar />
-
+      <ScrollToTop/>
       {/* Mobile-only sidebar toggle, sits just below the navbar */}
       <button
         onClick={() => setSidebarOpen(true)}

@@ -13,6 +13,7 @@ import { ApiSubforumFull } from '@/app/services/subforum-service';
 import { SubforumService } from '@/app/services/subforum-service';
 import AnnouncementBoard from '@/app/MainPage/trendingThreads/components/AnnouncementBoard';
 import Footer from '@/app/Footer';
+import { ScrollToTop } from '@/app/components/scroll-to-top';
 
 interface SubforumPageProps {
   params_cc: { subforumId: string };
@@ -80,6 +81,7 @@ export default function Body({ params_cc }: SubforumPageProps) {
     return (
       <div className="min-h-screen bg-(--bg-page) text-(--text-primary)">
         <Navbar />
+        <ScrollToTop/>
         <main className="max-w-8xl mx-auto px-4 py-6">
           <SubforumHeaderSkeleton />
           <div className="flex gap-5">
