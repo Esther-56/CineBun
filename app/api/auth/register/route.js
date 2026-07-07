@@ -7,11 +7,13 @@ import Notification from "@/app/lib/models/Notification";
 import * as yup from "yup";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { SignJWT } from "jose";
+import { cookies } from "next/headers";
 import { sendVerificationEmail } from "@/app/lib/mailer";
 
 const registrationSchema = yup.object().shape({
   username: yup.string().required('Username is required').min(3).max(15),
-   email: yup
+  email: yup
     .string()
     .required('Email is required')
     .matches(
@@ -38,6 +40,10 @@ const MEMBER_PERMISSIONS = {
   canBanUser: false, canWarnUser: false, canViewReports: false, canManageReports: false, canViewIPs: false,
   canManageRoles: false, canManageCategories: false, canManageThemes: false, canAccessAdmin: false,
 };
+
+function getSecret() {
+  return new TextEncoder().encode(process.env.JWT_SECRET);
+}
 
 async function bootstrapRoles() {
   const [adminRole, memberRole] = await Promise.all([
@@ -111,12 +117,49 @@ export const POST = async (req) => {
     const verifyToken = crypto.randomBytes(32).toString("hex");
     await User.findByIdAndUpdate(newUser._id, {
       emailVerificationToken: verifyToken,
-      emailVerificationExpires: new Date(Date.now() + 72 * 60 * 60 * 1000), // 24h
+      emailVerificationExpires: new Date(Date.now() + 72 * 60 * 60 * 1000), // 72h
     });
 
-    await sendVerificationEmail(email, username, verifyToken);
+    // Fire the verification email but don't let a mail failure block registration/login
+    try {
+      await sendVerificationEmail(email, username, verifyToken);
+    } catch (mailErr) {
+      console.error("[register] verification email failed", mailErr);
+    }
 
-    return NextResponse.json({ success: true, message: "Account created" }, { status: 201 });
+    // --- Log the user in immediately: same token shape/cookie as /api/auth/login ---
+    const token = await new SignJWT({ id: String(newUser._id) })
+      .setProtectedHeader({ alg: "HS256" })
+      .setExpirationTime("30d")
+      .sign(getSecret());
+
+    const ckk = await cookies();
+    ckk.set({
+      name: "accessToken",
+      value: token,
+      httpOnly: true,
+      maxAge: 60 * 60 * 24 * 30,
+      sameSite: "strict",
+    });
+
+    return NextResponse.json(
+      {
+        success: true,
+        message: "Account created",
+        data: {
+          username: newUser.username,
+          _id: newUser._id,
+          isBanned: newUser.isBanned,
+          avatar: newUser.avatar,
+          isVerified: newUser.isVerified,
+          theme: newUser.theme,
+          usernameEffect: newUser.usernameEffect,
+          avatarEffect: newUser.avatarEffect,
+        },
+        token,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error.name === "ValidationError") {
       return NextResponse.json(
