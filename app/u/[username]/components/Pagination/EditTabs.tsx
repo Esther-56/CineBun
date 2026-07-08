@@ -280,29 +280,73 @@ export function AccountTab({ profile, passwordData, onPasswordChange }: AccountT
 }
 
 // ── Notifications Tab ─────────────────────────────────────────────────────────
-export function NotificationsTab() {
-  const notifications = [
-    { label: 'Someone replies to your thread',  sub: 'Get notified when a member posts in a thread you started.', default: true  },
-    { label: 'Someone quotes your post',         sub: 'Get notified when your post is quoted.',                   default: true  },
-    { label: 'Someone reacts to your post',      sub: 'Likes, loves, and other reactions.',                       default: true  },
-    { label: 'Someone mentions you',             sub: 'When your @username appears in a post.',                   default: true  },
-    { label: 'You receive a direct message',     sub: 'Private messages from other members.',                     default: false },
-    { label: 'Staff warnings or notices',        sub: 'Moderation actions on your account.',                      default: false },
+// ── Notifications Tab ─────────────────────────────────────────────────────────
+interface NotificationsTabProps {
+  commentEmailsEnabled: boolean;
+  replyEmailsEnabled: boolean;
+  onCommentEmailsChange: (v: boolean) => void;
+  onReplyEmailsChange: (v: boolean) => void;
+}
+
+export function NotificationsTab({
+  commentEmailsEnabled,
+  replyEmailsEnabled,
+  onCommentEmailsChange,
+  onReplyEmailsChange,
+}: NotificationsTabProps) {
+  const emailToggles = [
+    {
+      label: 'Someone comments on your thread',
+      sub: 'Get an email when a member posts a top-level reply in a thread you started.',
+      checked: commentEmailsEnabled,
+      onChange: onCommentEmailsChange,
+    },
+    {
+      label: 'Someone replies to your comment',
+      sub: 'Get an email when a member replies directly to one of your posts.',
+      checked: replyEmailsEnabled,
+      onChange: onReplyEmailsChange,
+    },
+  ];
+
+  // Not wired to a backend field yet — shown for context, saved locally only.
+  const comingSoon = [
+    { label: 'Someone quotes your post', sub: 'Get notified when your post is quoted.', default: true },
+    { label: 'Someone reacts to your post', sub: 'Likes, loves, and other reactions.', default: true },
+    { label: 'Someone mentions you', sub: 'When your @username appears in a post.', default: true },
+    { label: 'You receive a direct message', sub: 'Private messages from other members.', default: false },
+    { label: 'Staff warnings or notices', sub: 'Moderation actions on your account.', default: false },
   ];
 
   return (
-    <SectionCard title="Notification Preferences">
-      <div className="divide-y divide-(--border-soft)">
-        {notifications.map((n, i) => (
-          <div key={i} className="flex items-center justify-between gap-4 px-4 py-3">
-            <div>
-              <p className="text-sm text-(--text-primary)">{n.label}</p>
-              <p className="text-[11px] text-(--text-muted) mt-0.5">{n.sub}</p>
+    <div className="space-y-4">
+      <SectionCard title="Email Notifications">
+        <div className="divide-y divide-(--border-soft)">
+          {emailToggles.map((n, i) => (
+            <div key={i} className="flex items-center justify-between gap-4 px-4 py-3">
+              <div>
+                <p className="text-sm text-(--text-primary)">{n.label}</p>
+                <p className="text-[11px] text-(--text-muted) mt-0.5">{n.sub}</p>
+              </div>
+              <Toggle checked={n.checked} onChange={(v) => n.onChange(v)} />
             </div>
-            <Toggle defaultChecked={n.default} />
-          </div>
-        ))}
-      </div>
-    </SectionCard>
+          ))}
+        </div>
+      </SectionCard>
+
+      <SectionCard title="Coming Soon">
+        <div className="divide-y divide-(--border-soft)">
+          {comingSoon.map((n, i) => (
+            <div key={i} className="flex items-center justify-between gap-4 px-4 py-3 opacity-50">
+              <div>
+                <p className="text-sm text-(--text-primary)">{n.label}</p>
+                <p className="text-[11px] text-(--text-muted) mt-0.5">{n.sub}</p>
+              </div>
+              <Toggle defaultChecked={n.default} disabled />
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+    </div>
   );
 }

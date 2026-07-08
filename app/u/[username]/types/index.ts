@@ -139,6 +139,8 @@ export interface UserProfile {
   location:string;
   isBlockedByMe:boolean
   messagingPrivacy:'everyone' | 'nobody'
+  commentEmailsEnabled?: boolean;
+  replyEmailsEnabled?: boolean;
 }
 
 

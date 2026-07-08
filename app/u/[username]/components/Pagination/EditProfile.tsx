@@ -1,13 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { X, Save, Check, User, Settings, Palette, Loader2 } from 'lucide-react';
-import { ProfileTab, AccountTab, AppearanceTab,} from './EditTabs';
+import { X, Save, Check, User, Settings, Palette, Loader2, Bell } from 'lucide-react';
+import { ProfileTab, AccountTab, AppearanceTab, } from './EditTabs';
 import { UserService } from '@/app/services/users';
 import { UserProfile, EditTab } from '../../types';
 import { UsernameEffectKey } from '../ui/UsernameEffect';
 import { AvatarEffectKey } from '@/app/MainPage/trendingThreads/components/Avatar';
 import { store } from '@/app/store';
-
+import { NotificationsTab } from './EditTabs';
 
 
 interface EditProfileProps {
@@ -37,7 +37,7 @@ const TABS: { id: EditTab; label: string; icon: React.ReactNode }[] = [
   { id: 'profile',       label: 'Profile',       icon: <User size={13} />    },
   { id: 'account',       label: 'Account',       icon: <Settings size={13} /> },
   { id: 'appearance',    label: 'Appearance',    icon: <Palette size={13} />  },
-  // { id: 'notifications', label: 'Notifications', icon: <Bell size={13} />     },
+  { id: 'notifications', label: 'Notifications', icon: <Bell size={13} />     }, // uncomment + import Bell
 ];
 
 export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
@@ -70,6 +70,14 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
     (profile.avatarEffect as AvatarEffectKey) ?? null
   );
 
+  // ── Notification email state ──────────────────────────────────────────────
+  const [commentEmailsEnabled, setCommentEmailsEnabled] = useState(
+    profile.commentEmailsEnabled ?? true
+  );
+  const [replyEmailsEnabled, setReplyEmailsEnabled] = useState(
+    profile.replyEmailsEnabled ?? true
+  );
+
   const flashSaved = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -92,7 +100,6 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
         store.avatar = formData?.avatar || null
         onSaved?.();
         flashSaved();
-        
 
       } else if (tab === 'account') {
         const touchedPassword =
@@ -115,22 +122,22 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
         }
         onSaved?.();
         flashSaved();
-        
 
       } else if (tab === 'appearance') {
-       await UserService.updateAppearance({
+        await UserService.updateAppearance({
           theme:          themeId,
           usernameEffect: usernameEffect ?? null,
           avatarEffect:   avatarEffect   ?? null,
         });
-        
-      onSaved?.();
-      flashSaved();
-       
+        onSaved?.();
+        flashSaved();
 
-      } else {
-        // notifications — local-only for now
-        
+      } else if (tab === 'notifications') {
+        await UserService.updateNotificationSettings({
+          commentEmailsEnabled,
+          replyEmailsEnabled,
+        });
+        onSaved?.();
         flashSaved();
       }
     } catch {
@@ -142,7 +149,7 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
 
   return (
     <div className="min-h-screen bg-(--bg-page)">
-      {/* ── Header ── */}
+      {/* ── Header ── (unchanged) ── */}
       <div className="sticky top-0 z-20 border-b border-(--border-soft) bg-(--bg-surface)">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <button
@@ -210,9 +217,14 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
             onAvatarEffectChange={setAvatarEffect}
           />
         )}
-        {/* {tab === 'notifications' && (
-          <NotificationsTab />
-        )} */}
+        {tab === 'notifications' && (
+          <NotificationsTab
+            commentEmailsEnabled={commentEmailsEnabled}
+            replyEmailsEnabled={replyEmailsEnabled}
+            onCommentEmailsChange={setCommentEmailsEnabled}
+            onReplyEmailsChange={setReplyEmailsEnabled}
+          />
+        )}
       </div>
     </div>
   );
