@@ -40,7 +40,6 @@ export async function GET(
       if (!id) {
         return serverError("GET /api/threads/[id]/posts/poll");
       }
-
       const { searchParams } = new URL(req.url);
       const since = searchParams.get("since");
       if (!since) return fail("Missing 'since' parameter.", 400);
