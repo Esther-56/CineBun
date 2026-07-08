@@ -49,7 +49,25 @@ export function RichEditor({
   const [preview, setPreview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
-
+  const LinkExtended = Link.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      class: {
+        default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute("class"),
+        renderHTML: (attributes: Record<string, any>) =>
+          attributes.class ? { class: attributes.class } : {},
+      },
+      style: {
+        default: null,
+        parseHTML: (element: HTMLElement) => element.getAttribute("style"),
+        renderHTML: (attributes: Record<string, any>) =>
+          attributes.style ? { style: attributes.style } : {},
+      },
+    };
+  },
+});
   const editor = useEditor({
     immediatelyRender: false,
     autofocus: autoFocus,
@@ -63,7 +81,7 @@ export function RichEditor({
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Color,
       FontSize,
-      Link.configure({
+     LinkExtended.configure({
         openOnClick: false,
         autolink: false,
         HTMLAttributes: { rel: "noopener noreferrer" },

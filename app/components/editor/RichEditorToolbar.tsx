@@ -43,31 +43,103 @@ const FONT_SIZES = [
   { label: "XXL",    value: "40px" },
 ];
 
-const MAX_UPLOAD_BYTES = 1 * 1024 * 1024; // 8MB, matches the API route
+const MAX_UPLOAD_BYTES = 1 * 1024 * 1024; // 1MB, matches the API route
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
+// Recognizes a much wider set of video sources and returns an embeddable
+// iframe src, or null if the URL isn't a recognized video.
 function getVideoEmbedSrc(url: string): string | null {
   try {
     const u = new URL(url);
     const host = u.hostname.replace(/^www\./, "");
+    const path = u.pathname;
 
+    // YouTube
     if (host === "youtube.com" || host === "m.youtube.com") {
       const id =
         u.searchParams.get("v") ??
-        u.pathname.match(/\/shorts\/([a-zA-Z0-9_-]+)/)?.[1] ??
-        u.pathname.match(/\/embed\/([a-zA-Z0-9_-]+)/)?.[1];
+        path.match(/\/shorts\/([a-zA-Z0-9_-]+)/)?.[1] ??
+        path.match(/\/embed\/([a-zA-Z0-9_-]+)/)?.[1];
       if (id) return `https://www.youtube.com/embed/${id}`;
     }
     if (host === "youtu.be") {
-      const id = u.pathname.slice(1);
+      const id = path.slice(1);
       if (id) return `https://www.youtube.com/embed/${id}`;
     }
-    if (host === "vimeo.com") {
-      const id = u.pathname.match(/\/(\d+)/)?.[1];
+
+    // Vimeo
+    if (host === "vimeo.com" || host === "player.vimeo.com") {
+      const id = path.match(/\/(\d+)/)?.[1];
       if (id) return `https://player.vimeo.com/video/${id}`;
     }
-    if (/\/(e|embed|player)\/[a-zA-Z0-9_-]+/.test(u.pathname)) return url;
+
+    // Dailymotion
+    if (host === "dailymotion.com") {
+      const id = path.match(/\/video\/([a-zA-Z0-9]+)/)?.[1];
+      if (id) return `https://www.dailymotion.com/embed/video/${id}`;
+    }
+    if (host === "dai.ly") {
+      const id = path.slice(1);
+      if (id) return `https://www.dailymotion.com/embed/video/${id}`;
+    }
+
+    // Loom
+    if (host === "loom.com") {
+      const id = path.match(/\/share\/([a-zA-Z0-9]+)/)?.[1];
+      if (id) return `https://www.loom.com/embed/${id}`;
+    }
+
+    // Streamable
+    if (host === "streamable.com") {
+      const id = path.match(/^\/([a-zA-Z0-9]+)/)?.[1];
+      if (id) return `https://streamable.com/e/${id}`;
+    }
+
+    // Wistia
+    if (host.endsWith("wistia.com") || host.endsWith("wistia.net")) {
+      const id =
+        path.match(/\/medias\/([a-zA-Z0-9]+)/)?.[1] ??
+        path.match(/\/iframe\/([a-zA-Z0-9]+)/)?.[1];
+      if (id) return `https://fast.wistia.net/embed/iframe/${id}`;
+    }
+
+    // Twitch (videos, clips, live channel)
+    if (host === "twitch.tv" || host === "m.twitch.tv" || host === "clips.twitch.tv") {
+      const parent = typeof window !== "undefined" ? window.location.hostname : "localhost";
+      if (host === "clips.twitch.tv") {
+        const clip = path.slice(1);
+        if (clip) return `https://clips.twitch.tv/embed?clip=${clip}&parent=${parent}`;
+      }
+      const clipMatch = path.match(/\/clip\/([a-zA-Z0-9-]+)/)?.[1];
+      if (clipMatch) return `https://clips.twitch.tv/embed?clip=${clipMatch}&parent=${parent}`;
+      const vid = path.match(/\/videos\/(\d+)/)?.[1];
+      if (vid) return `https://player.twitch.tv/?video=${vid}&parent=${parent}`;
+      const channel = path.match(/^\/([a-zA-Z0-9_]+)\/?$/)?.[1];
+      if (channel) return `https://player.twitch.tv/?channel=${channel}&parent=${parent}`;
+    }
+
+    // TikTok
+    if (host === "tiktok.com") {
+      const id = path.match(/\/video\/(\d+)/)?.[1];
+      if (id) return `https://www.tiktok.com/embed/v2/${id}`;
+    }
+
+    // Facebook video
+    if (host === "facebook.com" || host === "fb.watch") {
+      if (host === "fb.watch" || /\/videos\//.test(path)) {
+        return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false`;
+      }
+    }
+
+    // Direct video files — browsers render these natively inside an iframe
+    if (/\.(mp4|webm|ogg|ogv|mov|m4v)(\?.*)?$/i.test(path)) {
+      return url;
+    }
+
+    // Already a known embed/player URL
+    if (/\/(e|embed|player)\/[a-zA-Z0-9_-]+/.test(path)) return url;
+
     return null;
   } catch {
     return null;
@@ -156,8 +228,12 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
   const [showColor, setShowColor] = useState(false);
   const [showSize, setShowSize] = useState(false);
 
+  // ── Link popover state (Text / Card / Button) ───────────────────────────
+  const [linkMode, setLinkMode] = useState<"text" | "card" | "button">("text");
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
+  const [linkError, setLinkError] = useState("");
+  const [linkLoading, setLinkLoading] = useState(false);
 
   // ── Image popover state (URL-add + device upload only) ──────────────────
   const [imageUrlInput, setImageUrlInput] = useState("");
@@ -165,10 +241,9 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
   const [imageLoading, setImageLoading] = useState(false);
   const [imageUrls, setImageUrls] = useState<string[]>([]);
 
-  // ── Video/link embed popover state ───────────────────────────────────────
+  // ── Video embed popover state ────────────────────────────────────────────
   const [embedUrl, setEmbedUrl] = useState("");
   const [embedError, setEmbedError] = useState("");
-  const [embedLoading, setEmbedLoading] = useState(false);
 
   const [activeColor, setActiveColor] = useState("inherit");
   const colorInputRef = useRef<HTMLInputElement>(null);
@@ -190,22 +265,83 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
 
   // ── Link ───────────────────────────────────────────────────────────────────
 
-  const handleInsertLink = () => {
-    if (!linkUrl.trim()) return;
-    const safeUrl = `/leaving?site=${encodeURIComponent(linkUrl)}`;
-    const text = linkText || linkUrl;
-    editor
-      .chain()
-      .focus()
-      .insertContent({
-        type: "text",
-        text,
-        marks: [{ type: "link", attrs: { href: safeUrl } }],
-      })
-      .run();
+  const resetLinkState = () => {
     setShowLink(false);
+    setLinkMode("text");
     setLinkUrl("");
     setLinkText("");
+    setLinkError("");
+  };
+
+  const handleInsertLink = async () => {
+    const url = linkUrl.trim();
+    if (!url) return;
+
+    if (!validateHttpUrl(url)) {
+      setLinkError("Enter a valid http(s) URL.");
+      return;
+    }
+
+    const safeUrl = `/leaving?site=${encodeURIComponent(url)}`;
+
+    if (linkMode === "text") {
+      const text = linkText || url;
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "text",
+          text,
+          marks: [{ type: "link", attrs: { href: safeUrl } }],
+        })
+        .run();
+      resetLinkState();
+      return;
+    }
+
+    if (linkMode === "button") {
+      const text = linkText || "Learn more";
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "text",
+          text,
+          marks: [
+            {
+              type: "link",
+              attrs: {
+                href: safeUrl,
+                class: "link-btn",
+                style:
+                  "display:inline-block;padding:8px 16px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;font-weight:600;",
+              },
+            },
+          ],
+        })
+        .run();
+      resetLinkState();
+      return;
+    }
+
+    // linkMode === "card"
+    setLinkLoading(true);
+    setLinkError("");
+    try {
+      const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
+      const json = await res.json();
+      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't build a link card for that URL.");
+      editor
+        .chain()
+        .focus()
+        .setLinkCard({ ...json.data, url: safeUrl })
+        .run();
+      resetLinkState();
+    } catch (e: any) {
+      setLinkError(e?.message ?? "Couldn't build a link card for that URL. Try Text or Button instead.");
+    } finally {
+      setLinkLoading(false);
+    }
   };
 
   // ── Image: URL add ────────────────────────────────────────────────────────
@@ -244,7 +380,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
       return;
     }
 
-    setImageError("That doesn't look like an image. Use the video/link embed button instead.");
+    setImageError("That doesn't look like an image. Use the Embed video tool instead.");
   };
 
   // ── Image: device upload ─────────────────────────────────────────────────
@@ -287,7 +423,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
 
   const removeImage = (idx: number) => setImageUrls((prev) => prev.filter((_, i) => i !== idx));
 
-  // ── Video / link embed ───────────────────────────────────────────────────
+  // ── Video embed ───────────────────────────────────────────────────────────
 
   const resetEmbedState = () => {
     setShowEmbed(false);
@@ -295,12 +431,17 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
     setEmbedError("");
   };
 
-  const handleAddEmbed = async () => {
+  const handleAddEmbed = () => {
     const url = embedUrl.trim();
     if (!url) return;
 
     if (!validateHttpUrl(url)) {
       setEmbedError("Enter a valid http(s) URL.");
+      return;
+    }
+
+    if (isImageUrl(url)) {
+      setEmbedError("That's an image link — use the Insert Image tool instead.");
       return;
     }
 
@@ -311,28 +452,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
       return;
     }
 
-    if (isImageUrl(url)) {
-      setEmbedError("That's an image link — use the image button instead.");
-      return;
-    }
-
-    setEmbedLoading(true);
-    setEmbedError("");
-    try {
-      const res = await fetch(`/api/link-preview?url=${encodeURIComponent(url)}`);
-      const json = await res.json();
-      if (!res.ok || !json?.data) throw new Error(json?.error ?? "Couldn't load a preview for that link.");
-      editor
-        .chain()
-        .focus()
-        .setLinkCard({ ...json.data, url: `/leaving?site=${encodeURIComponent(url)}` })
-        .run();
-      resetEmbedState();
-    } catch (e: any) {
-      setEmbedError(e?.message ?? "Couldn't load a preview for that link.");
-    } finally {
-      setEmbedLoading(false);
-    }
+    setEmbedError("Couldn't recognize that as a video link. For articles or other pages, use the Link tool's Card option instead.");
   };
 
   // ── Color ──────────────────────────────────────────────────────────────────
@@ -461,29 +581,64 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
         <ToolbarButton icon={<Minus size={13} />} label="Divider" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
         <ToolbarDivider />
 
-        {/* Link */}
+        {/* Link (Text / Card / Button) */}
         <div className="relative">
           <ToolbarButton icon={<LinkIcon size={13} />} label="Insert link" active={showLink} onClick={() => openOnly(setShowLink)} />
           {showLink && (
             <Popover>
               <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Insert link</p>
+
+              <div className="flex gap-1 mb-2 bg-(--bg-page) p-0.5 rounded-lg">
+                {(["text", "card", "button"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => { setLinkMode(mode); setLinkError(""); }}
+                    className={`flex-1 py-1 text-[11px] rounded-md capitalize transition-colors ${
+                      linkMode === mode ? "bg-(--accent) text-white" : "text-(--text-muted) hover:text-(--text-primary)"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+
               <input
                 autoFocus
                 placeholder="URL"
                 value={linkUrl}
-                onChange={(e) => setLinkUrl(e.target.value)}
+                onChange={(e) => { setLinkUrl(e.target.value); setLinkError(""); }}
+                onKeyDown={(e) => e.key === "Enter" && linkMode !== "card" && handleInsertLink()}
                 className="mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) lg:w-64 w-full"
               />
-              <input
-                placeholder="Display text (optional)"
-                value={linkText}
-                onChange={(e) => setLinkText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleInsertLink()}
-                className="w-full mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent)"
-              />
+
+              {linkMode !== "card" && (
+                <input
+                  placeholder={linkMode === "button" ? "Button label (optional)" : "Display text (optional)"}
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleInsertLink()}
+                  className="w-full mb-2 px-2 py-1.5 bg-(--bg-page) border border-(--border-soft) rounded text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent)"
+                />
+              )}
+
+              {linkMode === "card" && (
+                <p className="text-[10px] text-(--text-muted) mb-2 leading-relaxed">
+                  {"Builds a preview card from the page's title, image, and description."}
+                </p>
+              )}
+
+              {linkError && <p className="text-[11px] text-(--danger) mb-2">{linkError}</p>}
+
               <div className="flex gap-2">
-                <button onClick={handleInsertLink} className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) text-white text-xs rounded transition-colors">Insert</button>
-                <button onClick={() => setShowLink(false)} className="px-3 py-1.5 bg-(--bg-elevated) hover:bg-(--border-soft) text-(--text-primary) text-xs rounded transition-colors">Cancel</button>
+                <button
+                  onClick={handleInsertLink}
+                  disabled={linkLoading || !linkUrl.trim()}
+                  className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-40 text-white text-xs rounded transition-colors"
+                >
+                  {linkLoading ? "Loading…" : "Insert"}
+                </button>
+                <button onClick={resetLinkState} className="px-3 py-1.5 bg-(--bg-elevated) hover:bg-(--border-soft) text-(--text-primary) text-xs rounded transition-colors">Cancel</button>
               </div>
             </Popover>
           )}
@@ -570,17 +725,17 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
           )}
         </div>
 
-        {/* Video / link embed */}
+        {/* Video embed */}
         <div className="relative">
-          <ToolbarButton icon={<MonitorPlay size={13} />} label="Embed video or link" active={showEmbed} onClick={() => openOnly(setShowEmbed)} />
+          <ToolbarButton icon={<MonitorPlay size={13} />} label="Embed video" active={showEmbed} onClick={() => openOnly(setShowEmbed)} />
           {showEmbed && (
             <Popover>
-              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Embed video or link</p>
+              <p className="text-[10px] text-(--text-muted) uppercase tracking-wide mb-2">Embed video</p>
 
               <div className="flex gap-1.5 mb-2">
                 <input
                   autoFocus
-                  placeholder="Paste a YouTube, Vimeo, or article URL…"
+                  placeholder="Paste a video URL…"
                   value={embedUrl}
                   onChange={(e) => { setEmbedUrl(e.target.value); setEmbedError(""); }}
                   onKeyDown={(e) => e.key === "Enter" && handleAddEmbed()}
@@ -591,8 +746,8 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
               {embedError && <p className="text-[11px] text-(--danger) mb-2">{embedError}</p>}
 
               <div className="flex gap-2 sticky bottom-0 bg-(--bg-elevated) pt-2 pb-1 -mb-1">
-                <button type="button" onClick={handleAddEmbed} disabled={embedLoading || !embedUrl.trim()} className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-40 text-white text-xs rounded transition-colors">
-                  {embedLoading ? "Loading…" : "Insert"}
+                <button type="button" onClick={handleAddEmbed} disabled={!embedUrl.trim()} className="flex-1 py-1.5 bg-(--accent) hover:bg-(--accent-hover) disabled:opacity-40 text-white text-xs rounded transition-colors">
+                  Insert
                 </button>
                 <button type="button" onClick={resetEmbedState} className="px-3 py-1.5 bg-(--bg-elevated) hover:bg-(--border-soft) text-(--text-primary) text-xs rounded transition-colors">
                   Cancel
@@ -600,7 +755,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
               </div>
 
               <p className="text-[10px] text-(--text-muted) mt-2 leading-relaxed">
-                YouTube/Vimeo links embed as video. Other links show as a preview card.
+               {"Works with YouTube, Vimeo, Dailymotion, Twitch, Loom, Streamable, Wistia, Facebook, TikTok, and direct video files. For articles or other pages, use the Link tool's Card option."}
               </p>
             </Popover>
           )}
