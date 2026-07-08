@@ -1,5 +1,6 @@
 "use server";
-
+import { sendNewCommentEmail, sendReplyToCommentEmail } from "@/app/lib/mailer";
+import { htmlToExcerpt } from "@/app/lib/helpers/textExcerpt";
 import mongoosedb from "@/app/lib/db/db";
 import Post, { MAX_REPLY_DEPTH } from "@/app/lib/models/Post";
 import Thread from "@/app/lib/models/ThreadSchema";
@@ -88,27 +89,99 @@ export async function POST(req: Request) {
       }
 
       // ── Notifications ──────────────────────────────────────────────────
-      if (parentPost) {
-        // Nested reply — notify the post being replied to, not the thread author
-        if (parentPost.author.toString() !== user._id.toString()) {
-          await Notification.create({
-            user:   parentPost.author,
-            type:   "reply",
-            actor:  user._id,
-            thread: body.threadId,
-            post:   post._id,
-          });
-        }
-      } else if (thread.author.toString() !== user._id.toString()) {
-        // Top-level reply — notify the thread author
-        await Notification.create({
-          user:   thread.author,
-          type:   "reply",
-          actor:  user._id,
-          thread: body.threadId,
-          post:   post._id,
+     const excerpt = htmlToExcerpt(body.content.trim());
+
+if (parentPost) {
+  // Nested reply — notify + email the post being replied to
+  if (parentPost.author.toString() !== user._id.toString()) {
+    await Notification.create({
+      user:   parentPost.author,
+      type:   "reply",
+      actor:  user._id,
+      thread: body.threadId,
+      post:   post._id,
+    });
+
+    const parentAuthor = await User.findById(parentPost.author).select(
+      "email username replyEmailsEnabled"
+    );
+    if (parentAuthor?.email && parentAuthor.replyEmailsEnabled !== false) {
+      try {
+        await sendReplyToCommentEmail({
+          email: parentAuthor.email,
+          username: parentAuthor.username,
+          replierName: user.username,
+          threadTitle: thread.title,
+          replyExcerpt: excerpt,
+          threadId: body.threadId,
         });
+      } catch (err) {
+        console.error("Failed to send reply email:", err);
       }
+    }
+  }
+
+  // Also alert the thread's original author (first post), even for
+  // nested replies buried deep in the tree — as long as they're not
+  // the replier themselves or already notified above as parentAuthor.
+  if (
+    thread.author.toString() !== user._id.toString() &&
+    thread.author.toString() !== parentPost.author.toString()
+  ) {
+    await Notification.create({
+      user:   thread.author,
+      type:   "reply",
+      actor:  user._id,
+      thread: body.threadId,
+      post:   post._id,
+    });
+
+    const threadAuthor = await User.findById(thread.author).select(
+      "email username commentEmailsEnabled"
+    );
+    if (threadAuthor?.email && threadAuthor.commentEmailsEnabled !== false) {
+      try {
+        await sendNewCommentEmail({
+          email: threadAuthor.email,
+          username: threadAuthor.username,
+          commenterName: user.username,
+          threadTitle: thread.title,
+          commentExcerpt: excerpt,
+          threadId: body.threadId,
+        });
+      } catch (err) {
+        console.error("Failed to send new comment email:", err);
+      }
+    }
+  }
+} else if (thread.author.toString() !== user._id.toString()) {
+  // Top-level reply — notify + email the thread author
+  await Notification.create({
+    user:   thread.author,
+    type:   "reply",
+    actor:  user._id,
+    thread: body.threadId,
+    post:   post._id,
+  });
+
+  const threadAuthor = await User.findById(thread.author).select(
+    "email username commentEmailsEnabled"
+  );
+  if (threadAuthor?.email && threadAuthor.commentEmailsEnabled !== false) {
+    try {
+      await sendNewCommentEmail({
+        email: threadAuthor.email,
+        username: threadAuthor.username,
+        commenterName: user.username,
+        threadTitle: thread.title,
+        commentExcerpt: excerpt,
+        threadId: body.threadId,
+      });
+    } catch (err) {
+      console.error("Failed to send new comment email:", err);
+    }
+  }
+}
 
       // Notify quoted post author
       if (body.quotedPostId) {
@@ -125,7 +198,7 @@ export async function POST(req: Request) {
       }
 
       // Notify @mentions — find @username patterns in content
-      const mentions = body.content.match(/@(\w+)/g) ?? [];
+      const mentions =  body.content.match(/@(\w+)/g) ?? [];
       for (const mention of mentions) {
         const username = mention.slice(1);
         const mentioned = await User.findOne({ username }).select("_id");

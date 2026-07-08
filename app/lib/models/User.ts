@@ -62,6 +62,8 @@ emailVerificationToken: { type: String, default: null },
 emailVerificationExpires: { type: Date, default: null },
 passwordResetToken: { type: String, default: null },
 passwordResetExpires: { type: Date, default: null },
+commentEmailsEnabled: { type: Boolean, default: true }, // "new comment on your thread"
+replyEmailsEnabled:   { type: Boolean, default: true }, // "someone replied to your comment
 }, { timestamps: true });
 
 export default mongoose.models.User ||
