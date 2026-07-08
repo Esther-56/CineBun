@@ -150,16 +150,20 @@ export async function sendNewCommentEmail({
   commenterName,
   threadTitle,
   commentExcerpt,
+  subforumId,
   threadId,
+  postId,
 }: {
   email: string;
   username: string;
   commenterName: string;
   threadTitle: string;
   commentExcerpt: string;
+  subforumId: string;
   threadId: string;
+  postId: string;
 }) {
-  const url = `${APP_URL}/f/${threadId}`;
+  const url = `${APP_URL}/f/${subforumId}/${threadId}?post=${postId}`;
   const html = renderEmail({
     preheader: `${commenterName} commented on your thread "${threadTitle}"`,
     heading: "New comment on your thread",
@@ -182,16 +186,20 @@ export async function sendReplyToCommentEmail({
   replierName,
   threadTitle,
   replyExcerpt,
+  subforumId,
   threadId,
+  postId,
 }: {
   email: string;
   username: string;
   replierName: string;
   threadTitle: string;
   replyExcerpt: string;
+  subforumId: string;
   threadId: string;
+  postId: string;
 }) {
-  const url = `${APP_URL}/f/${threadId}`;
+  const url = `${APP_URL}/f/${subforumId}/${threadId}?post=${postId}`;
   const html = renderEmail({
     preheader: `${replierName} replied to your comment in "${threadTitle}"`,
     heading: "New reply to your comment",
@@ -206,6 +214,33 @@ export async function sendReplyToCommentEmail({
     footNote: `Hi ${username} — you can turn off these notifications from your account settings.`,
   });
   await send(email, `${replierName} replied to your comment`, html);
+}
+
+export async function sendThreadMilestoneEmail({
+  email,
+  username,
+  threadTitle,
+  subforumId,
+  threadId,
+  milestone,
+}: {
+  email: string;
+  username: string;
+  threadTitle: string;
+  subforumId: string;
+  threadId: string;
+  milestone: number;
+}) {
+  const url = `${APP_URL}/f/${subforumId}/${threadId}`;
+  const html = renderEmail({
+    preheader: `Your thread "${threadTitle}" just hit ${milestone} replies!`,
+    heading: `🎉 ${milestone} replies and counting`,
+    bodyHtml: `Hi <strong style="color:#c7cbd1;">${username}</strong>, your thread <strong style="color:#c7cbd1;">"${threadTitle}"</strong> just crossed <strong style="color:#c7cbd1;">${milestone} replies</strong>. People are talking — come see what they're saying.`,
+    ctaLabel: "View Thread",
+    ctaUrl: url,
+    footNote: "You can turn off milestone notifications from your account settings.",
+  });
+  await send(email, `🎉 "${threadTitle}" hit ${milestone} replies`, html);
 }
 
 export async function sendMissYouReminderEmail({
@@ -255,27 +290,3 @@ export async function sendAnnouncementEmail({
   await send(email, `📢 ${title}`, html);
 }
 
-export async function sendThreadMilestoneEmail({
-  email,
-  username,
-  threadTitle,
-  threadId,
-  milestone,
-}: {
-  email: string;
-  username: string;
-  threadTitle: string;
-  threadId: string;
-  milestone: number;
-}) {
-  const url = `${APP_URL}/t/${threadId}`;
-  const html = renderEmail({
-    preheader: `Your thread "${threadTitle}" just hit ${milestone} replies!`,
-    heading: `🎉 ${milestone} replies and counting`,
-    bodyHtml: `Hi <strong style="color:#c7cbd1;">${username}</strong>, your thread <strong style="color:#c7cbd1;">"${threadTitle}"</strong> just crossed <strong style="color:#c7cbd1;">${milestone} replies</strong>. People are talking — come see what they're saying.`,
-    ctaLabel: "View Thread",
-    ctaUrl: url,
-    footNote: "You can turn off milestone notifications from your account settings.",
-  });
-  await send(email, `🎉 "${threadTitle}" hit ${milestone} replies`, html);
-}
