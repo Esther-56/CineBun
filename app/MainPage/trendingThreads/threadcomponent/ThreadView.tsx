@@ -8,7 +8,7 @@ import { useSnapshot } from 'valtio';
 import { store } from '@/app/store';
 import { PostService } from '@/app/services/posts';
 
-const POLL_INTERVAL_MS = 120000;
+const POLL_INTERVAL_MS = 20000;
 
 interface ThreadViewProps {
   thread: Thread;
