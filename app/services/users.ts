@@ -73,6 +73,9 @@ export const UserService = {
 
   unban: (userId: string) =>
     api.patch<{ user: UserProfile }>(`/admin/users/${userId}/unban`),
-
+  updateNotificationSettings: (body: {
+      commentEmailsEnabled?: boolean;
+      replyEmailsEnabled?: boolean;
+    }) => api.patch('/users/me/notifications', body),
 
 };

@@ -27,29 +27,42 @@ export function Avatar({ letter, size = 80, className = '' }: AvatarProps) {
 
 // ── Toggle ────────────────────────────────────────────────────────────────────
 interface ToggleProps {
-  defaultChecked?: boolean;
-  onChange?: (value: boolean) => void;
+  checked?: boolean;          // controlled mode
+  defaultChecked?: boolean;   // uncontrolled mode (unchanged behavior)
+  onChange?: (v: boolean) => void;
+  disabled?: boolean;
 }
 
-export function Toggle({ defaultChecked = false, onChange }: ToggleProps) {
-  const [on, setOn] = useState(defaultChecked);
+export function Toggle({ checked, defaultChecked = false, onChange, disabled = false }: ToggleProps) {
+  const isControlled = checked !== undefined;
+  const [internalOn, setInternalOn] = useState(defaultChecked);
+  const on = isControlled ? checked : internalOn;
+
   const handleClick = () => {
+    if (disabled) return;
     const next = !on;
-    setOn(next);
+    if (!isControlled) setInternalOn(next);
     onChange?.(next);
   };
+
   return (
     <button
       onClick={handleClick}
+      disabled={disabled}
       aria-checked={on}
       role="switch"
-      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${on ? 'bg-(--accent)' : 'bg-(--bg-elevated)'}`}
+      className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+        on ? 'bg-(--accent)' : 'bg-(--bg-elevated)'
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
-      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${on ? 'translate-x-4' : 'translate-x-0.5'}`} />
+      <div
+        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+          on ? 'translate-x-4' : 'translate-x-0.5'
+        }`}
+      />
     </button>
   );
 }
-
 // ── Field ─────────────────────────────────────────────────────────────────────
 interface FieldProps {
   label: string;
