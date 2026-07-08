@@ -159,7 +159,7 @@ export async function sendNewCommentEmail({
   commentExcerpt: string;
   threadId: string;
 }) {
-  const url = `${APP_URL}/t/${threadId}`;
+  const url = `${APP_URL}/f/${threadId}`;
   const html = renderEmail({
     preheader: `${commenterName} commented on your thread "${threadTitle}"`,
     heading: "New comment on your thread",
@@ -191,7 +191,7 @@ export async function sendReplyToCommentEmail({
   replyExcerpt: string;
   threadId: string;
 }) {
-  const url = `${APP_URL}/t/${threadId}`;
+  const url = `${APP_URL}/f/${threadId}`;
   const html = renderEmail({
     preheader: `${replierName} replied to your comment in "${threadTitle}"`,
     heading: "New reply to your comment",
