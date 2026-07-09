@@ -672,11 +672,34 @@ body {
     }
   }
 
-   .editor-image-grid { display: grid; gap: 4px; margin: 0.5rem 0; border-radius: 0.5rem; overflow: hidden; }
-  .editor-image-grid--1 { grid-template-columns: 1fr; }
-  .editor-image-grid--2 { grid-template-columns: 1fr 1fr; }
-  .editor-image-grid--3 { grid-template-columns: 1fr 1fr 1fr; }
-  .editor-image-grid .editor-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.editor-image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.editor-image-grid .editor-image {
+  height: 220px;   /* was 220px — this is your actual "too big" culprit */
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: var(--bg-page);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.editor-image-grid .editor-image:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .editor-image-grid .editor-image {
+    height: 160px;
+  }
+}
 
   .prose-dark .editor-video-embed,
 .editor-video-embed {
