@@ -8,7 +8,7 @@ import { UsernameEffectKey } from '../ui/UsernameEffect';
 import { AvatarEffectKey } from '@/app/MainPage/trendingThreads/components/Avatar';
 import { store } from '@/app/store';
 import { NotificationsTab } from './EditTabs';
-
+import { storeHydrator } from '@/app/MainPage/StoreHydrator';
 
 interface EditProfileProps {
   profile: UserProfile;
@@ -97,7 +97,7 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           avatar:      formData.avatar,
           banner:      formData.banner,
         });
-        store.avatar = formData?.avatar || null
+        await storeHydrator()
         onSaved?.();
         flashSaved();
 
@@ -129,6 +129,7 @@ export function EditProfile({ profile, onCancel, onSaved }: EditProfileProps) {
           usernameEffect: usernameEffect ?? null,
           avatarEffect:   avatarEffect   ?? null,
         });
+        await storeHydrator()
         onSaved?.();
         flashSaved();
 

@@ -4,9 +4,7 @@ import { useEffect } from 'react';
 import { store } from '@/app/store';
 import { UserService } from '../services/users';
 
-export default function StoreHydrator() {
-
-  const Get = async () =>{
+ export const storeHydrator = async () =>{
 
     try{
      const data = await UserService.getMyProfile()
@@ -21,8 +19,9 @@ export default function StoreHydrator() {
     }
   }
 
+export default function StoreHydrator() {
   useEffect(() => {
-    Get()
+    storeHydrator()
   }, []);
 
   return null;
