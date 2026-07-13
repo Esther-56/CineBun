@@ -585,7 +585,7 @@ export function RichEditorToolbar({ editor, preview, onTogglePreview }: RichEdit
         )}
         <div
           ref={scrollRef}
-          className="flex items-center gap-0.5 px-2 py-1.5 border-b border-(--border-soft) bg-(--bg-input) overflow-x-auto sm:flex-wrap sm:overflow-visible [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex items-center gap-0.5 px-2 py-1.5 border-b border-(--border-soft) bg-(--bg-input) overflow-x-auto sm:flex-wrap sm:overflow-visible [-webkit-overflow-scrolling:touch] scrollbar-none [&::-webkit-scrollbar]:hidden"
         >
 
           {/* Headings */}
