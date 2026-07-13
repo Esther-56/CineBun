@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback, memo } from 'react';
 import {
   MessageSquare, ChevronDown, ChevronRight, Pencil, SmilePlus,
   CornerUpLeft, Link as LinkIcon, Check, Trash2, AlertTriangle, X,
@@ -90,6 +90,43 @@ function scrollToPost(id: string) {
   flashHighlight(el);
 }
 
+function sanitizePostLinks(html: string): string {
+  return html.replace(
+    /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
+    (match, before, href, after) => {
+      if (href.startsWith("/leaving")) return match;
+      const safe = `/leaving?site=${encodeURIComponent(href)}`;
+      return `<a ${before}href="${safe}"${after}>`;
+    }
+  );
+}
+
+// ── Memoized post body ────────────────────────────────────────────────────
+// This is the ONLY thing that touches dangerouslySetInnerHTML. It's wrapped
+// in React.memo and only re-renders when `content` actually changes (e.g.
+// after an edit). Sibling state in PostCard — reactions, replying, editing
+// toggles, emoji picker, collapse — no longer forces this subtree to
+// re-render, so embedded <video>/<iframe> elements are never touched and
+// never restart when you click Reply, React, Edit, etc.
+const PostBody = memo(function PostBody({
+  content,
+  isReply,
+  onContentClick,
+}: {
+  content: string;
+  isReply: boolean;
+  onContentClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+}) {
+  const html = useMemo(() => sanitizePostLinks(content), [content]);
+  return (
+    <div
+      className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'} [&_.editor-image]:cursor-zoom-in`}
+      dangerouslySetInnerHTML={{ __html: html }}
+      onClick={onContentClick}
+    />
+  );
+});
+
 // ── Delete confirmation modal ─────────────────────────────────────────────────
 function DeleteModal({
   onConfirm,
@@ -173,6 +210,7 @@ export default function PostCard({
   );
   const [visibleReplies, setVisibleReplies]   = useState(INITIAL_VISIBLE_REPLIES);
   const [copied, setCopied]                   = useState(false);
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
   const snap = useSnapshot(store)
   const id = snap._id
   const emojiRef = useRef<HTMLDivElement>(null);
@@ -213,22 +251,21 @@ export default function PostCard({
   const flattenedReplies  = flattenChildren(children);
   const visibleChildren   = flattenedReplies.slice(0, visibleReplies);
   const hiddenCount       = flattenedReplies.length - visibleReplies;
-  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null);
 
-// Add click handler
-function handleContentClick(e: React.MouseEvent<HTMLDivElement>) {
-  const target = e.target as HTMLElement;
-  if (target.tagName !== "IMG") return;
-  const img = target as HTMLImageElement;
-  // Find all images in the same grid as the clicked image
-  const grid = img.closest(".editor-image-grid");
-  const imgs = grid
-    ? Array.from(grid.querySelectorAll("img")).map((i) => (i as HTMLImageElement).src)
-    : [img.src];
-  const index = imgs.indexOf(img.src);
-  setLightbox({ images: imgs, index: index === -1 ? 0 : index });
-}
-
+  // Stable reference so PostBody (React.memo) doesn't re-render when
+  // unrelated PostCard state changes — only when `content` itself changes.
+  const handleContentClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName !== "IMG") return;
+    const img = target as HTMLImageElement;
+    // Find all images in the same grid as the clicked image
+    const grid = img.closest(".editor-image-grid");
+    const imgs = grid
+      ? Array.from(grid.querySelectorAll("img")).map((i) => (i as HTMLImageElement).src)
+      : [img.src];
+    const index = imgs.indexOf(img.src);
+    setLightbox({ images: imgs, index: index === -1 ? 0 : index });
+  }, []);
 
   function handleReplyCreated(newPost: Post) {
     setChildren((prev) => [...prev, { ...newPost, children: [] }]);
@@ -299,17 +336,6 @@ function handleContentClick(e: React.MouseEvent<HTMLDivElement>) {
       setMyReaction(prevReaction);
     }
   }
-
-  function sanitizePostLinks(html: string): string {
-  return html.replace(
-    /<a\s+([^>]*?)href="(https?:\/\/[^"]+)"([^>]*?)>/gi,
-    (match, before, href, after) => {
-      if (href.startsWith("/leaving")) return match;
-      const safe = `/leaving?site=${encodeURIComponent(href)}`;
-      return `<a ${before}href="${safe}"${after}>`;
-    }
-  );
-}
 
   async function handleCopyLink() {
     const url = `${window.location.origin}${window.location.pathname}?post=${post._id}`;
@@ -462,20 +488,19 @@ function handleContentClick(e: React.MouseEvent<HTMLDivElement>) {
                   </div>
                 ) : (
                   <div className="flex flex-col flex-1 justify-between">
-                                  <div
-                                      className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'} [&_.editor-image]:cursor-zoom-in`}
-                                      dangerouslySetInnerHTML={{ __html: sanitizePostLinks(content) }}
-                                      onClick={handleContentClick}
-                                    />
-                                    {lightbox && (
-                                    <Lightbox
-                                      images={lightbox.images}
-                                      index={lightbox.index}
-                                      onClose={() => setLightbox(null)}
-                                      onNavigate={(i) => setLightbox((lb) => lb ? { ...lb, index: i } : null)}
-                                    />
-                                  )}
-                
+                    <PostBody
+                      content={content}
+                      isReply={isReply}
+                      onContentClick={handleContentClick}
+                    />
+                    {lightbox && (
+                      <Lightbox
+                        images={lightbox.images}
+                        index={lightbox.index}
+                        onClose={() => setLightbox(null)}
+                        onNavigate={(i) => setLightbox((lb) => lb ? { ...lb, index: i } : null)}
+                      />
+                    )}
 
                     {id&&<div>
                       {/* Reaction bubbles */}
