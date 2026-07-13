@@ -29,6 +29,11 @@ body {
 
 .prose-dark p {
   font-size: 0.875rem;
+  margin: 0 0 0.75rem 0;
+}
+
+.prose-dark p:last-child {
+  margin-bottom: 0;
 }
 
 .prose-dark ul {
