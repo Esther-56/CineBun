@@ -120,7 +120,7 @@ const PostBody = memo(function PostBody({
   const html = useMemo(() => sanitizePostLinks(content), [content]);
   return (
     <div
-      className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary) leading-relaxed ${isReply ? 'mb-2' : 'mb-3'} [&_.editor-image]:cursor-zoom-in`}
+      className={`prose-dark ${isReply ? 'text-[14px]' : 'text-[17px]'} font-medium text-(--text-primary)  ${isReply ? 'mb-2' : 'mb-3'} [&_.editor-image]:cursor-zoom-in`}
       dangerouslySetInnerHTML={{ __html: html }}
       onClick={onContentClick}
     />
