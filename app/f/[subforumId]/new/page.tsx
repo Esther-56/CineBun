@@ -2,13 +2,23 @@
 
 import { useState, useRef, useEffect, type KeyboardEvent } from "react";
 import { useSearchParams } from "next/navigation";
-import { X, Image as ImageIcon, AlertCircle, ChevronDown, Loader2, Upload } from "lucide-react";
+import { X, Image as ImageIcon, AlertCircle, ChevronDown, Loader2, Upload, BarChart3, Plus } from "lucide-react";
 import { ThreadService } from "@/app/services/threads";
 import { RichEditor } from "@/app/MainPage/trendingThreads/threadcomponent/RichEditor";
 import { useRouter } from "nextjs-toploader/app";
 
 const MAX_TAGS = 5;
 const MAX_IMAGE_BYTES = 1 * 1024 * 1024; // 1MB, matches /api/upload server-side cap
+
+const MIN_POLL_OPTIONS = 2;
+const MAX_POLL_OPTIONS = 6;
+const POLL_DURATIONS = [
+  { value: "1",  label: "1 day" },
+  { value: "3",  label: "3 days" },
+  { value: "7",  label: "7 days" },
+  { value: "14", label: "14 days" },
+  { value: "0",  label: "No end date" },
+];
 
 const PREFIXES = [
   { value: "Discussion", color: "#1877f2", desc: "General conversation" },
@@ -17,6 +27,11 @@ const PREFIXES = [
   { value: "News",       color: "#c43f3f", desc: "Announcements & updates" },
   { value: "Poll",       color: "#9b5de5", desc: "Community vote" },
 ];
+
+interface PollOption {
+  id: string;
+  text: string;
+}
 
 export default function NewThreadPage() {
   const router       = useRouter();
@@ -35,6 +50,17 @@ export default function NewThreadPage() {
   const [imageError, setImageError] = useState("");
   const [uploading, setUploading]   = useState(false);
   const [error, setError]           = useState("");
+
+  // ── Poll ──────────────────────────────────────────────────────────────────
+  const [showPoll, setShowPoll]         = useState(false);
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions]   = useState<PollOption[]>([
+    { id: "opt-1", text: "" },
+    { id: "opt-2", text: "" },
+  ]);
+  const [pollDuration, setPollDuration] = useState("3");
+  const [pollError, setPollError]       = useState("");
+  const pollIdCounter = useRef(2);
 
   const prefixRef     = useRef<HTMLDivElement>(null);
   const fileInputRef  = useRef<HTMLInputElement>(null);
@@ -98,27 +124,82 @@ export default function NewThreadPage() {
     }
   };
 
-  const handleSubmit = async (html: string) => {
-    setError("");
-    if (!title.trim()) { setError("Please enter a title."); return; }
-    if (!subforumId)   { setError("No subforum selected."); return; }
+  // ── Poll helpers ──────────────────────────────────────────────────────────
 
-    const { data, success } = await ThreadService.create({
-      title: title.trim(),
-      content: html,
-      image: image.trim(),
-      tags,
-      prefix: prefix || undefined,
-      subforumId,
-      categoryId,
-    });
-    const id = data?.thread?._id;
-
-    if (success) {
-      const params = new URLSearchParams({ page: "1" });
-      router.replace(`/f/${subforumId}/${id}?${params.toString()}`);
-    }
+  const togglePoll = () => {
+    setShowPoll(true);
+    setPrefix((prev) => prev || "Poll");
   };
+
+  const resetPoll = () => {
+    setShowPoll(false);
+    setPollQuestion("");
+    setPollOptions([
+      { id: "opt-1", text: "" },
+      { id: "opt-2", text: "" },
+    ]);
+    setPollDuration("3");
+    setPollError("");
+    pollIdCounter.current = 2;
+  };
+
+  const updatePollQuestion = (value: string) => {
+    setPollQuestion(value);
+    if (pollError) setPollError("");
+  };
+
+  const updatePollOption = (id: string, text: string) => {
+    setPollOptions((prev) => prev.map((o) => (o.id === id ? { ...o, text } : o)));
+    if (pollError) setPollError("");
+  };
+
+  const addPollOption = () => {
+    if (pollOptions.length >= MAX_POLL_OPTIONS) return;
+    pollIdCounter.current += 1;
+    setPollOptions((prev) => [...prev, { id: `opt-${pollIdCounter.current}`, text: "" }]);
+  };
+
+  const removePollOption = (id: string) => {
+    setPollOptions((prev) => (prev.length > MIN_POLL_OPTIONS ? prev.filter((o) => o.id !== id) : prev));
+  };
+
+const handleSubmit = async (html: string) => {
+  setError("");
+  setPollError("");
+  if (!title.trim()) { setError("Please enter a title."); return; }
+  if (!subforumId)   { setError("No subforum selected."); return; }
+
+  let poll: { question: string; options: string[]; durationDays: number } | undefined;
+  if (showPoll) {
+    const question = pollQuestion.trim();
+    const options = pollOptions.map((o) => o.text.trim()).filter(Boolean);
+    const pollIsEmpty = !question && options.length === 0;
+
+    if (!pollIsEmpty) {
+      if (!question) { setPollError("Add a question for your poll."); return; }
+      if (options.length < MIN_POLL_OPTIONS) { setPollError(`Add at least ${MIN_POLL_OPTIONS} options.`); return; }
+      poll = { question, options, durationDays: Number(pollDuration) };
+    }
+    // else: poll UI is open but untouched — treat as "no poll", no error, nothing sent.
+  }
+
+  const { data, success } = await ThreadService.create({
+    title: title.trim(),
+    content: html,
+    image: image.trim(),
+    tags,
+    prefix: prefix || undefined,
+    subforumId,
+    categoryId,
+    poll,
+  });
+  const id = data?.thread?._id;
+
+  if (success) {
+    const params = new URLSearchParams({ page: "1" });
+    router.replace(`/f/${subforumId}/${id}?${params.toString()}`);
+  }
+};
 
   const selectedPrefix = PREFIXES.find((p) => p.value === prefix);
 
@@ -337,6 +418,103 @@ export default function NewThreadPage() {
                   className="w-full h-40 object-cover"
                   onError={() => setImageError("This image link couldn't be loaded.")}
                 />
+              </div>
+            )}
+          </div>
+
+          {/* Poll */}
+          <div className="flex flex-col gap-1">
+            {!showPoll ? (
+              <button
+                type="button"
+                onClick={togglePoll}
+                className="flex items-center gap-2 w-full h-10 px-3 bg-(--bg-surface) border border-dashed border-(--border-medium) hover:border-(--accent) rounded-lg text-sm font-medium text-(--text-muted) hover:text-(--text-primary) transition-colors"
+              >
+                <BarChart3 size={14} />
+                Add a poll
+              </button>
+            ) : (
+              <div className="bg-(--bg-surface) border border-(--border-soft) rounded-lg p-3 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-(--text-muted)">
+                    <BarChart3 size={12} /> Poll
+                  </span>
+                  <button
+                    type="button"
+                    onClick={resetPoll}
+                    className="flex items-center gap-1 text-xs font-medium text-(--text-muted) hover:text-[#ff6b6b] transition-colors"
+                  >
+                    <X size={12} /> Remove poll
+                  </button>
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Ask a question…"
+                  value={pollQuestion}
+                  onChange={(e) => updatePollQuestion(e.target.value)}
+                  maxLength={200}
+                  className="w-full font-medium h-10 px-3 bg-(--bg-page) border border-(--border-soft) rounded-lg text-sm text-(--text-primary) placeholder:text-(--text-muted) focus:outline-none focus:border-(--accent) transition-colors"
+                />
+
+                <div className="flex flex-col gap-1.5">
+                  {pollOptions.map((opt, i) => (
+                    <div key={opt.id} className="flex items-center gap-1.5">
+                      <span className="w-5 shrink-0 text-xs text-(--text-muted) text-center">{i + 1}</span>
+                      <input
+                        type="text"
+                        value={opt.text}
+                        onChange={(e) => updatePollOption(opt.id, e.target.value)}
+                        placeholder={`Option ${i + 1}`}
+                        maxLength={80}
+                        className="flex-1 h-9 px-3 bg-(--bg-page) border border-(--border-soft) rounded-lg text-sm font-medium text-(--text-primary) placeholder:text-(--text-muted) placeholder:font-normal focus:outline-none focus:border-(--accent) transition-colors"
+                      />
+                      {pollOptions.length > MIN_POLL_OPTIONS && (
+                        <button
+                          type="button"
+                          onClick={() => removePollOption(opt.id)}
+                          aria-label={`Remove option ${i + 1}`}
+                          className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg text-(--text-muted) hover:text-[#ff6b6b] hover:bg-(--bg-page) transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {pollOptions.length < MAX_POLL_OPTIONS && (
+                  <button
+                    type="button"
+                    onClick={addPollOption}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-(--accent) hover:text-(--accent-hover) transition-colors"
+                  >
+                    <Plus size={13} /> Add option
+                  </button>
+                )}
+
+                <div className="flex items-center gap-2 pt-1">
+                  <span className="text-xs font-medium text-(--text-muted) shrink-0">Voting ends in</span>
+                  <div className="relative">
+                    <select
+                      value={pollDuration}
+                      onChange={(e) => setPollDuration(e.target.value)}
+                      className="h-9 pl-3 pr-8 bg-(--bg-page) border border-(--border-soft) rounded-lg text-xs font-medium text-(--text-primary) focus:outline-none focus:border-(--accent) appearance-none cursor-pointer"
+                    >
+                      {POLL_DURATIONS.map((d) => (
+                        <option key={d.value} value={d.value}>{d.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDown size={12} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-(--text-muted)" />
+                  </div>
+                </div>
+
+                {pollError && (
+                  <span className="flex items-center gap-1 text-[#ff6b6b] text-xs font-medium">
+                    <AlertCircle size={12} />
+                    {pollError}
+                  </span>
+                )}
               </div>
             )}
           </div>

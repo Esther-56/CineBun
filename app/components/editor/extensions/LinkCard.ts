@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/components/editor/extensions/LinkCard.ts
 import { Node, mergeAttributes } from "@tiptap/core";
 

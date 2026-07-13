@@ -7,6 +7,8 @@ import { Post, Thread } from '../../types/forum';
 import { useSnapshot } from 'valtio';
 import { store } from '@/app/store';
 import { PostService } from '@/app/services/posts';
+import PollDisplay from '@/app/components/PollDisplay';
+
 
 const POLL_INTERVAL_MS = 20000;
 
@@ -111,7 +113,7 @@ export default function ThreadView({
           {pendingCount} new {pendingCount === 1 ? 'post' : 'posts'} — jump to the latest
         </a>
       )}
-
+      {thread?.poll && <PollDisplay threadId={thread._id} poll={thread.poll} />}
       <PostList
         threadId={thread?._id}
         posts={posts}

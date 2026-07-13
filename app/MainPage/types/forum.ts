@@ -19,6 +19,19 @@ export interface Subforum {
   isNew?: boolean;
 }
 
+export interface PollOption {
+  text: string;
+  votes: number;
+}
+
+export interface Poll {
+  question: string;
+  options: PollOption[];
+  durationDays: number;
+  endsAt: string | null;
+  voters: { user: string; optionIndex: number }[];
+}
+
 export interface Category {
   _id: string;
   name: string;
@@ -46,6 +59,13 @@ export interface ThreadUser {
 
 export type ThreadPrefix = 'GUIDE' | 'WIP' | 'DISCUSSION' | 'QUESTION' | 'NEWS' | null;
 
+export interface PollOption {
+  text: string;
+  votes: number;
+}
+
+
+
 export interface Thread {
   _id: string;
   title: string;
@@ -64,12 +84,12 @@ export interface Thread {
   } | null;
   createdAt: Date;
   subforum?: {
-    _id:string;
-    name:string
+    _id: string;
+    name: string
   }; 
   image: string;
-  updatedAt:Date
-
+  updatedAt: Date;
+  poll?: Poll;
 }
 
 export interface SubforumMeta {

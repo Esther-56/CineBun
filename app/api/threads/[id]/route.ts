@@ -60,11 +60,44 @@ export async function POST(req: Request) {
       await mongoosedb();
 
       const body = await req.json();
-      const { title, content, subforumId, categoryId, image, tags, prefix } = body;
+      const { title, content, subforumId, categoryId, image, tags, prefix, poll } = body;
 
-      if (!title?.trim())   return fail("Title is required.");
-      if (!content?.trim()) return fail("Content is required.");
-      if (!subforumId)      return fail("subforumId is required.");
+    if (!title?.trim())   return fail("Title is required.");
+    if (!content?.trim()) return fail("Content is required.");
+    if (!subforumId)      return fail("subforumId is required.");
+
+    interface PollDoc {
+      question: string;
+      options: { text: string; votes: number }[];
+      durationDays: number;
+      endsAt: Date | null;
+      voters: { user: string; optionIndex: number }[];
+    }
+
+    let pollDoc: PollDoc | undefined;
+
+    if (poll) {
+      const question = poll.question?.trim();
+      const cleanOptions = (poll.options ?? [])
+        .map((t: string) => t.trim())
+        .filter(Boolean);
+
+      if (!question)              return fail("Poll question is required.");
+      if (cleanOptions.length < 2) return fail("Poll needs at least 2 options.");
+      if (cleanOptions.length > 6) return fail("Poll allows at most 6 options.");
+
+      const days = Number(poll.durationDays);
+      const endsAt = days > 0 ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null;
+
+      pollDoc = {
+        question,
+        options: cleanOptions.map((text: string) => ({ text, votes: 0 })),
+        durationDays: days,
+        endsAt,
+        voters: [],
+      };
+    }
+
 
 
       // Staff (mods/admins) bypass the read-only restriction.
@@ -95,7 +128,8 @@ export async function POST(req: Request) {
             image,
             tags,
             lastPost: { user: user._id, createdAt: new Date() },
-            prefix
+            prefix,
+            poll:pollDoc
           }], { session }).then(docs => docs[0]);
 
           firstPost = await Post.create([{
@@ -133,28 +167,59 @@ export async function PATCH(
     try {
       await mongoosedb();
       const { id } = await params
-      
+
       const thread = await Thread.findById(id);
 
       if (!thread || thread.isDeleted) return fail("Thread not found.", 404);
       const isAuthor = thread.author.toString() === user._id.toString();
       const canMod   = user.role?.permissions?.canEditAnyPost;
-    
+
       if (!isAuthor && !canMod) return fail("Not allowed.", 403);
 
       const body = await req.json();
-   
+
       const updates: Record<string, unknown> = {};
 
       if (body.title?.trim()) updates.title = body.title.trim();
       if (body.prefix !== undefined) updates.prefix = body.prefix;
       if (body.image !== undefined) updates.image = body.image;
       if (body.tags !== undefined) updates.tags = body.tags;
+
+      // Poll: body.poll === null means "remove the poll".
+      // body.poll === {question, options, durationDays} means "create/replace it".
+      // Replacing a poll resets vote counts and voters, since editing the
+      // options invalidates any votes already cast against the old options.
+      if (body.poll !== undefined) {
+        if (body.poll === null) {
+          updates.poll = null;
+        } else {
+          const question = body.poll.question?.trim();
+          const cleanOptions = (body.poll.options ?? [])
+            .map((t: string) => t.trim())
+            .filter(Boolean);
+
+          if (!question)              return fail("Poll question is required.");
+          if (cleanOptions.length < 2) return fail("Poll needs at least 2 options.");
+          if (cleanOptions.length > 6) return fail("Poll allows at most 6 options.");
+
+          const days = Number(body.poll.durationDays);
+          const endsAt = days > 0 ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null;
+
+          updates.poll = {
+            question,
+            options: cleanOptions.map((text: string) => ({ text, votes: 0 })),
+            durationDays: days,
+            endsAt,
+            voters: [],
+          };
+        }
+      }
+
       // Mod-only fields
       if (canMod) {
         if (typeof body.isPinned  === "boolean") updates.isPinned  = body.isPinned;
         if (typeof body.isLocked  === "boolean") updates.isLocked  = body.isLocked;
-        
+
       }
 
       if (Object.keys(updates).length === 0) return fail("Nothing to update.");
