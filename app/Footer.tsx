@@ -18,7 +18,7 @@ export default function Footer() {
 
         {/* Brand */}
         <div>
-          <p className="text-[15px] font-bold text-(--text-primary) tracking-wide">mid9it</p>
+          <p className="text-[15px] font-bold text-(--text-primary) tracking-wide">Bunny Forum</p>
           <p className="text-[13px] text-(--text-secondary) mt-0.5">Community Forums</p>
         </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
       {/* Bottom row */}
       <div className="max-w-5xl mx-auto px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2">
         <span className="text-[13px] text-(--text-secondary)">
-          © {new Date().getFullYear()} mid9it. All rights reserved.
+          © {new Date().getFullYear()}. All rights reserved.
         </span>
         <span className="text-[13px] text-(--text-secondary)">
           Forum software by <span className="text-(--accent)">mid9it</span>

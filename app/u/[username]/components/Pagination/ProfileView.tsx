@@ -34,7 +34,7 @@ export function ProfileView({
 }: ProfileViewProps) {
   const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
   return (
-    <div className="min-h-screen bg-(--bg-page)">
+    <div className="min-h-screen bg-(--bg-page) pb-8">
       <ProfileHeader profile={profile} onEdit={onEdit} total={total} />
 
       <div className="max-w-6xl mx-auto px-4">
