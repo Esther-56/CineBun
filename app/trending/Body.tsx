@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Flame } from 'lucide-react';
 import Navbar from '@/app/MainPage/trendingThreads/components/Navbar';
@@ -40,7 +40,7 @@ function ListSkeleton() {
   );
 }
 
-export default function Body() {
+function BodyInfo() {
   const searchParams = useSearchParams();
   const page = Number(searchParams.get('page') ?? 1) || 1;
 
@@ -134,4 +134,12 @@ export default function Body() {
       <Footer />
     </div>
   );
+}
+
+export default function Body (){
+    return(
+        <Suspense fallback={<div></div>}>
+            <BodyInfo/>
+        </Suspense>
+    )
 }
