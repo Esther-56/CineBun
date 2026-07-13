@@ -163,38 +163,43 @@ export default function NewThreadPage() {
     setPollOptions((prev) => (prev.length > MIN_POLL_OPTIONS ? prev.filter((o) => o.id !== id) : prev));
   };
 
-  const handleSubmit = async (html: string) => {
-    setError("");
-    setPollError("");
-    if (!title.trim()) { setError("Please enter a title."); return; }
-    if (!subforumId)   { setError("No subforum selected."); return; }
+const handleSubmit = async (html: string) => {
+  setError("");
+  setPollError("");
+  if (!title.trim()) { setError("Please enter a title."); return; }
+  if (!subforumId)   { setError("No subforum selected."); return; }
 
-    let poll: { question: string; options: string[]; durationDays: number } | undefined;
-    if (showPoll) {
-      const question = pollQuestion.trim();
-      const options = pollOptions.map((o) => o.text.trim()).filter(Boolean);
+  let poll: { question: string; options: string[]; durationDays: number } | undefined;
+  if (showPoll) {
+    const question = pollQuestion.trim();
+    const options = pollOptions.map((o) => o.text.trim()).filter(Boolean);
+    const pollIsEmpty = !question && options.length === 0;
+
+    if (!pollIsEmpty) {
       if (!question) { setPollError("Add a question for your poll."); return; }
       if (options.length < MIN_POLL_OPTIONS) { setPollError(`Add at least ${MIN_POLL_OPTIONS} options.`); return; }
       poll = { question, options, durationDays: Number(pollDuration) };
     }
+    // else: poll UI is open but untouched — treat as "no poll", no error, nothing sent.
+  }
 
-    const { data, success } = await ThreadService.create({
-      title: title.trim(),
-      content: html,
-      image: image.trim(),
-      tags,
-      prefix: prefix || undefined,
-      subforumId,
-      categoryId,
-      poll,
-    });
-    const id = data?.thread?._id;
+  const { data, success } = await ThreadService.create({
+    title: title.trim(),
+    content: html,
+    image: image.trim(),
+    tags,
+    prefix: prefix || undefined,
+    subforumId,
+    categoryId,
+    poll,
+  });
+  const id = data?.thread?._id;
 
-    if (success) {
-      const params = new URLSearchParams({ page: "1" });
-      router.replace(`/f/${subforumId}/${id}?${params.toString()}`);
-    }
-  };
+  if (success) {
+    const params = new URLSearchParams({ page: "1" });
+    router.replace(`/f/${subforumId}/${id}?${params.toString()}`);
+  }
+};
 
   const selectedPrefix = PREFIXES.find((p) => p.value === prefix);
 
