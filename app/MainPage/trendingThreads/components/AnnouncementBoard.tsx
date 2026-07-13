@@ -50,8 +50,8 @@ export default function AnnouncementBoard() {
             style={{ backgroundColor: style.bg, borderColor: style.border }}
           >
             <style.Icon size={18} className="shrink-0 mt-0.5" style={{ color: style.text }} />
-            <div className="flex-1 text-sm text-(--text-secondary) leading-relaxed">
-              <RichText text={a.message} />
+            <div className="flex-1  text-(--text-secondary) text-sm sm:text-base font-semibold">
+              <RichText text={a.message} /> 
             </div>
             <button
               onClick={() => handleDismiss(a._id)}
