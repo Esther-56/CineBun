@@ -50,7 +50,7 @@ export default function AnnouncementBoard() {
             style={{ backgroundColor: style.bg, borderColor: style.border }}
           >
             <style.Icon size={18} className="shrink-0 mt-0.5" style={{ color: style.text }} />
-            <div className="flex-1  text-(--text-secondary) text-sm sm:text-base font-semibold">
+            <div className="flex-1  text-(--text-secondary) text-sm sm:text-base font-medium">
               <RichText text={a.message} /> 
             </div>
             <button
