@@ -26,6 +26,12 @@ export interface PaginatedThreads {
   pages: number;
 }
 
+export interface ThreadPollBody {
+  question:     string;
+  options:      string[];
+  durationDays: number;
+}
+
 export interface ThreadUpdateBody {
   title?:   string;
   content?: string;
@@ -53,6 +59,7 @@ export const ThreadService = {
     categoryId?: string;
     prefix?:    string;
     tags:       string[];
+    poll?:      ThreadPollBody;
   }) => api.post<Data>('/threads/new', body),
 
   update: (threadId: string | undefined, body: ThreadUpdateBody) =>
@@ -66,6 +73,14 @@ export const ThreadService = {
 
   pin: (threadId: string | undefined) =>
     api.patch<ApiResponse<Thread>>(`/threads/${threadId}/pin`),
+
+  /**
+   * Casts (or changes) the current user's vote on a thread's poll.
+   * optionIndex is the zero-based index into the poll's options array.
+   */
+  votePoll: (threadId: string | undefined, optionIndex: number) =>
+    api.patch<ApiResponse<Thread>>(`/threads/${threadId}/vote`, { optionIndex }),
+
 
   /**
    * Uploads a File to Cloudinary via /api/upload (the general editor/thread

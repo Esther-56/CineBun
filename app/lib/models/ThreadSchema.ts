@@ -13,6 +13,19 @@ const Thread = new Schema({
   views:        { type: Number, default: 0 },
   replyCount:   { type: Number, default: 0 },
   prefix:       { type: String, default: null },          // e.g. "[GUIDE]", "[WIP]"
+  poll: {
+  question:     { type: String },
+  options: [{
+    text:  { type: String, required: true },
+    votes: { type: Number, default: 0 },
+  }],
+  durationDays: { type: Number },
+  endsAt:       { type: Date, default: null },
+  voters: [{
+    user:        { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    optionIndex: { type: Number },
+  }],
+  },
   tags: {
   type: [String],
   milestonesSent: { type: [Number], default: [] },

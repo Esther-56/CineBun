@@ -60,11 +60,44 @@ export async function POST(req: Request) {
       await mongoosedb();
 
       const body = await req.json();
-      const { title, content, subforumId, categoryId, image, tags, prefix } = body;
+      const { title, content, subforumId, categoryId, image, tags, prefix, poll } = body;
 
-      if (!title?.trim())   return fail("Title is required.");
-      if (!content?.trim()) return fail("Content is required.");
-      if (!subforumId)      return fail("subforumId is required.");
+    if (!title?.trim())   return fail("Title is required.");
+    if (!content?.trim()) return fail("Content is required.");
+    if (!subforumId)      return fail("subforumId is required.");
+
+    interface PollDoc {
+      question: string;
+      options: { text: string; votes: number }[];
+      durationDays: number;
+      endsAt: Date | null;
+      voters: { user: string; optionIndex: number }[];
+    }
+
+    let pollDoc: PollDoc | undefined;
+
+    if (poll) {
+      const question = poll.question?.trim();
+      const cleanOptions = (poll.options ?? [])
+        .map((t: string) => t.trim())
+        .filter(Boolean);
+
+      if (!question)              return fail("Poll question is required.");
+      if (cleanOptions.length < 2) return fail("Poll needs at least 2 options.");
+      if (cleanOptions.length > 6) return fail("Poll allows at most 6 options.");
+
+      const days = Number(poll.durationDays);
+      const endsAt = days > 0 ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null;
+
+      pollDoc = {
+        question,
+        options: cleanOptions.map((text: string) => ({ text, votes: 0 })),
+        durationDays: days,
+        endsAt,
+        voters: [],
+      };
+    }
+
 
 
       // Staff (mods/admins) bypass the read-only restriction.
@@ -95,7 +128,8 @@ export async function POST(req: Request) {
             image,
             tags,
             lastPost: { user: user._id, createdAt: new Date() },
-            prefix
+            prefix,
+            poll:pollDoc
           }], { session }).then(docs => docs[0]);
 
           firstPost = await Post.create([{
