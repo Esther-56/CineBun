@@ -1,5 +1,6 @@
 // TrendingPanel.tsx
-import { Flame } from 'lucide-react';
+import Link from 'next/link';
+import { Flame, ArrowRight } from 'lucide-react';
 
 interface TrendingThread {
   _id: string;
@@ -34,6 +35,14 @@ export default function TrendingPanel({ threads }: TrendingPanelProps) {
           ))
         )}
       </div>
+
+      <Link
+        href="/trending"
+        className="flex items-center justify-center gap-1.5 mt-3.5 pt-3 border-t border-(--border-soft) text-sm font-semibold text-(--accent) hover:text-(--accent-hover) transition-colors group"
+      >
+        See all trending
+        <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+      </Link>
     </div>
   );
 }
